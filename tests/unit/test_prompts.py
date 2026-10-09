@@ -78,6 +78,24 @@ CONTEXTS: dict[tuple[str, int], dict] = {
         "tense": "past",
     },
     ("draft.continue", 1): {"original_request": "Write it.", "anchor": "…and then"},
+    ("draft.scene", 2): {
+        "spec_block": "SPEC",
+        "codex_block": "- Ailsa",
+        "chapter_block": "CHAPTER",
+        "recap": "",
+        "card_block": "CARD",
+        "target_words": 1200,
+        "pov": "third-limited",
+        "tense": "past",
+        "pov_name": "Ailsa",
+    },
+    ("draft.continue", 2): {
+        "card_block": "CARD",
+        "anchor": "…and then",
+        "mid_sentence": True,
+        "remaining_words": 300,
+        "exit_condition": "the storm hits",
+    },
     ("critique.scene", 1): {"text": "Some scene.", "max_findings": 5},
 }
 

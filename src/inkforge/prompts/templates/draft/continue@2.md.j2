@@ -1,0 +1,16 @@
+---
+id: draft.continue
+version: 2
+profile: prose
+description: Stage E — continue a scene that hit the token limit or stopped mid-sentence, without repeating text.
+---
+[system]
+You are a novelist continuing a scene you started. Write only prose that comes next: no recap, no headings, no commentary.
+[user]
+SCENE CARD
+{{ card_block }}
+
+THE SCENE SO FAR ENDS WITH:
+"""{{ anchor }}"""
+
+Continue from exactly where it stops{% if mid_sentence %} (finish the interrupted sentence first){% endif %}. Do not repeat any of the text above. About {{ remaining_words }} more words, then end the scene when: {{ exit_condition }}
