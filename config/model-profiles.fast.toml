@@ -1,0 +1,14 @@
+# "fast" profile set: real-model plumbing tests on llama3.2:1b (decision D16).
+# Values here override config/model-profiles.toml per profile.
+
+[profiles.planner]
+model = "llama3.2:1b"
+num_ctx = 4096
+
+[profiles.prose]
+model = "llama3.2:1b"
+num_ctx = 4096
+
+[profiles.critic]
+model = "llama3.2:1b"
+num_ctx = 4096

@@ -1,0 +1,356 @@
+# Golden continuity book — v0 outline (Phase 0). Prose is written in Phase 6.
+# 30 scenes, 25 planted contradictions (all rule types in docs/07 § 3), 10 decoys that must NOT be flagged.
+# Validated by tests/unit/test_golden_fixtures.py.
+schema: inkforge/fixture-continuity-book@1
+title: The Glass Orchard
+form: novella
+pov: third-limited
+tense: past
+
+entities:
+  characters:
+    - {id: char-mira,  name: Mira Vale,   born: 1858-03-02, eye_color: grey,  hair: dark,  handedness: left, role: protagonist, note: glass-restorer}
+    - {id: char-tom,   name: Tom Vale,    born: 1863-07-19, eye_color: brown, hair: red,   role: Mira's brother}
+    - {id: char-elias, name: Elias Crane, born: 1831-01-11, eye_color: grey,  hair: white, role: orchard owner, dies: ch04-sc03}
+    - {id: char-june,  name: June Crane,  born: 1873-06-10, eye_color: blue,  hair: fair,  role: Elias's daughter}
+    - {id: char-bram,  name: Bram Okafor, born: 1847-09-30, title_rank: constable, role: Saltmere constable}
+    - {id: char-nell,  name: Nell Pike,   born: 1822-12-01, role: Crane housekeeper}
+  locations:
+    - {id: loc-saltmere,     name: Saltmere harbor town}
+    - {id: loc-crane-house,  name: Crane House, parent: loc-saltmere}
+    - {id: loc-glass-orchard, name: The Glass Orchard, parent: loc-crane-house}
+    - {id: loc-chapel,       name: Saltmere chapel, parent: loc-saltmere}
+    - {id: loc-carrow,       name: Carrow (city)}
+  travel:
+    - {from: loc-saltmere, to: loc-carrow, min_days: 2, mode: coach}
+  items:
+    - {id: obj-brass-key,   name: brass glasshouse key, significance: plot,      unique: true}
+    - {id: obj-ledger,      name: Elias's ledger,       significance: plot,      unique: true}
+    - {id: obj-revolver,    name: Elias's revolver,     significance: plot,      unique: true}
+    - {id: obj-locket,      name: June's silver locket, significance: plot,      unique: true}
+    - {id: obj-silver-pear, name: the silver pear (glass tree), significance: plot, unique: true}
+  lore:
+    - {id: lore-frost-rule, rule: "Glass trees shatter in hard frost unless the stove-pipes are lit."}
+
+promises:
+  - {id: prom-001, description: "The locked central glasshouse", setup: ch01-sc05, payoff: ch05-sc05}
+  - {id: prom-002, description: "The forged deed", setup: ch02-sc05, payoff: ch06-sc03}
+  - {id: prom-003, description: "Elias's wife's letter hidden in the chapel", setup: ch01-sc05, payoff: null}
+  - {id: prom-004, description: "Who took the revolver", setup: ch04-sc03, payoff: ch06-sc01}
+
+# Narrative order = list order. Story order = narrative order except where `timeline` says otherwise.
+scenes:
+  # ---- Chapter 1: Arrival (1892-10-01 .. 10-03)
+  - id: ch01-sc01
+    when: 1892-10-01
+    pov: char-mira
+    location: loc-saltmere
+    participants: [char-mira, char-tom]
+    summary: Mira and Tom arrive by boat; Mira, 34, studies the harbor with her grey eyes, sketching left-handed. Tom's red hair under his cap.
+    establishes:
+      - [char-mira, age, 34]
+      - [char-mira, eye_color, grey]
+      - [char-mira, handedness, left]
+      - [char-tom, hair, red]
+      - [char-tom, location_at, loc-saltmere]
+  - id: ch01-sc02
+    when: 1892-10-01
+    pov: char-mira
+    location: loc-crane-house
+    participants: [char-mira, char-elias, char-june]
+    items_present: [obj-brass-key]
+    summary: Elias (61) hires Mira and hands her the brass key; June (19), blue-eyed, watches. Mira thinks June's eyes are sea-coloured.
+    establishes:
+      - [char-elias, age, 61]
+      - [char-june, age, 19]
+      - [char-june, eye_color, blue]
+      - [obj-brass-key, held_by, char-mira]
+  - id: ch01-sc03
+    when: 1892-10-02
+    pov: char-mira
+    location: loc-glass-orchard
+    participants: [char-mira]
+    items_present: [obj-ledger, obj-silver-pear]
+    summary: Mira tours the orchard; learns the frost rule from the stove-pipes; notices a ledger on a potting bench. The silver pear is the oldest tree.
+    establishes:
+      - [lore-frost-rule, rule_of_world, "glass shatters in hard frost unless pipes are lit"]
+      - [obj-ledger, located_at, loc-glass-orchard]
+      - [obj-silver-pear, condition, intact]
+  - id: ch01-sc04
+    when: 1892-10-02
+    pov: char-tom
+    location: loc-saltmere
+    participants: [char-tom, char-bram]
+    summary: At the tavern, Constable Bram tells Tom that Elias is deep in debt. Tom keeps it to himself.
+    establishes:
+      - [char-bram, title_rank, constable]
+      - [char-tom, knows_fact, fact-elias-debts]
+  - id: ch01-sc05
+    when: 1892-10-03
+    pov: char-mira
+    location: loc-crane-house
+    participants: [char-mira, char-nell]
+    summary: Nell tells Mira that June's mother died in the frost of '79, and that the central glasshouse has been locked since. She mentions a letter the wife hid in the chapel.
+    establishes:
+      - [char-mira, knows_fact, fact-mother-died-1879]
+    promises_touched: [prom-001, prom-003]
+
+  # ---- Chapter 2: The locket and the deed (10-04 .. 10-08)
+  - id: ch02-sc01
+    when: 1892-10-04
+    pov: char-mira
+    location: loc-glass-orchard
+    participants: [char-mira]
+    items_present: [obj-brass-key, obj-locket]
+    summary: Mira opens the outer glasshouse with the brass key and finds June's silver locket in the soil.
+    establishes:
+      - [obj-locket, held_by, char-mira]
+  - id: ch02-sc02
+    when: 1892-10-05 14:00
+    pov: char-bram
+    location: loc-chapel
+    participants: [char-bram, char-elias]
+    items_present: [obj-revolver]
+    summary: Elias and Bram argue in the chapel about the debts; Elias's revolver shows under his coat.
+    establishes:
+      - [obj-revolver, held_by, char-elias]
+      - [char-elias, location_at, loc-chapel]
+  - id: ch02-sc03
+    when: 1892-10-05 14:00
+    pov: char-mira
+    location: loc-crane-house
+    participants: [char-mira, char-june]
+    items_present: [obj-locket]
+    summary: At the same hour, Mira returns the locket to June, who puts it on at once.
+    establishes:
+      - [obj-locket, held_by, char-june]
+  - id: ch02-sc04
+    when: 1892-10-06
+    pov: char-tom
+    location: loc-saltmere
+    participants: [char-tom, char-mira]
+    summary: Tom takes the coach to Carrow (two days) to check the deed at the records office.
+  - id: ch02-sc05
+    when: 1892-10-08
+    pov: char-tom
+    location: loc-carrow
+    participants: [char-tom]
+    summary: In Carrow, Tom finds the deed to the orchard was forged by Elias.
+    establishes:
+      - [char-tom, location_at, loc-carrow]
+      - [char-tom, knows_fact, fact-deed-forged]
+    promises_touched: [prom-002]
+
+  # ---- Chapter 3: Frost (10-09 .. 10-12)
+  - id: ch03-sc01
+    when: 1892-10-09
+    pov: char-mira
+    location: loc-glass-orchard
+    participants: [char-mira, char-june]
+    items_present: [obj-locket]
+    summary: Mira and June light stove-pipes against a frost warning; June wears the locket.
+  - id: ch03-sc02
+    when: 1892-10-10
+    pov: char-tom
+    location: loc-carrow
+    participants: [char-tom]
+    summary: Tom writes to Mira about the forgery, dated 10 October, saying he leaves Carrow on the 12th.
+    establishes:
+      - [fact-tom-letter, date_of_event, 1892-10-10]
+      - [char-tom, location_at, loc-carrow]
+  - id: ch03-sc03
+    when: 1892-10-11
+    pov: char-elias
+    location: loc-crane-house
+    participants: [char-elias]
+    items_present: [obj-ledger]
+    summary: Alone, Elias moves the ledger into the study safe.
+    establishes:
+      - [obj-ledger, held_by, char-elias]
+      - [obj-ledger, located_at, loc-crane-house]
+  - id: ch03-sc04
+    when: 1892-10-12
+    pov: char-mira
+    location: loc-crane-house
+    participants: [char-mira]
+    summary: Mira receives and reads Tom's letter.
+    establishes:
+      - [char-mira, knows_fact, fact-deed-forged]
+  - id: ch03-sc05
+    when: 1892-10-12 23:00
+    pov: char-mira
+    location: loc-glass-orchard
+    participants: [char-mira, char-june]
+    items_present: [obj-silver-pear]
+    summary: A pipe fails in the hard frost; three trees shatter, the silver pear among them.
+    establishes:
+      - [obj-silver-pear, condition, destroyed]
+
+  # ---- Chapter 4: Death in the glasshouse (10-13 .. 10-15)
+  - id: ch04-sc01
+    when: 1892-10-13
+    pov: char-mira
+    location: loc-crane-house
+    participants: [char-mira, char-elias]
+    summary: Mira confronts Elias with the forgery; she writes down his answers.
+  - id: ch04-sc02
+    when: 1892-10-14 16:00
+    pov: char-tom
+    location: loc-saltmere
+    participants: [char-tom, char-mira]
+    summary: Tom arrives back in Saltmere and reunites with Mira.
+    establishes:
+      - [char-tom, location_at, loc-saltmere]
+  - id: ch04-sc03
+    when: 1892-10-14 23:30
+    pov: char-june
+    location: loc-glass-orchard
+    participants: [char-june]
+    summary: June finds Elias dead in the outer glasshouse; his revolver is gone.
+    establishes:
+      - [char-elias, status, dead]
+      - [obj-revolver, condition, lost]
+    promises_touched: [prom-004]
+  - id: ch04-sc04
+    when: 1892-10-15
+    pov: char-bram
+    location: loc-crane-house
+    participants: [char-bram, char-mira, char-june]
+    items_present: [obj-brass-key]
+    summary: Bram takes the brass key from Mira as evidence.
+    establishes:
+      - [obj-brass-key, held_by, char-bram]
+  - id: ch04-sc05
+    when: 1879-11-20
+    temporal_mode: flashback
+    timeline: {before: ch01-sc01}
+    pov: char-elias
+    location: loc-glass-orchard
+    participants: [char-elias, char-june]
+    summary: "Flashback: the frost of '79. Elias, 48, argues with his wife among the trees while June, a child of six, watches. The silver pear stands whole."
+
+  # ---- Chapter 5: The search (10-16 .. 10-19)
+  - id: ch05-sc01
+    when: 1892-10-16
+    temporal_mode: dream
+    pov: char-june
+    location: loc-glass-orchard
+    participants: [char-june, char-elias]
+    summary: June dreams her father walks the orchard and tells her to look under the silver pear, which stands whole.
+  - id: ch05-sc02
+    when: 1892-10-17
+    pov: char-tom
+    location: loc-crane-house
+    participants: [char-tom, char-mira]
+    items_present: [obj-ledger]
+    summary: Mira and Tom search the study; Tom finds the ledger in the safe and keeps it.
+    establishes:
+      - [obj-ledger, held_by, char-tom]
+  - id: ch05-sc03
+    when: 1892-10-18 15:00
+    pov: char-bram
+    location: loc-chapel
+    participants: [char-bram, char-june, char-nell]
+    summary: Bram questions June at the chapel. Nell, there to pray, tells June about the forgery; June then repeats it to Bram.
+    establishes:
+      - [char-june, knows_fact, fact-deed-forged]
+  - id: ch05-sc04
+    when: 1892-10-18 18:00
+    temporal_mode: unreliable
+    pov: char-nell
+    location: loc-crane-house
+    participants: [char-nell]
+    summary: "Nell's account (unreliable): she claims she saw Tom at the glasshouse on the night of the death."
+  - id: ch05-sc05
+    when: 1892-10-19
+    pov: char-mira
+    location: loc-glass-orchard
+    participants: [char-mira, char-june]
+    summary: Mira and June open the locked central glasshouse.
+    promises_touched: [prom-001]
+
+  # ---- Chapter 6: Verdicts (10-20 .. epilogue 1893-10)
+  - id: ch06-sc01
+    when: 1892-10-20
+    pov: char-mira
+    location: loc-crane-house
+    participants: [char-mira, char-nell, char-bram]
+    items_present: [obj-revolver]
+    summary: The revolver is found in Nell's sewing basket.
+    establishes:
+      - [obj-revolver, held_by, char-nell]
+    promises_touched: [prom-004]
+  - id: ch06-sc02
+    when: 1892-10-21
+    pov: char-bram
+    location: loc-chapel
+    participants: [char-bram, char-mira, char-tom, char-june]
+    summary: An inquiry in the chapel hall.
+  - id: ch06-sc03
+    when: 1892-10-22
+    pov: char-june
+    location: loc-crane-house
+    participants: [char-june, char-mira]
+    summary: June inherits; the forged deed is set aside.
+    promises_touched: [prom-002]
+  - id: ch06-sc04
+    when: 1892-10-23
+    pov: char-mira
+    location: loc-saltmere
+    participants: [char-mira, char-tom]
+    summary: Mira and Tom on the harbor wall, deciding whether to stay.
+  - id: ch06-sc05
+    when: 1893-10-01
+    pov: char-mira
+    location: loc-glass-orchard
+    participants: [char-mira, char-june]
+    summary: "Epilogue, a year later: Mira, now thirty-five, plants a new pear by the central glasshouse."
+
+# Each contradiction is text the Phase 6 prose for `scene` must contain. `conflicts_with` names the
+# scene/fact it breaks. `checked_by: model` marks free-form predicates outside the controlled vocabulary.
+contradictions:
+  # single-valued predicate (5)
+  - {id: c01, rule: single_valued, scene: ch02-sc03, plant: "Mira's blue eyes",                     conflicts_with: [ch01-sc01, char-mira, eye_color]}
+  - {id: c02, rule: single_valued, scene: ch03-sc01, plant: "June's green eyes",                    conflicts_with: [ch01-sc02, char-june, eye_color]}
+  - {id: c03, rule: single_valued, scene: ch04-sc01, plant: "Mira writes with her right hand",      conflicts_with: [ch01-sc01, char-mira, handedness], checked_by: model}
+  - {id: c04, rule: single_valued, scene: ch05-sc03, plant: "Sergeant Okafor",                      conflicts_with: [ch01-sc04, char-bram, title_rank]}
+  - {id: c05, rule: single_valued, scene: ch06-sc04, plant: "Tom's black hair",                     conflicts_with: [ch01-sc01, char-tom, hair]}
+  # temporal validity (3)
+  - {id: c06, rule: temporal,      scene: ch05-sc02, plant: "Elias mutters an answer from the doorway", conflicts_with: [ch04-sc03, char-elias, status]}
+  - {id: c07, rule: temporal,      scene: ch06-sc02, plant: "Elias sits in the front pew at the inquiry", conflicts_with: [ch04-sc03, char-elias, status]}
+  - {id: c08, rule: temporal,      scene: ch06-sc01, plant: "Nell says she spoke with Elias yesterday",  conflicts_with: [ch04-sc03, char-elias, status], checked_by: model}
+  # knowledge (4)
+  - {id: c09, rule: knowledge,     scene: ch03-sc01, plant: "Mira tells June the deed was forged",   conflicts_with: [ch03-sc04, char-mira, knows_fact, fact-deed-forged]}
+  - {id: c10, rule: knowledge,     scene: ch01-sc03, plant: "Mira worries about Elias's debts",      conflicts_with: [ch01-sc04, char-tom, knows_fact, fact-elias-debts]}
+  - {id: c11, rule: knowledge,     scene: ch04-sc02, plant: "Tom mentions June's mother dying in the frost of '79", conflicts_with: [ch01-sc05, char-mira, knows_fact, fact-mother-died-1879]}
+  - {id: c12, rule: knowledge,     scene: ch05-sc03, plant: "Bram says the ledger was in the study safe", conflicts_with: [ch03-sc03, obj-ledger, located_at]}
+  # presence (3)
+  - {id: c13, rule: presence,      scene: ch03-sc01, plant: "Tom helps light the stove-pipes",       conflicts_with: [ch02-sc05, char-tom, location_at, loc-carrow]}
+  - {id: c14, rule: presence,      scene: ch02-sc03, plant: "Elias watches from the doorway",        conflicts_with: [ch02-sc02, char-elias, location_at, loc-chapel]}
+  - {id: c15, rule: presence,      scene: ch04-sc01, plant: "Tom stands behind Mira as she confronts Elias", conflicts_with: [ch03-sc02, char-tom, location_at, loc-carrow]}
+  # object state (4)
+  - {id: c16, rule: object_state,  scene: ch05-sc05, plant: "the silver pear glitters, untouched",   conflicts_with: [ch03-sc05, obj-silver-pear, condition]}
+  - {id: c17, rule: object_state,  scene: ch05-sc05, plant: "Mira unlocks it with the brass key from her pocket", conflicts_with: [ch04-sc04, obj-brass-key, held_by]}
+  - {id: c18, rule: object_state,  scene: ch06-sc02, plant: "June produces the ledger from her father's desk", conflicts_with: [ch05-sc02, obj-ledger, held_by]}
+  - {id: c19, rule: object_state,  scene: ch06-sc04, plant: "Mira turns June's locket over in her pocket", conflicts_with: [ch02-sc03, obj-locket, held_by]}
+  # age / date arithmetic (3)
+  - {id: c20, rule: age_date,      scene: ch06-sc03, plant: "June, now twenty-one",                  conflicts_with: [char-june, born]}
+  - {id: c21, rule: age_date,      scene: ch04-sc05, plant: "Elias, barely thirty",                  conflicts_with: [char-elias, born]}
+  - {id: c22, rule: age_date,      scene: ch03-sc04, plant: "the letter is dated 14 October",        conflicts_with: [ch03-sc02, fact-tom-letter, date_of_event]}
+  # promises (2)
+  - {id: c23, rule: promise,       scene: null,      plant: "prom-003 never paid off",               conflicts_with: [prom-003]}
+  - {id: c24, rule: promise,       scene: ch06-sc03, plant: "June produces her mother's second will (never set up)", conflicts_with: []}
+  # travel plausibility, opt-in (1)
+  - {id: c25, rule: travel,        scene: ch04-sc02, plant: "Tom left Carrow only that morning",     conflicts_with: [travel, loc-carrow, loc-saltmere]}
+
+decoys:
+  - {id: d01, scene: ch04-sc05, looks_like: temporal,     why_not: "flashback placed before ch01-sc01; Elias alive in 1879"}
+  - {id: d02, scene: ch04-sc05, looks_like: age_date,     why_not: "June six in 1879 matches born 1873-06-10"}
+  - {id: d03, scene: ch05-sc01, looks_like: temporal,     why_not: "dream: dead Elias may appear"}
+  - {id: d04, scene: ch05-sc01, looks_like: object_state, why_not: "dream: destroyed silver pear may appear whole"}
+  - {id: d05, scene: ch05-sc04, looks_like: presence,     why_not: "unreliable narrator: at most a low-severity hypothesis"}
+  - {id: d06, scene: ch03-sc01, looks_like: object_state, why_not: "June wears the locket after the on-page transfer in ch02-sc03"}
+  - {id: d07, scene: ch05-sc03, looks_like: knowledge,    why_not: "June learns the forgery from Nell earlier in the same scene"}
+  - {id: d08, scene: ch06-sc05, looks_like: age_date,     why_not: "Mira 35 on 1893-10-01 matches born 1858-03-02"}
+  - {id: d09, scene: ch01-sc02, looks_like: single_valued, why_not: "'sea-coloured' is compatible with blue"}
+  - {id: d10, scene: ch06-sc04, looks_like: temporal,     why_not: "Elias only mentioned, not acting"}

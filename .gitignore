@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+
+# Node (apps/web, later)
+node_modules/
+
+# InkForge user data and generated output — never in source control
+workspace/
+exports/
+runs/
+*.sqlite
+*.sqlite-journal
+backups/
+logs/
+*.log
+
+# Local overrides and caches
+config/*.local.toml
+.cache/
+.env
+
+# Benchmark raw outputs (summaries in docs/benchmarks/ are tracked)
+bench-out/
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

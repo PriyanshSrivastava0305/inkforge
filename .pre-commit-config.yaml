@@ -1,0 +1,26 @@
+# Local-only hooks: everything runs from the project venv, nothing is fetched from remote hook repos.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+      - id: pyright
+        name: pyright
+        entry: uv run pyright
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: pytest-quick
+        name: pytest (no model)
+        entry: uv run pytest -m "not ollama" -x
+        language: system
+        types: [python]
+        pass_filenames: false

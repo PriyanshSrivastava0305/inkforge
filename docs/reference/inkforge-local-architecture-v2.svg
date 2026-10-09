@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1280" viewBox="0 0 1920 1280">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fafc"/><stop offset="1" stop-color="#eef2ff"/></linearGradient>
+  <linearGradient id="navy" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#172554"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0f172a" flood-opacity=".08"/></filter>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker>
+  <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/></marker>
+  <style>
+    text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#172033}
+    .title{font-size:34px;font-weight:800;letter-spacing:-.5px}
+    .subtitle{font-size:16px;fill:#64748b}
+    .laneTitle{font-size:17px;font-weight:800;letter-spacing:.7px;fill:#fff}
+    .h{font-size:17px;font-weight:750}
+    .p{font-size:13px;fill:#475569}
+    .tiny{font-size:11px;fill:#64748b}
+    .tag{font-size:11px;font-weight:750;letter-spacing:.5px}
+    .panel{fill:#fff;stroke:#dbe3ef;stroke-width:1.5;rx:16;filter:url(#shadow)}
+    .ui{fill:#eff6ff;stroke:#93c5fd;stroke-width:1.5;rx:13}
+    .core{fill:#eef2ff;stroke:#818cf8;stroke-width:1.5;rx:13}
+    .pipe{fill:#ecfdf5;stroke:#6ee7b7;stroke-width:1.5;rx:13}
+    .quality{fill:#fff7ed;stroke:#fdba74;stroke-width:1.5;rx:13}
+    .store{fill:#f8fafc;stroke:#94a3b8;stroke-width:1.5;rx:13}
+    .local{fill:#172033;stroke:#172033;stroke-width:1.5;rx:13}
+    .edge{stroke:#64748b;stroke-width:2.2;fill:none;marker-end:url(#arrow)}
+    .edgeBlue{stroke:#2563eb;stroke-width:2.2;fill:none;marker-end:url(#arrowBlue)}
+    .feedback{stroke:#8b5cf6;stroke-width:2;stroke-dasharray:7 6;fill:none;marker-end:url(#arrow)}
+  </style>
+</defs>
+<rect width="1920" height="1280" fill="url(#bg)"/>
+<!-- Header -->
+<rect x="0" y="0" width="1920" height="112" fill="#fff"/>
+<rect x="48" y="28" width="8" height="58" rx="4" fill="#2563eb"/>
+<text x="78" y="55" class="title">INKFORGE</text>
+<text x="78" y="82" class="subtitle">Local-first AI writing system · visual planning + staged generation + continuity control</text>
+<rect x="1532" y="34" width="336" height="42" rx="21" fill="#dcfce7" stroke="#86efac"/>
+<circle cx="1557" cy="55" r="6" fill="#16a34a"/><text x="1574" y="60" font-size="13" font-weight="800" fill="#166534">LOCAL-ONLY RUNTIME</text>
+<text x="1868" y="95" text-anchor="end" class="tiny">Reference architecture v2 · implementation target</text>
+
+<!-- Main background panels -->
+<rect x="36" y="132" width="1848" height="176" rx="20" fill="#fff" stroke="#dbe3ef"/>
+<rect x="36" y="132" width="1848" height="42" rx="20" fill="url(#navy)"/>
+<rect x="36" y="154" width="1848" height="20" fill="url(#navy)"/>
+<text x="58" y="159" class="laneTitle">01  EXPERIENCE LAYER</text>
+<text x="1860" y="159" text-anchor="end" font-size="12" fill="#dbeafe">Author works here · every action goes through the local API</text>
+
+<!-- UI cards -->
+<rect x="56" y="190" width="420" height="96" class="ui"/>
+<rect x="56" y="190" width="7" height="96" rx="3" fill="#3b82f6"/>
+<text x="78" y="216" class="h">Visual Story Workbench</text><text x="78" y="239" class="p">Story graph · plot dependencies · timeline</text><text x="78" y="260" class="p">Drag/reorder acts, chapters and scene cards</text><text x="78" y="278" class="tiny">React + TypeScript · React Flow</text>
+<rect x="496" y="190" width="420" height="96" class="ui"/>
+<rect x="496" y="190" width="7" height="96" rx="3" fill="#3b82f6"/>
+<text x="518" y="216" class="h">Manuscript Editor</text><text x="518" y="239" class="p">Markdown/rich text · autosave · version diffs</text><text x="518" y="260" class="p">Scene status · inline findings · approve/reject</text><text x="518" y="278" class="tiny">Tiptap or CodeMirror</text>
+<rect x="936" y="190" width="420" height="96" class="ui"/>
+<rect x="936" y="190" width="7" height="96" rx="3" fill="#3b82f6"/>
+<text x="958" y="216" class="h">Codex / Project Bible</text><text x="958" y="239" class="p">Characters · locations · lore · relationships</text><text x="958" y="260" class="p">Canon facts linked to evidence in the manuscript</text><text x="958" y="278" class="tiny">Structured forms + cross-linked entity pages</text>
+<rect x="1376" y="190" width="488" height="96" class="ui"/>
+<rect x="1376" y="190" width="7" height="96" rx="3" fill="#3b82f6"/>
+<text x="1398" y="216" class="h">CLI + Run Console</text><text x="1398" y="239" class="p">init · plan · draft · check · revise · export</text><text x="1398" y="260" class="p">Logs, progress, checkpoints, pause/resume/retry</text><text x="1398" y="278" class="tiny">Typer CLI · local events stream</text>
+
+<!-- API layer -->
+<rect x="36" y="330" width="1848" height="148" rx="20" fill="#fff" stroke="#dbe3ef"/>
+<rect x="36" y="330" width="1848" height="42" rx="20" fill="#4338ca"/>
+<rect x="36" y="352" width="1848" height="20" fill="#4338ca"/>
+<text x="58" y="357" class="laneTitle">02  APPLICATION CORE</text>
+<text x="1860" y="357" text-anchor="end" font-size="12" fill="#e0e7ff">Typed domain services · durable jobs · controlled tool access</text>
+<rect x="56" y="390" width="350" height="72" class="core"/>
+<text x="76" y="416" class="h">Local API Gateway</text><text x="76" y="438" class="p">FastAPI · schema validation · job queue</text><text x="76" y="455" class="tiny">127.0.0.1 · REST + streaming events</text>
+<rect x="426" y="390" width="430" height="72" class="core"/>
+<text x="446" y="416" class="h">Conductor / Workflow Engine</text><text x="446" y="438" class="p">Stage state machine · retries · pause/resume</text><text x="446" y="455" class="tiny">Approval gates · checkpoint after each stage</text>
+<rect x="876" y="390" width="430" height="72" class="core"/>
+<text x="896" y="416" class="h">Context Builder + Prompt Registry</text><text x="896" y="438" class="p">Token budget · relevant Codex · versioned skills</text><text x="896" y="455" class="tiny">Context manifest saved with each generation</text>
+<rect x="1326" y="390" width="538" height="72" class="core"/>
+<text x="1346" y="416" class="h">Policy, Audit &amp; Workspace Guard</text><text x="1346" y="438" class="p">Path sandbox · audit events · atomic writes</text><text x="1346" y="455" class="tiny">No outbound network by default · confirm destructive changes</text>
+
+<!-- flow arrows UI to core -->
+<path d="M260 286 V318" class="edgeBlue"/><path d="M706 286 V318" class="edgeBlue"/><path d="M1146 286 V318" class="edgeBlue"/><path d="M1620 286 V318" class="edgeBlue"/>
+<path d="M260 318 H1620" stroke="#2563eb" stroke-width="2" fill="none"/><path d="M260 318 V386" class="edgeBlue"/>
+<text x="945" y="323" text-anchor="middle" class="tiny">UI / CLI requests</text>
+
+<!-- Pipeline -->
+<rect x="36" y="500" width="1848" height="270" rx="20" fill="#fff" stroke="#dbe3ef"/>
+<rect x="36" y="500" width="1848" height="42" rx="20" fill="#047857"/>
+<rect x="36" y="522" width="1848" height="20" fill="#047857"/>
+<text x="58" y="527" class="laneTitle">03  STORY PIPELINE</text>
+<text x="1860" y="527" text-anchor="end" font-size="12" fill="#d1fae5">Top-down planning · each stage produces a versioned artifact</text>
+
+<!-- pipeline boxes -->
+<g>
+<rect x="56" y="570" width="202" height="112" class="pipe"/><circle cx="80" cy="594" r="13" fill="#047857"/><text x="80" y="598" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">1</text><text x="101" y="599" class="h">Book Spec</text><text x="72" y="625" class="p">Premise · genre · POV</text><text x="72" y="645" class="p">Tone · constraints · stakes</text><text x="72" y="666" class="tiny">book_spec.json</text>
+<rect x="276" y="570" width="202" height="112" class="pipe"/><circle cx="300" cy="594" r="13" fill="#047857"/><text x="300" y="598" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">2</text><text x="321" y="599" class="h">Story Design</text><text x="292" y="625" class="p">Themes · arcs · acts</text><text x="292" y="645" class="p">Setups and payoffs</text><text x="292" y="666" class="tiny">story_design.json</text>
+<rect x="496" y="570" width="202" height="112" class="pipe"/><circle cx="520" cy="594" r="13" fill="#047857"/><text x="520" y="598" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">3</text><text x="541" y="599" class="h">Chapter Plan</text><text x="512" y="625" class="p">Goal · conflict · turn</text><text x="512" y="645" class="p">Causal links · pacing</text><text x="512" y="666" class="tiny">outline.json</text>
+<rect x="716" y="570" width="202" height="112" class="pipe"/><circle cx="740" cy="594" r="13" fill="#047857"/><text x="740" y="598" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">4</text><text x="761" y="599" class="h">Scene Cards</text><text x="732" y="625" class="p">Want · obstacle · change</text><text x="732" y="645" class="p">POV · cast · setting</text><text x="732" y="666" class="tiny">scenes/*.json</text>
+<rect x="936" y="570" width="202" height="112" class="pipe"/><circle cx="960" cy="594" r="13" fill="#047857"/><text x="960" y="598" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">5</text><text x="981" y="599" class="h">Draft Scene</text><text x="952" y="625" class="p">Voice + relevant context</text><text x="952" y="645" class="p">Safe continuation</text><text x="952" y="666" class="tiny">scene version</text>
+<rect x="1156" y="570" width="202" height="112" class="quality"/><circle cx="1180" cy="594" r="13" fill="#c2410c"/><text x="1180" y="598" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">6</text><text x="1201" y="599" class="h">Critique</text><text x="1172" y="625" class="p">Continuity · voice · craft</text><text x="1172" y="645" class="p">Evidence-linked findings</text><text x="1172" y="666" class="tiny">findings.json</text>
+<rect x="1376" y="570" width="202" height="112" class="quality"/><circle cx="1400" cy="594" r="13" fill="#c2410c"/><text x="1400" y="598" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">7</text><text x="1421" y="599" class="h">Revise</text><text x="1392" y="625" class="p">Targeted edits · diffs</text><text x="1392" y="645" class="p">Re-check affected rules</text><text x="1392" y="666" class="tiny">new scene version</text>
+<rect x="1596" y="570" width="268" height="112" class="pipe"/><circle cx="1620" cy="594" r="13" fill="#047857"/><text x="1620" y="598" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">8</text><text x="1641" y="599" class="h">Approve &amp; Export</text><text x="1612" y="625" class="p">Author approves canonical version</text><text x="1612" y="645" class="p">Markdown · DOCX · EPUB</text><text x="1612" y="666" class="tiny">release bundle + preflight report</text>
+</g>
+<g class="edge"><path d="M258 626 H271"/><path d="M478 626 H491"/><path d="M698 626 H711"/><path d="M918 626 H931"/><path d="M1138 626 H1151"/><path d="M1358 626 H1371"/><path d="M1578 626 H1591"/></g>
+<path d="M1468 682 V716 H1037 V688" class="feedback"/>
+<text x="1260" y="710" class="tiny" fill="#7c3aed">revision loop: re-check before approval</text>
+<text x="60" y="744" class="tiny">Any stage can be run alone, edited manually, retried, or resumed from its last valid checkpoint.</text>
+
+<!-- shared services band -->
+<rect x="36" y="792" width="1218" height="246" rx="20" fill="#fff" stroke="#dbe3ef"/>
+<rect x="36" y="792" width="1218" height="42" rx="20" fill="#c2410c"/>
+<rect x="36" y="814" width="1218" height="20" fill="#c2410c"/>
+<text x="58" y="819" class="laneTitle">04  SHARED INTELLIGENCE SERVICES</text>
+<rect x="56" y="854" width="372" height="160" class="quality"/>
+<text x="78" y="882" class="h">Continuity &amp; Canon Engine</text><text x="78" y="907" class="p">• Timeline, ages, injuries, object states</text><text x="78" y="930" class="p">• Character knowledge and relationships</text><text x="78" y="953" class="p">• Setup/payoff and plot promise tracking</text><text x="78" y="976" class="p">• Findings cite both conflicting passages</text><text x="78" y="998" class="tiny">Rules first · local model for ambiguity</text>
+<rect x="448" y="854" width="372" height="160" class="quality"/>
+<text x="470" y="882" class="h">Voice &amp; Craft Critics</text><text x="470" y="907" class="p">• Per-character voice cards</text><text x="470" y="930" class="p">• Motivation, dialogue and POV drift</text><text x="470" y="953" class="p">• Pacing, clarity, repetition and payoff</text><text x="470" y="976" class="p">• Reader personas / rubric-based critique</text><text x="470" y="998" class="tiny">Advisory findings · author decides</text>
+<rect x="840" y="854" width="394" height="160" class="quality"/>
+<text x="862" y="882" class="h">Long-Book Memory</text><text x="862" y="907" class="p">CORE · stable facts always available</text><text x="862" y="930" class="p">DIGEST · chapter and arc summaries</text><text x="862" y="953" class="p">RECALL · lexical + optional vector retrieval</text><text x="862" y="976" class="p">Context manifest saved per model run</text><text x="862" y="998" class="tiny">Manuscript remains source of truth</text>
+
+<!-- runtime &amp; storage -->
+<rect x="1274" y="792" width="610" height="246" rx="20" fill="#fff" stroke="#dbe3ef"/>
+<rect x="1274" y="792" width="610" height="42" rx="20" fill="#334155"/>
+<rect x="1274" y="814" width="610" height="20" fill="#334155"/>
+<text x="1296" y="819" class="laneTitle">05  LOCAL RUNTIME &amp; DATA</text>
+<rect x="1294" y="854" width="270" height="72" class="store"/>
+<text x="1312" y="880" class="h">Local Model Router</text><text x="1312" y="901" class="p">Ollama · llama.cpp · task profiles</text><text x="1312" y="917" class="tiny">Planner / prose / critic / embeddings</text>
+<rect x="1580" y="854" width="284" height="72" class="store"/>
+<text x="1598" y="880" class="h">Project Storage</text><text x="1598" y="901" class="p">Markdown + JSON + SQLite</text><text x="1598" y="917" class="tiny">Versions · checkpoints · audit · backups</text>
+<rect x="1294" y="940" width="270" height="74" class="store"/>
+<text x="1312" y="966" class="h">Local Search</text><text x="1312" y="987" class="p">SQLite FTS5 · optional FAISS</text><text x="1312" y="1004" class="tiny">Indexes are rebuildable</text>
+<rect x="1580" y="940" width="284" height="74" class="local"/>
+<text x="1598" y="966" font-size="16" font-weight="750" fill="#fff">Offline Boundary</text><text x="1598" y="987" font-size="12" fill="#e2e8f0">Loopback only · no cloud fallback</text><text x="1598" y="1004" font-size="11" fill="#cbd5e1">OS firewall for strict isolation</text>
+
+<!-- cross-layer connections -->
+<path d="M641 462 V484 H640 V494" class="edgeBlue"/>
+<text x="656" y="484" class="tiny">workflow dispatch</text>
+<path d="M640 770 V782 H646 V846" class="edge"/>
+<path d="M1070 462 V482 H1050 V562" class="edge"/>
+<text x="1085" y="487" class="tiny">build prompt / call stages</text>
+<path d="M1090 682 V776 H1025 V846" class="feedback"/>
+<path d="M1240 896 H1264 V890 H1284" class="edge"/>
+<path d="M1240 966 H1284" class="edge"/>
+<path d="M1430 462 V484 H1715 V846" class="edge"/>
+<path d="M1430 484 V930" class="edge"/>
+<text x="1460" y="478" class="tiny">guard + persist</text>
+<path d="M1429 626 V758 H1430 V846" class="edgeBlue"/>
+<text x="1445" y="756" class="tiny">inference requests</text>
+
+<!-- Footer principles -->
+<rect x="36" y="1060" width="1848" height="180" rx="20" fill="#172033"/>
+<text x="62" y="1097" font-size="18" font-weight="800" fill="#fff">DESIGN GUARANTEES</text>
+<line x1="62" y1="1112" x2="1856" y2="1112" stroke="#334155" stroke-width="1.5"/>
+<circle cx="74" cy="1142" r="5" fill="#34d399"/><text x="90" y="1147" font-size="14" font-weight="700" fill="#f8fafc">Author owns canon</text><text x="90" y="1168" font-size="12" fill="#cbd5e1">No silent story changes</text>
+<circle cx="510" cy="1142" r="5" fill="#60a5fa"/><text x="526" y="1147" font-size="14" font-weight="700" fill="#f8fafc">Recoverable workflow</text><text x="526" y="1168" font-size="12" fill="#cbd5e1">Versioned artifacts + resumable checkpoints</text>
+<circle cx="1000" cy="1142" r="5" fill="#fbbf24"/><text x="1016" y="1147" font-size="14" font-weight="700" fill="#f8fafc">Evidence-based quality</text><text x="1016" y="1168" font-size="12" fill="#cbd5e1">Findings link back to source passages</text>
+<circle cx="1460" cy="1142" r="5" fill="#c084fc"/><text x="1476" y="1147" font-size="14" font-weight="700" fill="#f8fafc">Offline by design</text><text x="1476" y="1168" font-size="12" fill="#cbd5e1">Local models, data and indexes</text>
+<text x="62" y="1212" font-size="12" fill="#94a3b8">Build order: data contracts → checkpointed pipeline → local inference → quality engine → visual workbench → exports → offline hardening.</text>
+<text x="1856" y="1212" text-anchor="end" font-size="12" fill="#94a3b8">INKFORGE · unified synthesis of visual planning, structured plotting, and autonomous writing QA</text>
+</svg>

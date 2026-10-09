@@ -1,0 +1,36 @@
+# Default model profiles (decision D16). One model serves every role.
+# Only the models listed in [runtime].allowed_models may be referenced.
+
+[runtime]
+adapter = "ollama"
+base_url = "http://127.0.0.1:11434"   # loopback only (D2/D18)
+max_loaded_models = 1                 # 16 GB RAM: never keep 1B and 8B resident together
+keep_alive = "15m"
+allowed_models = [
+    "llama3.1:8b-instruct-q4_K_M",
+    "llama3.2:1b",
+    "nomic-embed-text",
+]
+
+[profiles.planner]
+model = "llama3.1:8b-instruct-q4_K_M"
+num_ctx = 6144
+temperature = 0.4
+output_fraction = 0.3
+
+[profiles.prose]
+model = "llama3.1:8b-instruct-q4_K_M"
+num_ctx = 6144
+temperature = 0.85
+top_p = 0.92
+repeat_penalty = 1.08
+min_output_tokens = 1500
+
+[profiles.critic]
+model = "llama3.1:8b-instruct-q4_K_M"
+num_ctx = 6144
+temperature = 0.1
+
+[profiles.embedding]
+model = "nomic-embed-text"
+enabled = false

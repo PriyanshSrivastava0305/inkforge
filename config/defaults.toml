@@ -1,0 +1,18 @@
+# Application defaults. Local overrides go in config/defaults.local.toml (git-ignored).
+
+[workspace]
+# "~" expands to %USERPROFILE% on Windows (decision D15)
+root = "~/InkForge/workspace"
+
+[cache]
+root = "~/InkForge/cache"
+
+[api]
+host = "127.0.0.1"
+port = 8787
+
+[approval_gates]
+spec = true
+design = true
+outline = true
+scene_cards = false

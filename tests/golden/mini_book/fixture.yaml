@@ -1,0 +1,22 @@
+# Mini-book benchmark fixture (docs/10 Phase 0, docs/08 § Benchmark harness).
+# spec -> 3 chapter plans -> 6 scene cards (2 per chapter) -> 2 scene drafts -> 1 critique.
+schema: inkforge/fixture-mini-book@1
+
+idea: >
+  A lighthouse keeper on a drowned coast finds letters in bottles that predict
+  storms a day before they happen. The letters are in her own handwriting.
+
+form: novella
+target_words: 24000
+chapters: 3
+scenes_per_chapter: 2
+
+# Scenes drafted in the benchmark (by position: chapter index, scene index; 1-based)
+draft_scenes: [[1, 1], [1, 2]]
+draft_target_words: 450
+
+# Critique runs on the first drafted scene
+critique_scene: [1, 1]
+
+# Generation seed for reproducibility across runs of the same model
+seed: 42

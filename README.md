@@ -1,0 +1,30 @@
+# InkForge
+
+Local-first story and script writing agent — personal tool, strictly local (no network calls at runtime).
+
+- **Plan & docs:** [`docs/`](docs/README.md) — start with `01`, then the roadmap in `10`.
+- **Status:** Phase 0 (foundations & model spike). See [`CHANGELOG.md`](CHANGELOG.md).
+- **Models (D16):** `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests), via Ollama on `127.0.0.1`.
+
+## Setup
+
+```bash
+uv sync --extra tokenizer
+uv run inkforge version
+uv run pytest -m "not ollama"   # no model needed
+uv run pytest                   # includes live Ollama checks (1B only)
+```
+
+`uv` lives in `%APPDATA%\Python\Python312\Scripts`; add that folder to PATH.
+
+## Scripts (Phase 0)
+
+| Script | Purpose |
+|---|---|
+| `scripts/smoke_ollama.py <model> [runs]` | Structured output, truncation, streaming, cancellation, model switching |
+| `scripts/build_tokenizer.py` | Build the Llama-3 tokenizer from the local Ollama GGUF (offline) and verify it |
+| `scripts/bench_models.py <model>` | Mini-book benchmark (`tests/golden/mini_book/`) |
+
+## Layout
+
+`src/inkforge/` — one package, subpackages per component (ADR-0001) · `config/` — TOML defaults and model profiles · `tests/` — unit / integration / golden / e2e · `docs/` — plan, ADRs, benchmarks, reference material.
