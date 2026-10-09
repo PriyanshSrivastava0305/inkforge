@@ -41,6 +41,8 @@ class RuntimeConfig(BaseModel):
     max_loaded_models: int = Field(default=1, ge=1)
     keep_alive: str = "15m"
     allowed_models: list[str] = Field(min_length=1)
+    min_version: str | None = None  # lowest tested runtime version; `doctor` warns below it
+    tokenizer_family: dict[str, str] = Field(default_factory=dict)  # model -> cached tokenizer name
 
     @field_validator("base_url")
     @classmethod
@@ -64,6 +66,11 @@ class ModelProfile(BaseModel):
     repeat_penalty: float | None = Field(default=None, gt=0.0)
     output_fraction: float = Field(default=0.3, gt=0.0, lt=1.0)
     min_output_tokens: int = Field(default=512, ge=1)
+    seed: int | None = None
+    # CPU inference: reading a cold prompt can take minutes before the first token (docs/08).
+    first_token_timeout_s: float = Field(default=900, gt=0)
+    idle_timeout_s: float = Field(default=180, gt=0)  # max gap between streamed chunks
+    timeout_s: float = Field(default=1800, gt=0)  # whole call
 
 
 class ModelConfig(BaseModel):

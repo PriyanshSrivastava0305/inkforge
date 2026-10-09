@@ -2,28 +2,51 @@
 
 ## Router interface
 
+Implemented in `src/inkforge/models/router.py` (Phase 2).
+
 ```python
 class ModelRouter:
+    @classmethod
+    def from_config(cls, profile_set: str | None = None, *, adapter=None, cache_root=None) -> ModelRouter: ...
+
     async def generate(
         self,
-        messages,
+        messages: list[Message],
         profile: str,
-        max_tokens: int,
-        temperature: float | None = None,
-        stop: list[str] | None = None,
-        stream: bool = False,
+        *,
+        max_tokens=None,
+        temperature=None,
+        stop=(),
+        json_schema=None,
+        cancel: CancelToken | None = None,
     ) -> Generation: ...
 
     async def generate_structured(
-        self, messages, schema: type[BaseModel], profile: str, max_attempts: int = 3
-    ) -> BaseModel: ...
+        self,
+        messages,
+        schema: type[T],
+        profile: str,
+        *,
+        max_attempts=3,
+        allowed_ids: Mapping[str, Collection[str]] | None = None,
+        validate: Callable[[T], list[str]] | None = None,
+        max_tokens=None,
+        temperature=None,
+        cancel=None,
+        recorder: RunRecorder | None = None,
+    ) -> StructuredResult[T]: ...  # .value, .attempts, .first_try
 
-    async def health(self) -> dict[str, RuntimeHealth]: ...  # reachable, models loaded, ctx size
+    async def health(self) -> RuntimeHealth: ...
+    async def ensure_model(self, model: str) -> list[str]: ...  # unloads others per max_loaded_models
     def context_length(self, profile: str) -> int: ...
     def count_tokens(self, text: str, profile: str) -> int: ...
 ```
 
-`Generation` carries text, `finish_reason` (`stop|length|cancelled|error`), token counts, latency, model name/digest. `finish_reason == "length"` is what drives scene continuation.
+`Generation` carries text, `finish_reason` (`stop | length | cancelled | error | repetition`), prompt/output token counts, prompt-read and generation seconds, load time, time to first token and wall time. `finish_reason == "length"` drives scene continuation. `"cancelled"` text must never become a version.
+
+**Always streams internally**, even for single results. That is what makes cancellation immediate. It also lets the router enforce **three timeouts** per profile instead of one: `first_token_timeout_s` (default 900 s, because a cold 3k-token prompt takes minutes on this CPU), `idle_timeout_s` (180 s between chunks) and `timeout_s` (1800 s total; critic 1200 s).
+
+**Repetition guard.** Small models under constrained decoding sometimes loop. The 1B emitted `- > - > - > …` inside a JSON string until max_tokens, about two minutes wasted per attempt (2026-10-09). The stream is checked every ~64 chars and stopped when it ends in a ≤24-char unit repeated ≥12 times over ≥120 chars. The call then returns `finish_reason="repetition"`, and `generate_structured` repairs with "output got stuck repeating …". Normal prose and short repeats ("haha") don't trigger it. It can be turned off per request (`ChatRequest.loop_guard`).
 
 ## Adapters
 
@@ -32,12 +55,14 @@ class ModelRouter:
 | **Ollama** (default) | `http://127.0.0.1:11434/api/chat` | `format: <JSON schema>` | Installed (0.34.0). Set `num_ctx` explicitly per request — Ollama's default context is small. Read `done_reason` (`stop`/`length`) → `finish_reason`. No tokenize endpoint. |
 | **llama.cpp server** | `http://127.0.0.1:8080/v1/chat/completions` | `response_format` JSON schema / GBNF grammar | Best control; exposes `/tokenize`. |
 | **OpenAI-compatible (local only)** | configurable `127.0.0.1` URL | `response_format` if supported | Covers LM Studio, vLLM, KoboldCpp. URL validator rejects non-loopback hosts unless LAN mode is on. |
-| **Fake** (tests) | in-process | deterministic fixtures | Replays recorded outputs; used by unit/integration tests and CI. |
+| **Fake** (tests) | in-process | scripted / record-replay | `FakeAdapter(script)` (list or `req -> FakeResponse`), `FakeAdapter.replay(dir)` keyed by request hash, `RecordingAdapter(real, dir)` to capture fixtures, `max_resident` to simulate the RAM limit. The whole test suite runs on it. |
 
 ## Structured output strategy
 
-1. Send JSON Schema via the runtime's constrained decoding (Ollama `format`, llama.cpp grammar).
-2. Parse with Pydantic. On failure: **repair** attempt with the error message appended; then lower temperature; then fail the job.
+1. Send JSON Schema via the runtime's constrained decoding (Ollama `format`, llama.cpp `response_format`).
+2. Check, in order: truncated (`length`) or looping (`repetition`) → parse JSON → **allowed-ID check** (`models/allowed.py`: any string shaped like an ID of a constrained kind must be one we supplied) → Pydantic validation → optional `validate(value)` callback for stage rules.
+3. On failure: **repair**. The conversation becomes `[original…, assistant: <bad output>, user: "Your previous output was not accepted: - <errors> … Return only the corrected JSON"]`. If truncated, `max_tokens` grows ×1.5 (capped at `num_ctx/2`). Attempt 3 halves the temperature (floor 0.1). Then `StructuredOutputError` with every attempt kept. Cancellation raises `GenerationCancelled` immediately and is never retried.
+4. Every text field in a stage schema needs `min_length`. Constrained decoding happily emits `""` for hard fields (1B, 2026-10-09).
 3. Keep schemas small and flat per call (e.g., scene cards for *one chapter*, not the whole book). Long lists are generated in batches.
 4. All IDs in model output must be from an allowed set passed in the prompt; validator rejects unknown IDs.
 
@@ -116,20 +141,22 @@ Larger models or a GPU tier are out of scope until the hardware changes. The set
 
 ## Prompt & skill registry
 
-- `packages/prompts/templates/<stage>/<name>@<version>.md.j2` — Jinja2 with YAML frontmatter (`id, version, profile, output_schema, description`).
-- `packages/prompts/skills/<skill>/SKILL.md` — AuthorAgent-style craft skills: structure templates (three-act, save-the-cat, hero's journey, kishōtenketsu, 8-sequence), genre packs (mystery fair-play rules, romance beats, thriller pacing), style guides. Skills are *data injected into prompts*, never code.
-- Project-level overrides in `<project>/prompts/` shadow defaults (author can tune without touching the app).
-- Every run records `prompt_id@version` and a hash of the rendered prompt.
+- `src/inkforge/prompts/templates/<stage>/<name>@<version>.md.j2`: YAML frontmatter (`id` = `<stage>.<name>`, `version` = file version, `profile`, `description`), then a body with `[system]` / `[user]` / `[assistant]` section markers. File name and frontmatter must agree, or loading fails.
+- Rendered with Jinja's **sandboxed** environment + `StrictUndefined`. Project overrides are editable text, so they can't reach Python internals, and a missing variable is an error, not a silently empty prompt. Values (manuscript text, skill bodies) are inserted verbatim and never re-rendered, so `{{ … }}` inside a scene can't inject template code. Rendering is byte-stable (whitespace normalized), and `RenderedPrompt.sha256` identifies it.
+- First templates (v1): `spec.generate`, `outline.chapters`, `cards.generate`, `draft.scene`, `draft.continue`, `critique.scene`. The critique asks for `quote` → `problem` → `suggestion` with a worked example, because v0 (Phase 0) got `claim == quote` from both models.
+- `src/inkforge/prompts/skills/<skill>/SKILL.md` (shipped: `three-act`, `save-the-cat`, `heros-journey`) — AuthorAgent-style craft skills: structure templates (three-act, save-the-cat, hero's journey, kishōtenketsu, 8-sequence), genre packs (mystery fair-play rules, romance beats, thriller pacing), style guides. Skills are *data injected into prompts*, never code.
+- Project-level overrides in `<project>/prompts/` and `<project>/skills/` shadow defaults (author can tune without touching the app). `inkforge prompts [id]` lists or shows them.
+- Every run records `prompt_id@version` and a hash of the rendered prompt (`RunRecorder` → `runs/<job>/prompt.txt, raw_output.txt, meta.json, partial.txt`).
 - Prompt regression: changing a template version triggers golden-fixture runs against the fake + one real model (Phase 2 tooling).
 
 ## Operations
 
-- **Health:** startup checks runtime reachable, models present, context length; UI shows red/green.
-- **Timeouts:** per profile (default 600 s for prose), with streaming heartbeat.
+- **Health:** `inkforge doctor` checks runtime reachable, version ≥ `min_version` (0.34.0), profile models installed, resident models, free RAM vs. the next model's size, tokenizer cache. UI shows red/green (Phase 7).
+- **Timeouts:** per profile: first token / idle / total (see Router interface).
 - **Queue:** single in-flight generation per runtime by default.
 - **Cancellation:** abort stream; job → `cancelled`; partial output saved to `runs/<job>/partial.txt` but never becomes a version.
 - **Metrics:** tokens/s, latency, retries, schema failure rate — written to `runs/` and summarized by `inkforge stats`.
 
-## Benchmark harness (Phase 0)
+## Benchmark harness
 
-`scripts/bench_models.py` runs a fixed mini-book (spec → 3 chapters → 6 scene cards → 2 scene drafts → 1 critique) against each candidate model and records: schema-valid rate, tokens/s, wall time, VRAM peak, and a blind author rating of the two scenes. Output table goes into [`docs/benchmarks/`](benchmarks/)`<date>.md`.
+`inkforge bench [--profile-set fast]` (Phase 2; `scripts/bench_models.py` is now a wrapper) runs the mini-book through the **real router and prompt registry**, with a run record per call in `bench-out/<date>-<model>/runs/`. It runs a fixed mini-book (spec → 3 chapters → 6 scene cards → 2 scene drafts → 1 critique) against each candidate model and records: schema-valid rate, tokens/s, wall time, VRAM peak, and a blind author rating of the two scenes. Output table goes into [`docs/benchmarks/`](benchmarks/)`<date>.md`.

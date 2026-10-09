@@ -1,0 +1,26 @@
+---
+id: draft.scene
+version: 1
+profile: prose
+description: Stage E — draft one scene from its card (bench version; context builder arrives in Phase 4).
+---
+[system]
+You are a novelist. Write only scene prose: no titles, headings, notes or commentary.
+[user]
+{{ spec_block }}
+SCENE CARD (chapter {{ chapter_no }}, scene {{ scene_no }})
+POV: {{ pov_name }}
+Participants: {{ participants | join(", ") }}
+Location: {{ card.location }}
+Want: {{ card.want }}
+Obstacle: {{ card.obstacle }}
+Event: {{ card.concrete_event }}
+Change: {{ card.change }}
+Exit when: {{ card.exit_condition }}
+{% if recap %}
+
+PREVIOUS SCENE ENDED:
+"""{{ recap }}"""
+{% endif %}
+
+Write this scene in about {{ target_words }} words, {{ pov }} POV, {{ tense }} tense. Use the characters' names, not their ids.

@@ -1,0 +1,19 @@
+---
+id: spec.enhance
+version: 1
+profile: planner
+description: Stage A enhance — critique the spec, then return an improved version. Shown to the author as a field diff.
+---
+[system]
+You are a demanding development editor. Improve specs without changing what the author decided.
+[user]
+CURRENT BOOK SPEC (JSON)
+{{ spec_json }}
+{% if fixed %}
+
+These fields were set by the author and must not change: {{ fixed | join(", ") }}.
+{% endif %}
+
+1. "critique": the spec's weakest points (vague premise, generic tone, promises that don't follow from the idea…).
+2. "changes": each field you change and why.
+3. "improved": the complete improved spec. Keep everything that is already strong.

@@ -30,6 +30,10 @@ Lightweight ADRs. Status: **Accepted** (decided here, based on the build guide),
 | D22 | `canon/promises.json` is the only promise store; designs/cards reference IDs | Accepted | Removes duplicate source of truth |
 | D23 | `--yes` answers planning gates A–D only; never approves scenes, canon or final export. `export --preview` gives a watermarked draft export | Accepted (closes Q7) | Keeps "nothing exported without approval" true while allowing overnight runs ([05](05-pipeline.md#approval--yes)) |
 | D24 | Phase 7 split: 7a (API + authoring views, after Phase 4), 7b (quality views, after Phase 6) | Accepted | Quality views need the Phase 6 engine |
+| D26 | Repetition guard on every stream (short units ×12 / long units ×4) → `finish_reason="repetition"` → repair | Accepted (Phase 2) | 1B looped twice in testing (`- > - >…`, a 4-name cycle); each cost minutes on CPU |
+| D27 | Model fills *proposals*; code converts them to records and mints all IDs; references are enums of allowed IDs | Accepted (Phase 3) | Strengthens D6: constrained decoding can't produce an unknown id; the allowed-ID check stays as a backstop |
+| D28 | Every free-text proposal field has `min_length` | Accepted (Phase 2) | Constrained decoding emits `""` for hard fields (1B) |
+| D29 | `INKFORGE_FAKE=auto` env hook runs the whole CLI on schema-generated fake output | Accepted (Phase 3) | CLI/chaos tests without a model; still strictly local |
 | D25 | Context render order is stable-first for Ollama prefix-cache reuse, independent of trimming priority | Accepted | CPU prompt reading is ~10 tok/s cold vs ~170 cached ([06](06-memory-and-context.md#render-order--priority-order-prefix-caching)) |
 
 ## Open questions (need your call)

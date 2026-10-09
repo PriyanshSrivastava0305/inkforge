@@ -28,6 +28,10 @@ inkforge run --project glass-orchard --mode full|plan|draft|polish [--until card
 inkforge timeline --project glass-orchard [--place ch12-sc01 --after ch03-sc02]   # story-order view/edit
 inkforge jobs / resume <job_id> / cancel <job_id>
 inkforge facts review --project glass-orchard              # interactive review queue
+inkforge status --project glass-orchard                     # every planning artifact: active/approved/fresh|review|stale
+inkforge codex --project glass-orchard [--accept id|all] [--reject id]   # review pipeline-proposed candidates
+inkforge edit --project glass-orchard chapter ch03         # $EDITOR → validated user version → staleness report
+inkforge prompts [id] | doctor [--profile-set fast] | bench [--profile-set fast]
 inkforge memory rebuild|consolidate
 inkforge reindex | backup | restore <zip> | stats | doctor | bench
 ```

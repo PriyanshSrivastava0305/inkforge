@@ -79,6 +79,10 @@ class BookSpec(SchemaRecord, BookSpecFields):
 
     original: str = Field(description="the author's raw idea, never overwritten")
     assumptions: list[str] = Field(default_factory=list)
+    author_fields: list[str] = Field(
+        default_factory=list,
+        description="fields the author set explicitly; code re-applies them over model output",
+    )
 
 
 class Act(Record):
@@ -504,12 +508,35 @@ class JobStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
+class StepStatus(StrEnum):
+    PENDING = "pending"
+    DONE = "done"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+
+
+class JobStep(Record):
+    """One unit of work (a stage for one target). `done` steps are the checkpoint: resume skips them."""
+
+    stage: str
+    target: str | None = None
+    status: StepStatus = StepStatus.PENDING
+    output_refs: list[str] = Field(default_factory=list)
+    attempts: int = Field(default=0, ge=0)
+    error: str | None = None
+    finished_at: datetime | None = None
+
+    @property
+    def key(self) -> str:
+        return f"{self.stage}:{self.target}" if self.target else self.stage
+
+
 class Job(SchemaRecord):
     SCHEMA: ClassVar[str] = "inkforge/job@1"
 
     job_id: JobId
     project_id: ProjectId
-    stage: str
+    stage: str  # mode or single stage name, e.g. "plan" or "cards"
     target_id: str | None = None
     status: JobStatus = JobStatus.QUEUED
     attempts: int = Field(default=0, ge=0)
@@ -519,6 +546,9 @@ class Job(SchemaRecord):
     finished_at: datetime | None = None
     error_summary: str | None = None
     events_path: str | None = None
+    params: dict[str, Any] = Field(default_factory=dict)  # mode, until, yes, profile_set, stage options
+    steps: list[JobStep] = Field(default_factory=list)
+    awaiting: str | None = None  # gate name when status == awaiting_approval
 
 
 class AuditEvent(Record):

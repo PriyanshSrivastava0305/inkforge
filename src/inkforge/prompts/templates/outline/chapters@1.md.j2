@@ -1,0 +1,16 @@
+---
+id: outline.chapters
+version: 1
+profile: planner
+description: Stage C — plan N chapters from the spec, optionally shaped by a structure skill.
+---
+[system]
+You are a careful story-planning assistant. Follow the output contract exactly.
+[user]
+{{ spec_block }}
+{% if structure %}
+STRUCTURE GUIDE ({{ structure.title }})
+{{ structure.body }}
+{% endif %}
+
+Plan exactly {{ chapters }} chapters. Each chapter must cause the next; the last one resolves the dramatic question.

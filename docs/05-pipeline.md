@@ -17,7 +17,9 @@ class Stage(Protocol):
     def persist(self, out: Output, meta: RunMeta) -> list[ArtifactRef]: ...
 ```
 
-Everything except `generate` is deterministic. Failure policy for every stage: up to *N* (default 3) attempts — attempt 2 adds the validation error to the prompt ("repair"), attempt 3 lowers temperature. If all fail, the job fails and the previous valid artifact stays active.
+Everything except `generate` is deterministic.
+
+**As built (Phase 3, `src/inkforge/pipeline/`):** stages are `spec` (A), `design` (B), `chapters` (C, one target per act, plus an optional `enhance` target) and `cards` (D, one target per chapter). Each has `targets / check_inputs / build_prompt / schema / validate / persist / adopt / finalize`. The model fills a *proposal* schema (`pipeline/proposals.py`) whose references are enums of allowed IDs. `persist` converts it to domain records and mints IDs (D27). `validate` failures go back to the model as repairs; `finalize` problems are warnings for you. Gates: `spec`, `design`, `outline` (outline + every chapter plan), `scene_cards` (off by default). Failure policy for every stage: up to *N* (default 3) attempts — attempt 2 adds the validation error to the prompt ("repair"), attempt 3 lowers temperature. If all fail, the job fails and the previous valid artifact stays active.
 
 ## Modes
 

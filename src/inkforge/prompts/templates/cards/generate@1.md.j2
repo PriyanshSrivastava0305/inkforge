@@ -1,0 +1,19 @@
+---
+id: cards.generate
+version: 1
+profile: planner
+description: Stage D — split one chapter into N scene cards using only known character ids.
+---
+[system]
+You are a careful story-planning assistant. Follow the output contract exactly.
+[user]
+{{ spec_block }}
+CHAPTER {{ number }}: {{ chapter.title }}
+Purpose: {{ chapter.purpose }}
+Conflict: {{ chapter.conflict }}
+Turning point: {{ chapter.turning_point }}
+Outcome: {{ chapter.outcome }}
+
+Split this chapter into exactly {{ scenes }} scene cards.
+Use only these character ids: {{ char_ids | join(", ") }}.
+value_charge looks like "+ -> -" (how the scene's core value moves).

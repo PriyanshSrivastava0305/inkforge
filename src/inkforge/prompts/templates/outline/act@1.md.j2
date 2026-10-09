@@ -1,0 +1,29 @@
+---
+id: outline.act
+version: 1
+profile: planner
+description: Stage C — plan the chapters of one act, continuing from the chapters already planned.
+---
+[system]
+You are a careful story-planning assistant. Follow the output contract exactly.
+[user]
+{{ spec_block }}
+
+{{ design_block }}
+
+{{ cast_block }}
+
+{{ promises_block }}
+{% if earlier %}
+
+CHAPTERS ALREADY PLANNED (earlier acts)
+{{ earlier | bullets }}
+{% endif %}
+
+Now plan act {{ act_no }} of {{ n_acts }} ({{ act.id }}): {{ act.purpose }}
+It must end on its turning point: {{ act.turning_point }}
+
+Write exactly {{ n }} {{ unit }}s of about {{ words }} words each. For every {{ unit }}:
+- a distinct purpose (no two {{ unit }}s do the same job), its conflict, turning point and outcome;
+- causal_link_prev / causal_link_next: how it is caused by the previous {{ unit }} and causes the next;
+- characters: ids from the cast list; promises_touched: ids from the promises list (may be empty).

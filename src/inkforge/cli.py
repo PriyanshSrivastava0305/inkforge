@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import io
 import shutil
 import sqlite3
@@ -14,9 +15,15 @@ from rich.console import Console
 from rich.table import Table
 
 from inkforge import __version__
+from inkforge.bench import run_bench
+from inkforge.cli_pipeline import register as register_pipeline
 from inkforge.config import load_app_config, load_model_config
 from inkforge.domain.forms import load_forms
+from inkforge.models.health import Check, runtime_checks
+from inkforge.models.router import ModelRouter
 from inkforge.policy.pathguard import PathEscapeError, resolve_inside
+from inkforge.prompts.registry import PromptRegistry
+from inkforge.prompts.skills import SkillRegistry
 from inkforge.storage.atomic import remove_stale_temps
 from inkforge.storage.backup import backup_project, restore_project
 from inkforge.storage.workspace import ProjectStore, Workspace
@@ -48,6 +55,9 @@ def _open(ws: Path | None, project: str) -> ProjectStore:
     except FileNotFoundError as e:
         console.print(f"[red]{e}[/red]")
         raise typer.Exit(1) from None
+
+
+register_pipeline(app, console, _open, WorkspaceOpt, ProjectOpt)
 
 
 @app.callback()
@@ -143,16 +153,21 @@ def restore(
 
 
 @app.command()
-def doctor(workspace: Path | None = WorkspaceOpt) -> None:
-    """Check storage health (runtime checks arrive in Phase 2)."""
+def doctor(
+    workspace: Path | None = WorkspaceOpt,
+    profile_set: str | None = typer.Option(None, "--profile-set", help="Check a profile set, e.g. 'fast'"),
+    runtime: bool = typer.Option(True, "--runtime/--no-runtime", help="Also check the model runtime"),
+) -> None:
+    """Check storage and model-runtime health."""
     ok = True
 
-    def check(name: str, passed: bool, detail: str = "") -> None:
+    def check(name: str, passed: bool, detail: str = "", warn_only: bool = False) -> None:
         nonlocal ok
-        ok &= passed
-        console.print(
-            f"{'[green]OK  [/green]' if passed else '[red]FAIL[/red]'} {name}{f' — {detail}' if detail else ''}"
+        ok &= passed or warn_only
+        label = (
+            "[green]OK  [/green]" if passed else ("[yellow]WARN[/yellow]" if warn_only else "[red]FAIL[/red]")
         )
+        console.print(f"{label} {name}{f' — {detail}' if detail else ''}")
 
     cfg = load_app_config(workspace=workspace)
     ws = Workspace(cfg.workspace_root)
@@ -199,4 +214,54 @@ def doctor(workspace: Path | None = WorkspaceOpt) -> None:
             (f"orphan versions: {orphans}" if orphans else "consistent")
             + (f"; removed {n} temp files" if n else ""),
         )
+    if runtime:
+        for c in asyncio.run(_runtime_checks(profile_set, cfg.cache_root)):
+            check(c.name, c.ok, c.detail, c.warn_only)
     raise typer.Exit(0 if ok else 1)
+
+
+async def _runtime_checks(profile_set: str | None, cache_root: Path) -> list[Check]:
+    router = ModelRouter.from_config(profile_set, cache_root=cache_root)
+    try:
+        return await runtime_checks(router, cache_root)
+    finally:
+        await router.aclose()
+
+
+@app.command()
+def prompts(prompt_id: str | None = typer.Argument(None, help="Show one prompt template")) -> None:
+    """List prompt templates and skills, or show one template."""
+    reg = PromptRegistry()
+    if prompt_id:
+        t = reg.get(prompt_id)
+        console.print(f"[bold]{t.ref}[/bold] ({t.source}, profile {t.profile}) — {t.path}")
+        console.print(t.body, markup=False, highlight=False)
+        return
+    table = Table("prompt", "versions", "profile", "description")
+    for pid in reg.ids():
+        t = reg.get(pid)
+        table.add_row(pid, ",".join(map(str, reg.versions(pid))), t.profile, t.description)
+    console.print(table)
+    skills = Table("skill", "kind", "description")
+    for sk in SkillRegistry().list():
+        skills.add_row(sk.name, sk.kind, sk.description)
+    console.print(skills)
+
+
+@app.command()
+def bench(
+    profile_set: str | None = typer.Option(
+        None, "--profile-set", help="'fast' = llama3.2:1b (≈5 min); default 8B ≈25 min"
+    ),
+    structure: str = typer.Option("three-act", "--structure", help="Structure skill for the outline"),
+) -> None:
+    """Run the mini-book benchmark through the router and prompt registry."""
+
+    async def go() -> Path:
+        router = ModelRouter.from_config(profile_set)
+        try:
+            return await run_bench(router, profile_set=profile_set, structure=structure)
+        finally:
+            await router.aclose()
+
+    console.print(f"Report: {asyncio.run(go())}")

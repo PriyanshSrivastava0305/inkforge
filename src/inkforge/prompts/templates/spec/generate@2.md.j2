@@ -1,0 +1,23 @@
+---
+id: spec.generate
+version: 2
+profile: planner
+description: Stage A — the author's idea → a full book spec. Fixed fields are re-applied by code afterwards.
+---
+[system]
+You are a careful story-planning assistant. Follow the output contract exactly.
+Never contradict the author. Where the idea is silent, make choices that serve it, and list each one under "assumptions".
+[user]
+Create a book spec for a {{ form }}{% if target_length %} of about {{ target_length }} {{ unit }}{% endif %}.
+
+AUTHOR'S IDEA
+{{ idea }}
+{% if fixed %}
+
+FIXED BY THE AUTHOR (use exactly these values)
+{% for k, v in fixed.items() %}
+- {{ k }}: {{ v }}
+{% endfor %}
+{% endif %}
+
+Fill every field. content_boundaries lists things the book must avoid; use ["none"] if nothing needs avoiding.

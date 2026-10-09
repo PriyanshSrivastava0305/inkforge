@@ -19,8 +19,8 @@ class ProjectLockedError(RuntimeError):
 
 
 class ProjectLock:
-    def __init__(self, project_dir: Path, timeout: float = 10.0):
-        self.path = project_dir / ".lock"
+    def __init__(self, project_dir: Path, timeout: float = 10.0, name: str = ".lock"):
+        self.path = project_dir / name
         self.timeout = timeout
         self._fd: int | None = None
         self._depth = 0
@@ -39,7 +39,7 @@ class ProjectLock:
                 if time.monotonic() >= deadline:
                     os.close(fd)
                     raise ProjectLockedError(
-                        f"project is locked by another process: {self.path.parent}"
+                        f"{self.path.name} in {self.path.parent} is held by another process"
                     ) from None
                 time.sleep(0.1)
         self._fd, self._depth = fd, 1

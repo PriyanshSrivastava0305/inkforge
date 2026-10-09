@@ -1,0 +1,22 @@
+---
+id: critique.scene
+version: 1
+profile: critic
+description: Stage F (bench) — evidence-first critique. Quote first, then name the problem (fixes claim==quote seen in Phase 0).
+---
+[system]
+You are a demanding fiction editor. Every finding must point at exact words in the scene.
+[user]
+SCENE TEXT
+"""{{ text }}"""
+
+List up to {{ max_findings }} concrete weaknesses in this scene.
+For each finding:
+- "quote": copy 8–30 words exactly as they appear in the scene (same punctuation).
+- "problem": in your own words, what is wrong with that passage. Do NOT repeat the quote.
+- "suggestion": one specific change that would fix it.
+- "category" and "severity" from the allowed values.
+
+Example of the expected shape (different scene):
+{"findings": [{"quote": "The wind howled like a wolf in the dark night", "category": "prose", "severity": "low",
+  "problem": "Stock simile; the image adds nothing specific to this coast.", "suggestion": "Replace with a concrete detail, e.g. the shutters' rhythm against the frame."}]}

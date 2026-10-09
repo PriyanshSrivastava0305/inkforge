@@ -3,7 +3,7 @@
 Local-first story and script writing agent — personal tool, strictly local (no network calls at runtime).
 
 - **Plan & docs:** [`docs/`](docs/README.md) — start with `01`, then the roadmap in `10`.
-- **Status:** Phases 0–1 done; next is Phase 2 (model router & prompt registry). See [`CHANGELOG.md`](CHANGELOG.md).
+- **Status:** Phases 0–3 done (storage, model router, planning pipeline); next is Phase 4 (drafting → MVP). See [`CHANGELOG.md`](CHANGELOG.md).
 - **Models (D16):** `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests), via Ollama on `127.0.0.1`.
 
 ## Setup
@@ -22,9 +22,15 @@ uv run pytest                   # includes live Ollama checks (1B only)
 ```bash
 uv run inkforge init "The Glass Orchard"      # creates ~/InkForge/workspace/projects/the-glass-orchard
 uv run inkforge projects
+uv run inkforge run -p the-glass-orchard --mode plan --idea "…"   # stops at each approval gate
+uv run inkforge status -p the-glass-orchard
+uv run inkforge approve -p the-glass-orchard spec && uv run inkforge resume -p the-glass-orchard
+uv run inkforge codex -p the-glass-orchard --accept all
 uv run inkforge backup -p the-glass-orchard
 uv run inkforge doctor
 ```
+
+Add `--profile-set fast` to use `llama3.2:1b` for quick runs; `INKFORGE_FAKE=auto` runs everything on a fake model.
 
 ## Scripts (Phase 0)
 

@@ -1,0 +1,26 @@
+---
+id: design.generate
+version: 1
+profile: planner
+description: Stage B — dramatic question, acts, cast with arcs, plot promises, ending constraints.
+---
+[system]
+You are a careful story-planning assistant. Follow the output contract exactly.
+[user]
+{{ spec_block }}
+{% if structure %}
+
+STRUCTURE GUIDE ({{ structure.title }})
+{{ structure.body }}
+{% endif %}
+{% if known_cast %}
+
+ALREADY IN THE CODEX (reuse these people; don't rename them): {{ known_cast | join("; ") }}
+{% endif %}
+
+Design the story:
+- dramatic_question: the single yes/no question the ending answers.
+- acts: exactly {{ acts }}, each with a purpose and a distinct turning point.
+- characters: 2–6, exactly one protagonist. Give each a proper personal name, a goal, a fear, a secret, how they talk, and how they start and end (arc_start must differ from arc_end).
+- promises: setups the reader will expect to be paid off, with a hint of where each is set up and paid off.
+- ending_constraints: what the ending must deliver.

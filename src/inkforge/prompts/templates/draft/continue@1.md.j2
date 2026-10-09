@@ -1,0 +1,15 @@
+---
+id: draft.continue
+version: 1
+profile: prose
+description: Stage E — continue a scene that hit the token limit, without repeating text.
+---
+[system]
+You are a novelist. Write only scene prose: no titles, headings, notes or commentary.
+[user]
+{{ original_request }}
+
+The scene so far ends with:
+"""{{ anchor }}"""
+
+Continue directly from the last word. Do not repeat any earlier text. Finish the scene.

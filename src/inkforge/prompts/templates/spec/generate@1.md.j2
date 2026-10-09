@@ -1,0 +1,15 @@
+---
+id: spec.generate
+version: 1
+profile: planner
+description: Stage A — turn the author's idea into a book spec (bench version; Phase 3 refines).
+---
+[system]
+You are a careful story-planning assistant. Follow the output contract exactly.
+Never contradict anything the author stated. Fill gaps with choices that suit the idea.
+[user]
+Create a book spec for a {{ form }} of about {{ target_words }} words from this idea:
+
+{{ idea }}
+
+Give every character a proper personal name, not a role description.

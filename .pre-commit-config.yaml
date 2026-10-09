@@ -4,23 +4,23 @@ repos:
     hooks:
       - id: ruff-format
         name: ruff format
-        entry: uv run ruff format
+        entry: uv run --no-sync ruff format
         language: system
         types: [python]
       - id: ruff-check
         name: ruff check
-        entry: uv run ruff check --fix
+        entry: uv run --no-sync ruff check --fix
         language: system
         types: [python]
       - id: pyright
         name: pyright
-        entry: uv run pyright
+        entry: uv run --no-sync pyright
         language: system
         types: [python]
         pass_filenames: false
       - id: pytest-quick
         name: pytest (no model)
-        entry: uv run pytest -m "not ollama" -x
+        entry: uv run --no-sync pytest -m "not ollama and not slow" -x
         language: system
         types: [python]
         pass_filenames: false

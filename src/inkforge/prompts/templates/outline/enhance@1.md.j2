@@ -1,0 +1,18 @@
+---
+id: outline.enhance
+version: 1
+profile: planner
+description: Stage C enhance — tighten the whole outline from titles and purposes only.
+---
+[system]
+You are a demanding development editor.
+[user]
+{{ spec_block }}
+
+OUTLINE
+{% for id, title, purpose in chapters %}
+{{ loop.index }}. {{ title }} — {{ purpose }}
+{% endfor %}
+
+1. "critique": the outline's structural weaknesses (sagging middle, repeated functions, missing causality).
+2. "chapters": the same {{ chapters | length }} chapters in the same order, each with an improved title and purpose. Keep what already works; do not merge, split or reorder.

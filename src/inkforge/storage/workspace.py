@@ -508,3 +508,83 @@ class ProjectStore:
                 "scene.delete", scene_id, actor=actor, after_ref=dest.relative_to(self.dir).as_posix()
             )
             self.index.refresh("card", scene_id)
+
+
+# ---------------------------------------------------------------- integrity & repair
+
+
+def all_slots(store: ProjectStore) -> list[tuple[str, str | None, ArtifactSlot]]:
+    out: list[tuple[str, str | None, ArtifactSlot]] = [(k, None, store.slot(k)) for k in _SINGLETONS]  # type: ignore[arg-type]
+    out += [("chapter", c, store.slot("chapter", c)) for c in store.chapter_ids()]
+    for sid in store.scene_ids():
+        out += [("card", sid, store.slot("card", sid)), ("draft", sid, store.slot("draft", sid))]
+    return out
+
+
+def repair(store: ProjectStore) -> dict[str, list[str]]:
+    """Clean up after a crash: delete temp files, quarantine orphan versions (content written, metadata
+    never updated) to backups/orphans/. Nothing is deleted outright except temp files."""
+    from inkforge.storage.atomic import remove_stale_temps
+
+    report: dict[str, list[str]] = {"temps": [], "orphans": []}
+    with store.lock:
+        n = remove_stale_temps(store.dir)
+        report["temps"] = [str(n)] if n else []
+        for _, _, slot in all_slots(store):
+            for p in slot.orphans():
+                rel = p.relative_to(store.dir)
+                dest = store.dir / "backups" / "orphans" / rel
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(p), str(dest))
+                report["orphans"].append(rel.as_posix())
+        if report["orphans"]:
+            store.audit.record("project.repair", store.id, detail=report)
+    return report
+
+
+def verify_integrity(store: ProjectStore) -> list[str]:
+    """Every problem that would count as corruption: unreadable metadata, missing or altered version
+    files, dangling pointers, orphans, temp files, records that fail validation, broken references."""
+    problems: list[str] = []
+    for kind, target, slot in all_slots(store):
+        ref = f"{kind}:{target}" if target else kind
+        if not slot.exists():
+            continue
+        try:
+            meta = slot.meta()
+        except Exception as e:
+            problems.append(f"{ref}: unreadable meta ({e})")
+            continue
+        versions = {v.version for v in meta.versions}
+        for ptr in ("active", "approved"):
+            v = getattr(meta, ptr)
+            if v is not None and v not in versions:
+                problems.append(f"{ref}: {ptr} v{v} not among versions")
+        for v in sorted(versions):
+            try:
+                data = slot.read_text(v)
+                if kind != "draft":
+                    store._model_for(kind).model_validate_json(data)  # type: ignore[arg-type]
+            except Exception as e:
+                problems.append(f"{ref} v{v}: {type(e).__name__}: {e}")
+        problems += [f"{ref}: orphan {p.name}" for p in slot.orphans()]
+    problems += [f"temp file {p.relative_to(store.dir).as_posix()}" for p in store.dir.rglob(".*.tmp")]
+    outline = store.try_read("outline")
+    if outline:
+        problems += [
+            f"outline: {c.id} has no plan"
+            for c in outline.chapters
+            if store.meta("chapter", c.id).active is None
+        ]
+    tl = store.try_read("timeline")
+    if tl:
+        known = set(store.scene_ids())
+        problems += [f"timeline: unknown scene {e.scene_id}" for e in tl.entries if e.scene_id not in known]
+    try:
+        store.project  # noqa: B018
+        store.get_promises()
+        for e in store.list_codex():
+            e.model_validate(e.model_dump(by_alias=True))
+    except Exception as e:
+        problems.append(f"project/codex/promises: {type(e).__name__}: {e}")
+    return problems

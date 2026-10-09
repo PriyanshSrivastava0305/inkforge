@@ -1,0 +1,43 @@
+---
+id: cards.chapter
+version: 1
+profile: planner
+description: Stage D — split one chapter into scene cards (POV, cast, place, want/obstacle/change, value charge, beats).
+---
+[system]
+You are a careful story-planning assistant. Follow the output contract exactly.
+[user]
+{{ spec_block }}
+
+{{ cast_block }}
+
+{{ promises_block }}
+{% if locations %}
+
+KNOWN LOCATIONS (reuse these names when they fit): {{ locations | join("; ") }}
+{% endif %}
+{% if neighbours.previous %}
+
+PREVIOUS CHAPTER: {{ neighbours.previous }}
+{% endif %}
+{% if neighbours.next %}
+NEXT CHAPTER: {{ neighbours.next }}
+{% endif %}
+{% if earlier %}
+
+EARLIER SCENES (id: event)
+{{ earlier | bullets }}
+{% endif %}
+
+CHAPTER {{ chapter_no }}: {{ chapter.title }}
+Purpose: {{ chapter.purpose }}
+Conflict: {{ chapter.conflict }}
+Turning point: {{ chapter.turning_point }}
+Outcome: {{ chapter.outcome }}
+
+Split this chapter into exactly {{ n }} scenes of about {{ words }} words each. For every scene:
+- pov_character_id and participants: ids from the cast list;
+- want / obstacle / change: what the POV character wants, what stands in the way, what is different at the end;
+- story_value and value_charge: the value at stake and how it flips, e.g. "+ -> -" (it must change);
+- temporal_mode: "linear" unless the scene is a flashback, flashforward, dream or unreliable account.
+  A flashback or flashforward must set happens_after to the earlier scene it follows in story time; otherwise "none".

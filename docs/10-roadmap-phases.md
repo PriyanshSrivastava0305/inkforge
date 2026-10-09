@@ -68,18 +68,20 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 
 **Goal:** one reliable way to call a local model and get valid structured output.
 
-- [ ] `ModelRouter` interface; Ollama adapter; llama.cpp adapter; local-only OpenAI-compatible adapter; Fake adapter (record/replay)
-- [ ] `generate_structured` with schema-constrained decoding, Pydantic validation, repair retry, temperature backoff
-- [ ] Allowed-ID validation helper for model outputs
-- [ ] Token counting chain (llama.cpp tokenize → cached HF tokenizer → calibrated estimate)
-- [ ] Profiles loaded from `config/model-profiles.toml`; health checks; timeouts; cancellation
-- [ ] Prompt registry: Jinja2 templates with frontmatter, versioning, project overrides, render hash
-- [ ] Skills loader (`SKILL.md`), first skills: three-act, save-the-cat, hero's journey
-- [ ] Run recorder: `runs/<job>/prompt.txt, raw_output.txt, meta.json`
-- [ ] CLI: `doctor` (runtime part), `bench`
+- [x] `ModelRouter`; Ollama adapter; local OpenAI-compatible adapter (llama.cpp mode adds `/tokenize`); Fake adapter (scripted, record/replay, auto-from-schema, simulated RAM limit)
+- [x] `generate_structured`: constrained decoding, allowed-ID check, Pydantic validation, stage validators, repair retry, temperature backoff, truncation-aware token growth
+- [x] **Repetition guard** (not in the original plan): stops degenerate loops mid-stream and repairs. The 1B looped twice in testing, 2+ min wasted each time on CPU
+- [x] Allowed-ID validation helper (`models/allowed.py`) plus **ID enums in schemas** so constrained decoding can't invent references
+- [x] Token counting chain (runtime tokenize → offline-built cached tokenizer → calibrated estimate)
+- [x] Profiles from `config/model-profiles.toml`; three timeouts (first token / idle / total); cancellation; unload-before-switch; `min_version`
+- [x] Prompt registry: sandboxed Jinja2 + StrictUndefined, frontmatter, versioning, project overrides, render hash
+- [x] Skills loader (`SKILL.md`): three-act, save-the-cat, heros-journey
+- [x] Run recorder: `runs/<job>/prompt.txt, raw_output.txt, meta.json, partial.txt`
+- [x] CLI: `doctor` (runtime part), `bench`, `prompts`
 
-**Deliverables:** `packages/models`, `packages/prompts`.
+**Deliverables:** `inkforge.models`, `inkforge.prompts`. **Status: done 2026-10-09.**
 **Exit criteria:** ≥ 95% first-try schema-valid on the benchmark's planning calls with the default profile, 100% after retries; cancellation leaves no partial versions; Fake adapter lets the whole test suite run without a model.
+**Result:** router benchmark 6/6 first try on both 8B (22.9 min) and 1B (5.8 min) ([reports](benchmarks/)); cancelled text only ever reaches `partial.txt` (tested at router and conductor level); 220 tests run without a model.
 **Risks:** runtime API differences between Ollama versions → pin a tested minimum version, `doctor` warns.
 
 ---
@@ -88,21 +90,22 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 
 **Goal:** idea → approved spec, design, outline and scene cards, resumable.
 
-- [ ] Stage protocol + base class (check_inputs / build_prompt / generate / validate / persist)
-- [ ] Conductor: job table, state machine (`queued → running → awaiting_approval → succeeded/failed/cancelled`), retries, checkpoint after every stage, resume from last valid checkpoint
-- [ ] Stage A (Book Spec) + enhance, preserving `original`, diff output
-- [ ] Stage B (Story Design) + plot promises + Codex character candidates
-- [ ] Stage C (Chapter Plan) generated per act + whole-outline enhance + deterministic outline checks
-- [ ] Stage D (Scene Cards) per chapter + card checks
-- [ ] Approval gates (configurable per stage) in CLI. `--yes` answers planning gates A–D only, audited as `via: "--yes"`. It never accepts Codex/canon candidates. See [05 § Approval & `--yes`](05-pipeline.md#approval--yes)
-- [ ] Per-chapter ChapterPlan files + declared-input staleness ([04 § Staleness](04-data-model.md#staleness-what-each-artifact-depends-on))
-- [ ] Timeline file: append linear scenes automatically; validated placement for non-linear scenes
-- [ ] Manual edit workflow: `inkforge edit <artifact>` opens in `$EDITOR`, saves as user version, marks dependants stale
-- [ ] Modes: `run --mode plan`, `--until <stage>`
-- [ ] Integration tests with Fake adapter; one real-model smoke test (nightly/manual)
+- [x] Stage base class (check_inputs / build_prompt / schema / validate / persist / adopt / finalize) — `pipeline/stage.py`
+- [x] Conductor: jobs with per-step checkpoints, gates, resume, cancel file, one retry for transient runtime errors, `.run.lock`, crash `repair()` at job start
+- [x] Stage A (Book Spec) + enhance with field diff; author-set fields re-applied by code on every version
+- [x] Stage B (Story Design) + plot promises in the registry + character candidates (reused by name, never duplicated)
+- [x] Stage C (chapter plans) per act + optional whole-outline enhance + deterministic outline checks (warnings)
+- [x] Stage D (scene cards) per chapter: ID enums, location resolution/candidates, value-charge and non-linear placement checks
+- [x] Approval gates; `--yes` answers planning gates only, audited `via: "--yes"`; Codex candidates need `inkforge codex --accept`
+- [x] Per-chapter ChapterPlan files + declared-input staleness; chapter/scene IDs reused on regeneration
+- [x] Timeline: linear scenes follow the previous linear scene; flashbacks/flashforwards must name `happens_after`
+- [x] Manual edit workflow: `inkforge edit …` via `$EDITOR` (quoted Windows paths handled), user version, staleness report
+- [x] Modes: `run --mode plan [--until stage] [--yes]`; standalone `spec/design/outline/cards`; `jobs/resume/cancel/approve/status/codex`
+- [x] Integration tests on the Fake adapter + real-model smoke run (`llama3.2:1b`)
 
-**Deliverables:** `packages/pipeline` with stages A–D; CLI planning commands.
+**Deliverables:** `inkforge.pipeline` with stages A–D; CLI planning commands. **Status: done 2026-10-09.**
 **Exit criteria:** kill the process at a random point during `run --mode plan` 20 times → every resume completes with valid artifacts; each stage runs alone from saved inputs; editing chapter N marks only chapter N's cards stale (neighbours flagged "review suggested" only if `purpose`/`outcome` changed); reordering chapters marks nothing stale.
+**Result:** chaos test (`tests/integration/test_chaos_resume.py`) passed three seeds: 20, 20 and 30 random kills of a subprocess plan run, each followed by resume → zero integrity problems, index identical after rebuild.
 **Risks:** outline quality on small models → per-act generation, enhance passes, structure skills; author edits are first-class.
 
 ---
