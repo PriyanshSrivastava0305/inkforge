@@ -1,0 +1,7 @@
+id = "stage-play"
+label = "Stage play"
+units = ["play", "act", "scene"]
+output = "script"
+default_target_pages = 90
+exporters = ["fountain", "pdf"]
+available = false             # Phase 9 stretch

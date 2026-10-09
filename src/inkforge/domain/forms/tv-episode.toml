@@ -1,0 +1,8 @@
+id = "tv-episode"
+label = "TV episode"
+units = ["episode", "act", "scene"]
+output = "script"
+default_target_pages = 55
+exporters = ["fountain", "pdf"]
+optional_exporters = ["fdx"]
+available = false

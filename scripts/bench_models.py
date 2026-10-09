@@ -266,8 +266,12 @@ def _join_without_overlap(a: str, b: str, max_overlap: int = 400) -> str:
     return a + sep + b_stripped
 
 
+_QUOTES = str.maketrans({c: "'" for c in '"“”‘’`´«»'} | {c: "-" for c in "–—‒―"})
+
+
 def _norm(s: str) -> str:
-    return re.sub(r"\s+", " ", s.replace("’", "'").replace("“", '"').replace("”", '"')).strip().lower()
+    """Fold quote marks and dashes: models swap " for ' when emitting JSON (seen 2026-10-09, 8B)."""
+    return re.sub(r"\s+", " ", s.translate(_QUOTES)).strip().lower()
 
 
 def quote_found(quote: str, text: str, threshold: float = 0.95) -> bool:

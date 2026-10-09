@@ -33,11 +33,11 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 - [x] ~~Benchmark 3–4 candidate models~~. Models fixed by D16: `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests)
 - [x] Measure chars-per-token (3.7 JSON / 4.5 prose, Llama-3 tokenizer)
 - [x] Llama-3 tokenizer built **offline from the local GGUF** (`scripts/build_tokenizer.py`, no download); exact match with Ollama counts (+1 BOS) on 8/8 strings; identical for both D16 models
-- [ ] Write the **mini-book benchmark** fixture (spec + 3 chapters + 6 cards + 2 scenes) and `scripts/bench_models.py`. Run on 1B (minutes) and 8B (≈ 1–2 h, overnight-friendly); record schema-valid %, tok/s, prefix-cache hit rate, your quality rating
+- [x] **Mini-book benchmark** (`scripts/bench_models.py`, `tests/golden/mini_book/`): 1B 5.5 min, 8B 23.3 min, 6/6 structured calls valid first try on both; findings in [ADR-0002](adr/0002-default-model-profile.md). *Your quality rating of the drafts is still open* (see the two benchmark reports)
 - [x] **Golden test book** outline v0: `tests/golden/continuity_book/outline.yaml`, 30 scenes, 25 contradictions across all 8 rule types, 10 decoys (flashback, dream, unreliable, on-page transfers); structure checked by `tests/unit/test_golden_fixtures.py`
 
 **Deliverables:** repo skeleton, pre-commit green, `docs/benchmarks/2026-10-09-smoke.md` (done) + mini-book benchmark, golden fixtures v0.
-**Exit criteria:** `uv run pytest` passes on Windows; mini-book benchmark completes on both models; D16 confirmed or revised from the benchmark.
+**Exit criteria:** `uv run pytest` passes on Windows; mini-book benchmark completes on both models; D16 confirmed or revised from the benchmark. **Status: done 2026-10-09** (D16 confirmed by ADR-0002).
 **Risks:** 8B too slow for comfortable iteration → mitigation: 1B profile set for wiring, Fake adapter for tests, small context, prefix caching; structured JSON looked solid in the smoke test, but long/nested schemas are untested, so keep them small and flat.
 
 ---
@@ -46,19 +46,19 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 
 **Goal:** the data layer everything else stands on.
 
-- [ ] Pydantic models for every entity in [04](04-data-model.md), with `schema` version fields
-- [ ] Form profiles (`novel`, `short-story`; stubs for `screenplay`, `tv-episode`, `stage-play`)
-- [ ] ID minting service (stable, prefixed, collision-safe)
-- [ ] Workspace store: create project, read/write JSON & Markdown, versioned artifacts with active/approved pointers, input hashing, staleness detection
-- [ ] Atomic writes (`tmp → fsync → os.replace`) + Windows-safe file locking
-- [ ] Path guard: project-root confinement; reject traversal, absolute paths, symlinks/junctions
-- [ ] Append-only audit log (JSONL)
-- [ ] SQLite index (SQLModel) + `reindex` that rebuilds from files
-- [ ] Backup/restore (zip) of a project
-- [ ] CLI: `init`, `reindex`, `backup`, `restore`, `doctor` (storage part)
-- [ ] Unit + property tests (hypothesis) for versioning, pointers, path guard, reindex round-trip
+- [x] Pydantic models for every entity in [04](04-data-model.md), with `schema` version fields (`src/inkforge/domain/models.py`)
+- [x] Form profiles (`novel`, `short-story`; stubs for `screenplay`, `tv-episode`, `stage-play`, marked `available = false`)
+- [x] ID minting service (stable, prefixed, collision-safe; gaps never reused; counters persisted in `project.json`)
+- [x] Workspace store: create project, read/write JSON & Markdown, versioned artifacts with active/approved pointers, input hashing, staleness (hard = stale, neighbour context = review)
+- [x] Atomic writes (`tmp → fsync → os.replace`, retried on transient Windows `PermissionError`) + OS file lock per project (released if the process dies)
+- [x] Path guard: project-root confinement; rejects traversal, absolute/drive/UNC paths, reserved device names, ADS, trailing dots, symlinks **and NTFS junctions** (tested)
+- [x] Append-only audit log (JSONL, `O_APPEND` + fsync)
+- [x] SQLite index (stdlib `sqlite3`, [ADR-0003](adr/0003-sqlite-index-stdlib.md)) + `reindex`; incremental refresh proven equal to a rebuild
+- [x] Backup/restore (zip + hash manifest; zip-slip and tamper rejected; staged restore, never overwrites)
+- [x] CLI: `init`, `projects`, `reindex`, `backup`, `restore`, `doctor` (storage part); UTF-8 console output on Windows
+- [x] Unit + property tests (hypothesis) for versioning, pointers, path guard, reindex round-trip (153 tests)
 
-**Deliverables:** `packages/domain`, `packages/storage`, `packages/policy`, CLI basics.
+**Deliverables:** `inkforge.domain`, `inkforge.storage`, `inkforge.policy`, CLI basics. **Status: done 2026-10-09.**
 **Exit criteria:** delete `index.sqlite` → `reindex` reproduces identical query results; path-escape test suite passes on Windows; 100% of entity models round-trip JSON.
 **Risks:** over-modelling early → keep fields optional where unsure; migrations are cheap because files carry schema versions.
 

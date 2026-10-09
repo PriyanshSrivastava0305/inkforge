@@ -1,0 +1,8 @@
+id = "screenplay"
+label = "Feature screenplay"
+units = ["act", "sequence", "scene"]
+output = "script"
+default_target_pages = 110   # ~1 page per minute
+exporters = ["fountain", "pdf"]
+optional_exporters = ["fdx"]  # stretch goal (Phase 9)
+available = false             # ships in Phase 9

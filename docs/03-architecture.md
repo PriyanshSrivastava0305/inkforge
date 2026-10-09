@@ -76,7 +76,7 @@ Consequences: model output never chooses a file path or an ID (IDs are minted by
 | API | FastAPI + SSE (`sse-starlette`) | Typed, async, OpenAPI for the frontend | Litestar |
 | CLI | Typer + Rich | Same models as API; nice console | Click |
 | Schemas | Pydantic v2 | Shared contract; JSON Schema for structured output | attrs |
-| Metadata DB | SQLite via SQLModel, Alembic migrations | Single file, local, FTS5 built in | DuckDB |
+| Metadata DB | SQLite via stdlib `sqlite3`, rebuilt on schema change ([ADR-0003](adr/0003-sqlite-index-stdlib.md)) | Single file, local, FTS5 built in; the index is a disposable cache | SQLModel + Alembic, DuckDB |
 | Search | SQLite FTS5; optional `sentence-transformers` + FAISS | Lexical first; semantic when hardware allows | Chroma |
 | Model runtime | Ollama first; llama.cpp server adapter (OpenAI-compatible) | Easy local install (you already have Ollama); GGUF; grammar-constrained JSON | LM Studio (also OpenAI-compatible — free via same adapter) |
 | Frontend | React + TypeScript + Vite, TanStack Query, Tailwind + shadcn/ui | Fast, well-known | Svelte |

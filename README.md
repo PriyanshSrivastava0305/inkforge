@@ -3,7 +3,7 @@
 Local-first story and script writing agent — personal tool, strictly local (no network calls at runtime).
 
 - **Plan & docs:** [`docs/`](docs/README.md) — start with `01`, then the roadmap in `10`.
-- **Status:** Phase 0 (foundations & model spike). See [`CHANGELOG.md`](CHANGELOG.md).
+- **Status:** Phases 0–1 done; next is Phase 2 (model router & prompt registry). See [`CHANGELOG.md`](CHANGELOG.md).
 - **Models (D16):** `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests), via Ollama on `127.0.0.1`.
 
 ## Setup
@@ -16,6 +16,15 @@ uv run pytest                   # includes live Ollama checks (1B only)
 ```
 
 `uv` lives in `%APPDATA%\Python\Python312\Scripts`; add that folder to PATH.
+
+## CLI (so far)
+
+```bash
+uv run inkforge init "The Glass Orchard"      # creates ~/InkForge/workspace/projects/the-glass-orchard
+uv run inkforge projects
+uv run inkforge backup -p the-glass-orchard
+uv run inkforge doctor
+```
 
 ## Scripts (Phase 0)
 

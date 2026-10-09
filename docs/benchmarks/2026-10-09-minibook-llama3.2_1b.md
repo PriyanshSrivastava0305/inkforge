@@ -9,7 +9,7 @@ Fixture: `tests/golden/mini_book/fixture.yaml` · script: `scripts/bench_models.
 | Total wall time | 5.5 min |
 | Structured calls schema-valid first try | 6/6 |
 | Structured calls valid after repair | 6/6 |
-| Evidence quotes found verbatim (critique) | 1/1 |
+| Evidence quotes found verbatim (critique) | 1/1 (after folding quote marks; claim merely repeats the quote in 1/1) |
 
 ## Calls
 

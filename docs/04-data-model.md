@@ -119,17 +119,17 @@ Examples: `(char-mira, eye_color, "grey", from ch02-sc01)`, `(obj-brass-key, hel
 └── projects/
     └── the-glass-orchard/
         ├── project.json
-        ├── spec/book_spec.v1.json, book_spec.v2.json, book_spec.json → active pointer file
+        ├── spec/book_spec.v1.json, book_spec.v2.json, book_spec.meta.json   # meta = pointers + version records
         ├── design/story_design.vN.json
         ├── outline/
         │   ├── outline.vN.json                # structure only: act/chapter ids, order, titles
-        │   └── chapters/ch03/plan.vN.json     # one versioned ChapterPlan per chapter (+ meta.json)
+        │   └── chapters/ch03/plan.vN.json     # one versioned ChapterPlan per chapter (+ plan.meta.json)
         ├── timeline/timeline.vN.json          # story (chronological) order
         ├── scenes/
         │   └── ch01-sc02/
         │       ├── card.vN.json
         │       ├── draft.v1.md, draft.v2.md
-        │       └── meta.json                  # versions, active/approved pointers
+        │       └── card.meta.json, draft.meta.json   # versions, active/approved pointers, input hashes
         ├── codex/{characters,locations,lore,items}/<id>.json
         ├── canon/facts.jsonl, review_queue.jsonl, promises.json   # promises.json = sole promise registry
         ├── memory/core.json, digests/<ch>.json
@@ -151,9 +151,11 @@ Staleness is computed from **declared inputs** and their hashes, never from "any
 |---|---|
 | StoryDesign | BookSpec |
 | Outline | BookSpec, StoryDesign |
-| ChapterPlan `chN` | StoryDesign, Outline *entry* for `chN` (+ `purpose`/`outcome` fields of neighbours `chN±1`) |
+| ChapterPlan `chN` | StoryDesign, Outline *entry* for `chN` (title/act, not `order`); soft: previous/next neighbour as `chM@vK` tokens |
 | SceneCard in `chN` | ChapterPlan `chN`, Codex entries for its POV/participants/location |
 | Draft | its SceneCard, voice cards of present characters |
+
+**Neighbour context is "soft".** It never makes anything stale, only *review suggested*: the neighbour's id changed (reorder/insert), or its `purpose`/`outcome` changed since the baseline. If a neighbour had no plan yet when a chapter was written, the neighbour's first plan becomes the baseline. Chapters are generated in sequence, so a neighbour *appearing* is not a change.
 
 Editing chapter 3 therefore marks only chapter 3's cards stale, plus a "review suggested" flag on chapters 2 and 4 if 3's `purpose`/`outcome` changed. It doesn't mark the whole book stale. Reordering chapters changes only the Outline, so it never makes chapter content stale.
 
@@ -164,4 +166,4 @@ Tables mirror the entities for querying (`projects, chapters, scenes, scene_vers
 ## Migrations
 
 - File schema: `schema` field + migration functions `migrate_scene_card_1_to_2()`; applied lazily on read and rewritten on next save.
-- DB schema: Alembic; but since the DB is rebuildable, a failed migration can always fall back to reindex.
+- DB schema: no migrations. A `schema_version` mismatch (or a missing/corrupt file) triggers an automatic rebuild from files ([ADR-0003](adr/0003-sqlite-index-stdlib.md)).

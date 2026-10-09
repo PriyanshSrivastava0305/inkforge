@@ -1,0 +1,6 @@
+id = "novel"
+label = "Novel / novella"
+units = ["act", "chapter", "scene"]
+output = "prose"
+default_target_words = 80000
+exporters = ["markdown", "docx", "epub"]

@@ -8,6 +8,7 @@ Enforces two non-negotiables at load time:
 from __future__ import annotations
 
 import ipaddress
+import os
 import tomllib
 from pathlib import Path
 from typing import Any, Literal
@@ -96,6 +97,39 @@ def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any
 def _read_toml(path: Path) -> dict[str, Any]:
     with path.open("rb") as f:
         return tomllib.load(f)
+
+
+class AppConfig(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    workspace_root: Path
+    cache_root: Path
+    api_host: str = "127.0.0.1"
+    api_port: int = 8787
+    approval_gates: dict[str, bool] = Field(default_factory=dict)
+
+    @field_validator("api_host")
+    @classmethod
+    def _loopback_api(cls, v: str) -> str:
+        if not is_loopback_host(v):
+            raise ValueError(f"api.host must be loopback (strictly local), got {v!r}")
+        return v
+
+
+def load_app_config(config_dir: Path = CONFIG_DIR, workspace: Path | str | None = None) -> AppConfig:
+    """defaults.toml < defaults.local.toml < INKFORGE_WORKSPACE env < explicit `workspace` argument."""
+    data = _read_toml(config_dir / "defaults.toml")
+    local = config_dir / "defaults.local.toml"
+    if local.is_file():
+        data = _deep_merge(data, _read_toml(local))
+    ws = workspace or os.environ.get("INKFORGE_WORKSPACE") or data["workspace"]["root"]
+    return AppConfig(
+        workspace_root=Path(ws).expanduser(),
+        cache_root=Path(data["cache"]["root"]).expanduser(),
+        api_host=data["api"]["host"],
+        api_port=data["api"]["port"],
+        approval_gates=data.get("approval_gates", {}),
+    )
 
 
 def load_model_config(profile_set: str | None = None, config_dir: Path = CONFIG_DIR) -> ModelConfig:

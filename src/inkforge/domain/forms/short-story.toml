@@ -1,0 +1,6 @@
+id = "short-story"
+label = "Short story"
+units = ["story", "scene"]
+output = "prose"
+default_target_words = 6000
+exporters = ["markdown", "docx", "epub"]
