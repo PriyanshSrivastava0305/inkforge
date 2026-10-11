@@ -265,3 +265,61 @@ def test_repetition_guard_catches_long_cycles():
     res = run(r.generate_structured(USER, Card, "planner"))
     assert res.attempts[0].generation.finish_reason == "repetition"
     assert len(res.attempts[0].generation.text) < 1200
+
+
+# ---------------------------------------------------------------- advisory checks (D32)
+
+
+def _no_x(c: Card) -> list[str]:
+    return ["want must not be 'x'"] if c.want == "x" else []
+
+
+def test_advisory_gets_one_repair_then_is_accepted_with_warnings():
+    r, fa = router([FakeResponse('{"pov":"a","want":"x"}')] * 3)
+    res = run(r.generate_structured(USER, Card, "planner", advise=_no_x))
+    assert res.value.want == "x" and res.warnings == ["want must not be 'x'"]
+    assert len(fa.calls) == 2  # original + one advisory repair, not three attempts
+
+
+def test_advisory_fixed_on_repair_has_no_warnings():
+    r, _ = router([FakeResponse('{"pov":"a","want":"x"}'), FakeResponse('{"pov":"a","want":"home"}')])
+    res = run(r.generate_structured(USER, Card, "planner", advise=_no_x))
+    assert res.value.want == "home" and res.warnings == []
+
+
+def test_falls_back_to_best_advisory_only_value_when_later_attempts_break():
+    r, _ = router([FakeResponse('{"pov":"a","want":"x"}'), FakeResponse("garbage"), FakeResponse("garbage")])
+    res = run(r.generate_structured(USER, Card, "planner", advise=_no_x))
+    assert res.value.want == "x" and res.warnings == ["want must not be 'x'"] and len(res.attempts) == 3
+
+
+def test_hard_failures_still_fail():
+    r, _ = router([FakeResponse("garbage")] * 3)
+    with pytest.raises(StructuredOutputError):
+        run(r.generate_structured(USER, Card, "planner", advise=_no_x))
+
+
+# ---------------------------------------------------------------- sleep-safe timeouts (2026-10-10 incident)
+
+
+def test_timeouts_use_the_awake_clock(monkeypatch):
+    """A laptop that sleeps mid-call must not count the sleep: the awake clock doesn't advance."""
+    import inkforge.models.adapters.base as base
+
+    frozen = {"t": 1000.0}
+    monkeypatch.setattr(base, "awake_clock", lambda: frozen["t"])  # machine "asleep": no awake time passes
+    r, _ = router([FakeResponse("slow but fine", chunk_delay_s=0.3)], prose={"first_token_timeout_s": 0.1})
+    assert run(r.generate(USER, "prose")).finish_reason == "stop"
+
+
+def test_system_helpers():
+    import time
+
+    from inkforge.system import awake_clock, keep_awake, power_status
+
+    a = awake_clock()
+    time.sleep(0.05)
+    assert 0.03 < awake_clock() - a < 1.0
+    with keep_awake() as ok:
+        assert ok in (True, False)
+    assert power_status().on_battery in (True, False, None)

@@ -34,6 +34,10 @@ Lightweight ADRs. Status: **Accepted** (decided here, based on the build guide),
 | D27 | Model fills *proposals*; code converts them to records and mints all IDs; references are enums of allowed IDs | Accepted (Phase 3) | Strengthens D6: constrained decoding can't produce an unknown id; the allowed-ID check stays as a backstop |
 | D28 | Every free-text proposal field has `min_length` | Accepted (Phase 2) | Constrained decoding emits `""` for hard fields (1B) |
 | D29 | `INKFORGE_FAKE=auto` env hook runs the whole CLI on schema-generated fake output | Accepted (Phase 3) | CLI/chaos tests without a model; still strictly local |
+| D30 | Process-crash tests kill the whole process tree and prove death via the run lock | Accepted (2026-10-10) | Windows venv `python.exe` is a launcher; `Popen.kill()` left the real worker running |
+| D31 | Offline acceptance = real CLI + real model + in-process socket guard (fails non-loopback connect/DNS); airplane mode stays the release gate | Accepted (Phase 4) | Repeatable "no network" evidence without admin rights to disable adapters |
+| D32 | Two kinds of output checks: **hard** (schema, allowed IDs) fail the call after repairs; **advisory** craft rules get one repair, then the value is accepted with warnings; a later hard failure falls back to the best advisory-only value | Accepted (Phase 4) | Real 1B run (2026-10-10) failed a whole job because it kept writing two chapters with the same purpose; craft calls are the author's (D23) |
+| D33 | Model-call timeouts count **awake** time only (QueryUnbiasedInterruptTime, waited in ≤1 s slices); jobs hold a keep-awake request and warn on battery | Accepted (2026-10-11) | An 8B overnight run died when the laptop slept: `time.monotonic()` on Windows includes sleep, so calls "timed out" at wake |
 | D25 | Context render order is stable-first for Ollama prefix-cache reuse, independent of trimming priority | Accepted | CPU prompt reading is ~10 tok/s cold vs ~170 cached ([06](06-memory-and-context.md#render-order--priority-order-prefix-caching)) |
 
 ## Open questions (need your call)

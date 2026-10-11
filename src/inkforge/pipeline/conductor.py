@@ -36,16 +36,23 @@ from inkforge.pipeline.stage import (
 from inkforge.pipeline.stages.cards import CardsStage
 from inkforge.pipeline.stages.chapters import ChaptersStage
 from inkforge.pipeline.stages.design import DesignStage
+from inkforge.pipeline.stages.draft import DraftStage
+from inkforge.pipeline.stages.export import PreviewStage
 from inkforge.pipeline.stages.spec import SpecStage
 from inkforge.policy.lock import ProjectLock
 from inkforge.prompts.registry import PromptError, PromptRegistry
 from inkforge.prompts.skills import SkillRegistry
 from inkforge.storage.atomic import atomic_write_text
 from inkforge.storage.workspace import ProjectStore, repair
+from inkforge.system import keep_awake, power_status
 
-STAGES: dict[str, Stage] = {s.name: s for s in (SpecStage(), DesignStage(), ChaptersStage(), CardsStage())}
+STAGES: dict[str, Stage] = {
+    s.name: s
+    for s in (SpecStage(), DesignStage(), ChaptersStage(), CardsStage(), DraftStage(), PreviewStage())
+}
 PLAN_ORDER = ["spec", "design", "chapters", "cards"]
-MODES = {"plan": PLAN_ORDER}
+# full ends at a watermarked preview: a final export always needs explicit approval (D23)
+MODES = {"plan": PLAN_ORDER, "draft": ["drafts"], "full": [*PLAN_ORDER, "drafts", "preview"]}
 PLANNING_GATES = {"spec", "design", "outline", "scene_cards"}  # --yes may answer these (D23)
 TRANSIENT = (GenerationTimeout, ModelLoadError, RuntimeUnavailable)
 EventSink = Callable[[str, dict[str, Any]], None]
@@ -140,9 +147,20 @@ class Conductor:
             if any(fixed.values()):
                 self._event(job, "project.repaired", fixed)
             cancel = cancel or CancelToken()
+            power = power_status()
+            if power.on_battery:
+                self._event(
+                    job,
+                    "system.on_battery",
+                    {
+                        "percent": power.battery_percent,
+                        "message": "on battery: Windows may hibernate during a long run; plug in",
+                    },
+                )
             watcher = asyncio.ensure_future(self._watch_cancel_file(job, cancel))
             try:
-                return await self._run(job, cancel)
+                with keep_awake():  # no idle sleep mid-job (lid close / battery hibernate can still happen)
+                    return await self._run(job, cancel)
             finally:
                 watcher.cancel()
 
@@ -209,6 +227,12 @@ class Conductor:
                     except Exception as e:  # never leave a job stuck in "running"
                         self._fail(job, f"{step.key}: unexpected {type(e).__name__}: {e}", step)
                         raise
+                    for p in result.problems:  # e.g. advisory checks the model didn't fix (D32)
+                        self._event(
+                            job,
+                            "problem",
+                            {"stage": name, "level": p.level, "message": p.message, "target": p.target},
+                        )
                     self._done(
                         job,
                         step,

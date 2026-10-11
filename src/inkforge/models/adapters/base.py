@@ -7,7 +7,6 @@ cancellation immediate and lets us tell "still reading a long prompt" from "stal
 from __future__ import annotations
 
 import asyncio
-import time
 from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass
 from typing import Protocol
@@ -20,6 +19,7 @@ from inkforge.models.types import (
     GenerationTimeout,
     RuntimeHealth,
 )
+from inkforge.system import awake_clock
 
 
 @dataclass
@@ -72,6 +72,9 @@ _PLAN = [(p, max(12, -(-120 // p))) for p in range(1, 25)] + [
 ]
 
 
+_SLICE_S = 1.0  # max real seconds per wait slice; awake-time deadlines are re-checked between slices
+
+
 async def consume_stream(
     req: ChatRequest,
     open_stream: Callable[[], Awaitable[AsyncIterator[Chunk]]],
@@ -83,7 +86,7 @@ async def consume_stream(
     On cancel or timeout the stream is closed (the runtime stops generating) and whatever text
     arrived so far is returned with finish_reason "cancelled" — callers must never store it as a version.
     """
-    t0 = time.monotonic()
+    t0 = awake_clock()
     parts: list[str] = []
     tail_len = 0
     gen = Generation(text="", finish_reason="stop", model=req.model)
@@ -92,34 +95,47 @@ async def consume_stream(
     it = stream.__aiter__()
     try:
         while True:
-            elapsed = time.monotonic() - t0
-            if elapsed >= to.total_s:
-                raise GenerationTimeout(f"{req.model}: exceeded total timeout {to.total_s:.0f}s")
+            # Deadlines are in *awake* seconds. We wait in short slices and re-check, because
+            # asyncio's own timeouts count wall time: after a laptop sleep they would fire at wake
+            # even though no awake time passed (2026-10-10 incident).
+            waited_from = awake_clock()
             budget = to.idle_s if gen.first_token_s is not None else to.first_token_s
-            budget = min(budget, to.total_s - elapsed)
             next_chunk = asyncio.ensure_future(it.__anext__())
-            waiters: set[asyncio.Future] = {next_chunk}
             cancel_wait = asyncio.ensure_future(cancel.wait()) if cancel else None
+            waiters: set[asyncio.Future] = {next_chunk}
             if cancel_wait:
                 waiters.add(cancel_wait)
-            done, _ = await asyncio.wait(waiters, timeout=budget, return_when=asyncio.FIRST_COMPLETED)
+            done: set[asyncio.Future] = set()
+            timed_out: str | None = None
+            while not done:
+                now = awake_clock()
+                if now - t0 >= to.total_s:
+                    timed_out = f"exceeded total timeout {to.total_s:.0f}s"
+                    break
+                left = min(budget - (now - waited_from), to.total_s - (now - t0))
+                if left <= 0:
+                    phase = "first token" if gen.first_token_s is None else "next chunk"
+                    timed_out = f"no {phase} within {budget:.0f}s"
+                    break
+                done, _ = await asyncio.wait(
+                    waiters, timeout=min(left, _SLICE_S), return_when=asyncio.FIRST_COMPLETED
+                )
             if cancel_wait and not cancel_wait.done():
                 cancel_wait.cancel()
             if cancel_wait in done or (cancel and cancel.cancelled):
                 next_chunk.cancel()
                 gen.finish_reason = "cancelled"
                 break
-            if not done:
+            if timed_out:
                 next_chunk.cancel()
-                phase = "first token" if gen.first_token_s is None else "next chunk"
-                raise GenerationTimeout(f"{req.model}: no {phase} within {budget:.0f}s")
+                raise GenerationTimeout(f"{req.model}: {timed_out}")
             try:
                 chunk = next_chunk.result()
             except StopAsyncIteration:
                 break
             if chunk.text:
                 if gen.first_token_s is None:
-                    gen.first_token_s = time.monotonic() - t0
+                    gen.first_token_s = awake_clock() - t0
                 parts.append(chunk.text)
                 tail_len += len(chunk.text)
                 if req.loop_guard and tail_len >= 64:
@@ -137,7 +153,7 @@ async def consume_stream(
     finally:
         await close_stream()
     gen.text = "".join(parts)
-    gen.wall_s = time.monotonic() - t0
+    gen.wall_s = awake_clock() - t0
     if not gen.output_tokens:
         gen.output_tokens = len(parts)  # chunk count ≈ tokens when the runtime gives no stats
     return gen

@@ -100,7 +100,11 @@ class Stage(ABC):
         return None
 
     def validate(self, ctx: StageContext, target: str | None, value: Any) -> list[str]:
-        """Rules whose failure should go back to the model as a repair request."""
+        """Hard rules: output that breaks them is unusable, so the call fails after repairs."""
+        return []
+
+    def advise(self, ctx: StageContext, target: str | None, value: Any) -> list[str]:
+        """Craft rules: one repair attempt, then accepted with warnings for the author (D32)."""
         return []
 
     @abstractmethod
@@ -130,6 +134,7 @@ class Stage(ABC):
                 rp.profile,
                 allowed_ids=self.allowed_ids(ctx, target),
                 validate=lambda v: self.validate(ctx, target, v),
+                advise=lambda v: self.advise(ctx, target, v),
                 cancel=ctx.cancel,
                 recorder=rec,
             )
@@ -137,8 +142,8 @@ class Stage(ABC):
             rec.finish("failed", error=f"{type(e).__name__}: {e}")
             raise
         refs = self.persist(ctx, target, res.value, rp.ref)
-        rec.finish("succeeded", output_refs=refs)
-        return StepResult(refs, [], len(res.attempts))
+        rec.finish("succeeded", output_refs=refs, warnings=res.warnings)
+        return StepResult(refs, [Problem("warning", w, target) for w in res.warnings], len(res.attempts))
 
     # ---- gates
     def gate_artifacts(self, ctx: StageContext) -> list[tuple[ArtifactKind, str | None]]:

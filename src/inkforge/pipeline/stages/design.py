@@ -75,7 +75,7 @@ class DesignStage(Stage):
     def schema(self, ctx: StageContext, target: str | None) -> type[BaseModel]:
         return design_model(n_acts(ctx))
 
-    def validate(self, ctx: StageContext, target: str | None, value: Any) -> list[str]:
+    def advise(self, ctx: StageContext, target: str | None, value: Any) -> list[str]:
         errs = []
         if not any(c.role == "protagonist" for c in value.characters):
             errs.append("characters: exactly one character must have role 'protagonist'")
@@ -106,7 +106,7 @@ class DesignStage(Stage):
             s.save_codex(
                 Character(
                     id=cid,
-                    name=c.name,
+                    name=c.name.strip(),
                     role=c.role,
                     goals=[c.goal],
                     fears=[c.fear],

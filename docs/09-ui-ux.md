@@ -32,6 +32,10 @@ inkforge status --project glass-orchard                     # every planning art
 inkforge codex --project glass-orchard [--accept id|all] [--reject id]   # review pipeline-proposed candidates
 inkforge edit --project glass-orchard chapter ch03         # $EDITOR → validated user version → staleness report
 inkforge prompts [id] | doctor [--profile-set fast] | bench [--profile-set fast]
+inkforge draft --project glass-orchard [--scene ch03-sc02 | --chapter ch03] [--redraft]   # Stage E
+inkforge approve --project glass-orchard drafts --chapter ch03 [--confirm]   # lists, then asks
+inkforge diff --project glass-orchard draft ch03-sc02 [--from 1 --to 2] | show … manifest ch03-sc02
+inkforge findings --project glass-orchard [--scene …] [--dismiss find-0003] [--intentional …]
 inkforge memory rebuild|consolidate
 inkforge reindex | backup | restore <zip> | stats | doctor | bench
 ```

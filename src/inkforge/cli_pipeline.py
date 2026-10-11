@@ -264,13 +264,26 @@ def register(app: typer.Typer, console: Console, open_store, workspace_opt, proj
     @app.command()
     def approve(
         project: str = project_opt,
-        gate: str = typer.Argument(..., help="spec | design | outline | cards"),
-        chapter: str | None = typer.Option(None, help="cards: approve only this chapter's cards"),
+        what: str = typer.Argument(..., help="spec | design | outline | cards | drafts"),
+        chapter: str | None = typer.Option(None, help="Only this chapter's cards / drafts"),
+        scene: str | None = typer.Option(None, help="drafts: one scene"),
+        all_scenes: bool = typer.Option(False, "--all", help="drafts: every scene with a draft"),
+        version: int | None = typer.Option(
+            None, help="drafts: approve this version instead of the active one"
+        ),
+        confirm: bool = typer.Option(
+            False, "--confirm", help="drafts: skip the confirmation prompt (you still chose them)"
+        ),
         workspace: Path | None = workspace_opt,
     ) -> None:
-        """Approve the active version of everything behind a planning gate (scene approval comes in Phase 4)."""
+        """Approve planning gates, or scene drafts for export (always explicit; never via --yes)."""
         store = open_store(workspace, project)
-        gate = GATE_ALIASES.get(gate, gate)
+        if what == "drafts":
+            _approve_drafts(
+                store, chapter=chapter, scene=scene, all_scenes=all_scenes, version=version, confirm=confirm
+            )
+            return
+        gate = GATE_ALIASES.get(what, what)
         stage = next((s for s in STAGES.values() if s.gate == gate), None)
         if stage is None:
             console.print(f"[red]unknown gate {gate!r}[/red]")
@@ -289,6 +302,198 @@ def register(app: typer.Typer, console: Console, open_store, workspace_opt, proj
             console.print(f"[yellow]warning: approving stale artifacts: {', '.join(stale)}[/yellow]")
         done = approve_artifacts(store, cast(list[tuple[ArtifactKind, str | None]], arts), via=None)
         console.print(f"approved {len(done)}: {', '.join(done) or '(already approved)'}")
+
+    def _approve_drafts(
+        store: ProjectStore,
+        *,
+        chapter: str | None,
+        scene: str | None,
+        all_scenes: bool,
+        version: int | None,
+        confirm: bool,
+    ) -> None:
+        if sum(bool(x) for x in (chapter, scene, all_scenes)) != 1:
+            console.print("[red]choose exactly one of --scene, --chapter, --all[/red]")
+            raise typer.Exit(2)
+        if version is not None and not scene:
+            console.print("[red]--version needs --scene[/red]")
+            raise typer.Exit(2)
+        scenes = [
+            x
+            for x in store.scenes_in_order()
+            if all_scenes or x == scene or (chapter and x.startswith(f"{chapter}-"))
+        ]
+        picks = []
+        for sid in scenes:
+            m = store.meta("draft", sid)
+            v = version or m.active
+            if v is None:
+                console.print(f"[yellow]{sid}: no draft — skipped[/yellow]")
+                continue
+            if m.approved == v:
+                continue
+            fresh = str(store.staleness("draft", sid, v))
+            words = m.get(v).extra.get("word_count", "?")
+            picks.append((sid, v, fresh, words))
+        if not picks:
+            console.print("nothing new to approve")
+            return
+        table = Table("scene", "version", "words", "freshness")
+        for sid, v, fresh, words in picks:
+            table.add_row(
+                sid, f"v{v}", str(words), fresh if fresh == "fresh" else f"[yellow]{fresh}[/yellow]"
+            )
+        console.print(table)
+        if not confirm and not typer.confirm(f"Approve these {len(picks)} draft version(s) for export?"):
+            raise typer.Exit(1)
+        for sid, v, _, _ in picks:
+            store.approve("draft", sid, v)
+        console.print(f"approved {len(picks)} draft(s)")
+
+    # ------------------------------------------------------------ drafting, export, inspection
+    @app.command()
+    def draft(
+        project: str = project_opt,
+        scene: str | None = typer.Option(None, help="Draft this scene (always redrafts it)"),
+        chapter: str | None = typer.Option(None, help="Only this chapter"),
+        redraft: bool = typer.Option(
+            False, "--redraft", help="Redraft scenes that already have a fresh draft"
+        ),
+        profile_set: str | None = profile_opt,
+        workspace: Path | None = workspace_opt,
+    ) -> None:
+        """Stage E — draft scenes (default: those without a draft or with a stale one)."""
+        start(
+            project,
+            workspace,
+            ["drafts"],
+            {"scene": scene, "chapter": chapter, "redraft": redraft},
+            profile_set,
+        )
+
+    @app.command()
+    def export(
+        project: str = project_opt,
+        fmt: str = typer.Option("md", "--format", help="md (docx/epub arrive in Phase 10)"),
+        preview: bool = typer.Option(
+            False, "--preview", help="Watermarked export of active versions; unapproved allowed"
+        ),
+        workspace: Path | None = workspace_opt,
+    ) -> None:
+        """Assemble the manuscript in outline order. Final export uses approved versions and refuses on blockers."""
+        from inkforge.exporters.markdown import ExportBlocked, export_markdown
+
+        if fmt != "md":
+            console.print(f"[red]format {fmt!r} arrives in a later phase; use md[/red]")
+            raise typer.Exit(2)
+        store = open_store(workspace, project)
+        try:
+            res = export_markdown(store, mode="preview" if preview else "final")
+        except ExportBlocked as e:
+            console.print("[red]Export blocked by preflight:[/red]")
+            for b in e.report.blockers:
+                console.print(f"  [red]x[/red] {escape(b)}")
+            for w in e.report.warnings:
+                console.print(f"  [yellow]![/yellow] {escape(w)}")
+            console.print(
+                f"Fix these (e.g. `inkforge approve -p {store.id} drafts --chapter ch01`) or use --preview."
+            )
+            raise typer.Exit(1) from None
+        for w in res.report.warnings:
+            console.print(f"  [yellow]![/yellow] {escape(w)}")
+        kind = "preview (watermarked)" if preview else "final"
+        console.print(f"[green]exported {kind}[/green]: {res.path}  ({res.words} words)")
+
+    @app.command()
+    def show(
+        project: str = project_opt,
+        kind: str = typer.Argument(
+            ..., help="draft | card | chapter | spec | design | outline | timeline | manifest"
+        ),
+        target: str | None = typer.Argument(None),
+        version: int | None = typer.Option(None),
+        workspace: Path | None = workspace_opt,
+    ) -> None:
+        """Print an artifact version (or a draft's context manifest)."""
+        store = open_store(workspace, project)
+        if kind == "manifest":
+            from inkforge.pipeline.stages.draft import manifest_summary
+
+            m = store.meta("draft", target)
+            v = version or m.active
+            if v is None:
+                raise typer.Exit(1)
+            path = store.path(m.get(v).extra["context_manifest_path"])
+            console.print(manifest_summary(path.read_text(encoding="utf-8")), markup=False)
+            console.print(path.read_text(encoding="utf-8"), markup=False, highlight=False)
+            return
+        value = store.read(cast(ArtifactKind, kind), target, version=version)
+        console.print(value if isinstance(value, str) else value.to_json(), markup=False, highlight=False)
+
+    @app.command()
+    def diff(
+        project: str = project_opt,
+        kind: str = typer.Argument(..., help="draft | card | chapter | spec | design | outline | timeline"),
+        target: str | None = typer.Argument(None),
+        from_v: int | None = typer.Option(None, "--from", help="Default: the version before --to"),
+        to_v: int | None = typer.Option(None, "--to", help="Default: the active version"),
+        workspace: Path | None = workspace_opt,
+    ) -> None:
+        """Word-level diff between two versions of an artifact."""
+        from inkforge.pipeline.text import diff_stats, word_diff
+
+        store = open_store(workspace, project)
+        akind = cast(ArtifactKind, kind)
+        m = store.meta(akind, target)
+        b = to_v or m.active
+        a = from_v or max((v.version for v in m.versions if b and v.version < b), default=None)
+        if a is None or b is None:
+            console.print("[yellow]need two versions to diff[/yellow]")
+            raise typer.Exit(1)
+        slot = store.slot(akind, target)
+        ops = word_diff(slot.read_text(a), slot.read_text(b))
+        st = diff_stats(ops)
+        console.print(
+            f"[bold]{kind}{':' + target if target else ''} v{a} -> v{b}[/bold]  "
+            f"[green]+{st['insert']}[/green] [red]-{st['delete']}[/red] words"
+        )
+        out = []
+        for op in ops:
+            t = escape(op.text)
+            if op.op == "equal":
+                out.append(t)
+            elif op.op == "insert":
+                out.append(f"[green]{t}[/green]")
+            else:
+                out.append(f"[red strike]{t}[/red strike]")
+        console.print("".join(out))
+
+    @app.command()
+    def findings(
+        project: str = project_opt,
+        scene: str | None = typer.Option(None),
+        dismiss: list[str] = typer.Option([], "--dismiss", help="Mark finding id(s) dismissed"),
+        intentional: list[str] = typer.Option([], "--intentional", help="Mark finding id(s) intentional"),
+        show_all: bool = typer.Option(False, "--all", help="Include dismissed/intentional/fixed"),
+        workspace: Path | None = workspace_opt,
+    ) -> None:
+        """List evidence-linked findings; dismiss or mark them intentional (full Quality Desk in Phase 6)."""
+        store = open_store(workspace, project)
+        for ids, status in ((dismiss, "dismissed"), (intentional, "intentional")):
+            for fid in ids:
+                f = store.findings.get(fid)
+                if f is None:
+                    console.print(f"[red]unknown finding {fid}[/red]")
+                    raise typer.Exit(1)
+                store.upsert("findings", f.model_copy(update={"status": status}), actor=Actor.USER)
+                console.print(f"{fid}: {status}")
+        table = Table("id", "scene", "sev", "claim", "evidence", "status")
+        for f in store.findings.all():
+            if (scene and f.scene_id != scene) or (not show_all and f.status != "open"):
+                continue
+            ev = "; ".join(f"v{e.version}@{e.span[0]}: “{e.quote}”" for e in f.evidence)
+            table.add_row(f.id, f.scene_id, f.severity, escape(f.claim), escape(ev), f.status)
+        console.print(table)
 
     @app.command()
     def status(project: str = project_opt, workspace: Path | None = workspace_opt) -> None:

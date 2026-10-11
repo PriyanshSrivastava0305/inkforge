@@ -9,6 +9,7 @@ from pathlib import Path
 
 from inkforge.models.router import ModelRouter
 from inkforge.models.tokens import TokenizerCache
+from inkforge.system import power_status
 
 # Resident sizes measured on this machine (Ollama /api/ps, 2026-10-09), plus headroom for the OS.
 APPROX_RESIDENT_GB = {"llama3.1:8b-instruct-q4_K_M": 5.0, "llama3.2:1b": 1.4}
@@ -86,6 +87,18 @@ async def runtime_checks(router: ModelRouter, cache_root: Path) -> list[Check]:
             f"; loading the next model needs ~{biggest:.1f} GB" if biggest else ""
         )
         checks.append(Check("free RAM", enough, detail, warn_only=True))
+    power = power_status()
+    if power.on_battery is not None:
+        checks.append(
+            Check(
+                "power",
+                not power.on_battery,
+                "on AC"
+                if not power.on_battery
+                else f"on battery ({power.battery_percent}%) — Windows may hibernate during long runs; plug in",
+                warn_only=True,
+            )
+        )
     cache = TokenizerCache(cache_root)
     for fam in sorted(set(rt.tokenizer_family.values())):
         meta = cache.meta(fam)

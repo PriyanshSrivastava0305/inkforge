@@ -1,0 +1,11 @@
+# Phase 4 exit fixture: a 5-chapter novella planned, drafted and exported end to end.
+schema: inkforge/fixture-novella@1
+title: The Drowned Coast
+form: novel
+idea: >
+  A lighthouse keeper on a drowned coast finds letters in bottles that predict storms a day before
+  they happen. The letters are in her own handwriting.
+settings:
+  chapters: 5
+  scenes_per_chapter: 2
+target_length: 12000      # ≈1,200 words per scene on the 8B; the 1B wiring run uses the same plan

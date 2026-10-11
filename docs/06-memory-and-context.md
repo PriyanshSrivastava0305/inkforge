@@ -25,6 +25,8 @@ AuthorAgent runs a nightly "sleep-time" job. We make it a command/button: `inkfo
 
 ## Context builder
 
+*Phase 4 status:* v1 is built for drafting (`src/inkforge/context/builder.py`). Sections render as spec → codex → chapter stand-in → recap → card; the stand-in (chapter plan + earlier cards' events) replaces digests until Phase 5, and CORE/RECALL are not wired yet. Trimming: stand-in events → stand-in → recap to ~150 tokens → codex to names + voice cards → `ContextTooSmall`. Manifest: `runs/<job>/drafts_<scene>/manifest.json`, linked from the draft version's `context_manifest_path`.
+
 Assembly order (highest priority first; trimming happens from the bottom up):
 
 1. System constraints + output contract (schema / format rules) — **never trimmed**

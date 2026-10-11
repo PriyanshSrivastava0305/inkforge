@@ -265,3 +265,7 @@ def bench(
             await router.aclose()
 
     console.print(f"Report: {asyncio.run(go())}")
+
+
+if __name__ == "__main__":
+    app()

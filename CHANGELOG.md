@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased] — Phase 4: drafting + Markdown export (MVP)
+
+### Added
+- Context builder v1 with token budgeting, priority trimming and a context manifest per draft.
+- Stage E drafting: continuation on truncation with overlap stripping, edge-only meta cleanup, draft checks.
+- Name/alias consistency rule → evidence-linked Findings; `inkforge findings`.
+- Approval of drafts (`approve drafts --scene/--chapter/--all`), preflight, Markdown export (final / watermarked preview), `diff`, `show`.
+- `run --mode full` (plan → drafts → preview) and `--mode draft`.
+- Offline acceptance test with a socket guard; 5-chapter novella golden fixture.
+
+### Fixed
+- Chaos test now kills the real worker process (Windows venv launcher) and proves it died.
+- Craft rules are advisory (D32): one repair, then accepted with warnings — a real 1B run failed a whole job on a duplicate chapter purpose.
+- Possessives no longer produce false name findings ("James's" was read as "Jame").
+- Standalone timestamp lines are stripped from drafts; Codex names are trimmed.
+- Sleep-safe model timeouts (awake time only) and keep-awake during jobs; `doctor` and jobs warn on battery (D33).
+
 ## [Unreleased] — Phase 3: planning pipeline (Stages A–D) + Conductor
 
 ### Added

@@ -1,0 +1,11 @@
+# Phase 4 exit: one short story end to end on the 8B (default profile), offline.
+schema: inkforge/fixture-short-story@1
+title: Salt Letters
+form: short-story
+idea: >
+  A lighthouse keeper on a drowned coast finds letters in bottles that predict storms a day before
+  they happen. The letters are in her own handwriting.
+settings:
+  chapters: 3
+  scenes_per_chapter: 1
+target_length: 3600

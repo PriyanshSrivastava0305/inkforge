@@ -389,3 +389,23 @@ def test_value_charge_normalized():
 
     assert normalize_charge("+   ->-") == "+ -> -" and normalize_charge("- → +") == "- -> +"
     assert [charge_changes(x) for x in ("+ -> -", "- → +", "+ -> +", "+->-")] == [True, True, False, True]
+
+
+def test_persistent_duplicate_purposes_become_a_warning_not_a_failure(plan_store: ProjectStore):
+    """Real llama3.2:1b behaviour (2026-10-10): repeated a duplicate chapter purpose after every repair."""
+    s = plan_store
+    run(conductor(s), stages_for("plan", until="design"), yes=True)
+    events = []
+
+    def script(req):
+        if (req.json_schema or {}).get("title") != "ActPlan":
+            return auto_script(req)
+        v = SchemaExample(req.json_schema).build()
+        for ch in v["chapters"]:
+            ch["purpose"] = "the visions grow stronger"
+        return FakeResponse(json.dumps(v))
+
+    job = run(conductor(s, script, on_event=lambda k, d: events.append((k, d))), ["chapters"])
+    assert job.status == JobStatus.SUCCEEDED
+    warns = [d["message"] for k, d in events if k == "problem" and d.get("target") == "act2"]
+    assert any("share the purpose" in w for w in warns)

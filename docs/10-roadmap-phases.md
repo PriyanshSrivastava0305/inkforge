@@ -105,7 +105,7 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 
 **Deliverables:** `inkforge.pipeline` with stages A–D; CLI planning commands. **Status: done 2026-10-09.**
 **Exit criteria:** kill the process at a random point during `run --mode plan` 20 times → every resume completes with valid artifacts; each stage runs alone from saved inputs; editing chapter N marks only chapter N's cards stale (neighbours flagged "review suggested" only if `purpose`/`outcome` changed); reordering chapters marks nothing stale.
-**Result:** chaos test (`tests/integration/test_chaos_resume.py`) passed three seeds: 20, 20 and 30 random kills of a subprocess plan run, each followed by resume → zero integrity problems, index identical after rebuild.
+**Result:** chaos test (`tests/integration/test_chaos_resume.py`): 20 hard kills (whole process tree) per run, each verified by re-acquiring the run lock; seeds 5700, 1234, 777 → 20/20 kills interrupted a running job, 20 resumes, zero integrity problems, index identical after rebuild. *Correction (2026-10-10):* the first version of this test used `Popen.kill()`, which on Windows only kills the venv launcher, so its earlier "20/20/30 kills" results overstated what was proven; fixed in commit 6307dff.
 **Risks:** outline quality on small models → per-act generation, enhance passes, structure skills; author edits are first-class.
 
 ---
@@ -114,19 +114,23 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 
 **Goal:** the first end-to-end vertical slice, offline: spec → outline → cards → drafted scenes → one continuity check → Markdown.
 
-- [ ] Context builder v1: spec essentials, scene card, Codex for present characters, previous-scene recap, and a **chapter stand-in** in place of digests (chapter plan `purpose`/`conflict`/`outcome` + `concrete_event` one-liners of earlier cards in the chapter; no model summaries until Phase 5); token budgeting; **context manifest**
-- [ ] Stage E: scene drafting with voice cards, length targeting
-- [ ] Truncation detection (`finish_reason`, mid-sentence) + safe continuation with overlap stripping
-- [ ] Draft checks (participants present, meta leakage, length, unknown names → candidates)
-- [ ] Version history + word-level diff utility (`inkforge diff`)
-- [ ] One deterministic continuity check end to end (name/alias consistency) producing a Finding with evidence
-- [ ] Approve versions (`--scene/--chapter/--all`, bulk lists + confirms); Stage H-lite: Markdown export of approved scenes in outline order + preflight (missing/unapproved/stale)
-- [ ] `export --preview`: watermarked draft export of active versions (unapproved allowed, listed in preflight)
-- [ ] `run --mode full [--yes]` for a short story end to end (ends at draft preview; final export needs explicit approve)
-- [ ] **Offline test #1:** network disabled, full short-story run + export
+- [x] Context builder v1 (`context/builder.py`): spec, Codex + voice cards for present characters, chapter stand-in, previous-scene recap (~400 tokens), card; stable-first render order, priority trimming (stand-in → recap → codex; card never), `ContextTooSmall` instead of silent loss; **context manifest** per draft with per-section tokens, disposition and prefix hashes
+- [x] Stage E (`stages/draft.py`, prompt `draft.scene@2`): default targets = scenes without a draft or with a stale one; `--scene/--chapter/--redraft`
+- [x] Truncation (`length`, `repetition`, mid-sentence) → up to 3 continuations (`draft.continue@2`) with overlap stripping; hard cap 160% of target
+- [x] Meta-line cleanup at the edges only ("Here is the scene:", headings, labels, notes, rules); prose that merely starts with "Chapter" is kept
+- [x] Draft checks: length (±35%), participants named, meta leakage, first-person POV, unknown recurring names (reported, not auto-added), still-truncated
+- [x] Word-level diff (`inkforge diff`), `inkforge show` (any version, or a draft's manifest)
+- [x] Continuity rule: name/alias typos (Damerau distance, catches transpositions) → Findings with verbatim evidence spans; replaced on redraft; `inkforge findings [--dismiss|--intentional]`
+- [x] `approve drafts --scene/--chapter/--all [--version]` lists + confirms; Markdown export of approved versions in outline order + preflight (missing/unapproved/stale/empty chapters/high findings/newer-than-approved)
+- [x] `export --preview`: watermarked, active versions, unapproved listed per chapter
+- [x] `run --mode full [--yes]` = plan → drafts → preview stage; `--mode draft`; short stories export without chapter headings
+- [x] **Offline test #1**: `tests/integration/test_offline_acceptance.py` runs the real CLI with a socket guard (`tests/support/offline/sitecustomize.py`) that fails and logs any non-loopback connection or DNS lookup
 
-**Deliverables:** MVP CLI; sample project in `examples/`.
+**Deliverables:** MVP CLI; sample project in `examples/`. **Status: done 2026-10-10** (see result).
 **Exit criteria:** a 5-chapter novella fixture runs end to end offline (on `llama3.2:1b` for the wiring check; one short-story run on the 8B, overnight is fine); export order matches outline; no unapproved version in export; manifests recorded for every draft.
+**Result (1B, offline):** `test_offline_acceptance.py` passed — the 5-chapter novella through the real CLI with the network guard: plan → 10 drafts → approve → final export, 34 min, 9,571 words, **zero non-loopback connection attempts**, export order = outline, a manifest for every draft, integrity clean. Real continuation used once (a scene hit max_tokens); two hard repairs succeeded (broken JSON, missing protagonist).
+**Real-run findings fixed before sign-off:** (1) the first real run *failed* because the 1B kept writing two chapters with the same purpose after repairs → craft rules became advisory (D32); (2) 150 false "Jame vs James" name findings from an `rstrip("'s")` possessive bug → 0 after the fix; (3) the 1B scattered bare timestamp lines through its prose → 29 removed by cleanup; (4) Codex names are trimmed.
+**8B short story (offline):** first attempt (2026-10-10) died when the laptop slept and then hibernated on battery mid-call → sleep-safe timeouts + keep-awake (D33); rerun pending.
 **Risks:** prose quality → measure early with the benchmark; separate prose profile with higher temperature; lessons/skills later.
 
 ---

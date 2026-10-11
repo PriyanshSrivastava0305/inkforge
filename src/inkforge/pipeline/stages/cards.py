@@ -124,7 +124,7 @@ class CardsStage(Stage):
             scenes_for(ctx, plan.target_length), chars, proms, self._earlier_scenes(ctx, target)
         )
 
-    def validate(self, ctx: StageContext, target: str | None, value: Any) -> list[str]:
+    def advise(self, ctx: StageContext, target: str | None, value: Any) -> list[str]:
         errs = []
         for i, c in enumerate(value.cards):
             if not charge_changes(c.value_charge):

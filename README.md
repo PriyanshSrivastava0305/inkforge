@@ -3,7 +3,7 @@
 Local-first story and script writing agent — personal tool, strictly local (no network calls at runtime).
 
 - **Plan & docs:** [`docs/`](docs/README.md) — start with `01`, then the roadmap in `10`.
-- **Status:** Phases 0–3 done (storage, model router, planning pipeline); next is Phase 4 (drafting → MVP). See [`CHANGELOG.md`](CHANGELOG.md).
+- **Status:** M1 MVP (Phases 0–4): idea → plan → drafts → approved Markdown, offline. Next: Phase 5 (long-book memory). See [`CHANGELOG.md`](CHANGELOG.md).
 - **Models (D16):** `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests), via Ollama on `127.0.0.1`.
 
 ## Setup
@@ -26,6 +26,9 @@ uv run inkforge run -p the-glass-orchard --mode plan --idea "…"   # stops at e
 uv run inkforge status -p the-glass-orchard
 uv run inkforge approve -p the-glass-orchard spec && uv run inkforge resume -p the-glass-orchard
 uv run inkforge codex -p the-glass-orchard --accept all
+uv run inkforge draft -p the-glass-orchard                      # Stage E
+uv run inkforge approve -p the-glass-orchard drafts --all
+uv run inkforge export -p the-glass-orchard                     # or --preview
 uv run inkforge backup -p the-glass-orchard
 uv run inkforge doctor
 ```

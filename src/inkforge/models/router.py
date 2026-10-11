@@ -55,6 +55,9 @@ class Attempt:
 class StructuredResult[T: BaseModel]:
     value: T
     attempts: list[Attempt] = field(default_factory=list)
+    warnings: list[str] = field(
+        default_factory=list
+    )  # advisory problems the model didn't fix (author decides)
 
     @property
     def first_try(self) -> bool:
@@ -218,17 +221,27 @@ class ModelRouter:
         max_attempts: int = 3,
         allowed_ids: Mapping[str, Collection[str]] | None = None,
         validate: Callable[[T], list[str]] | None = None,
+        advise: Callable[[T], list[str]] | None = None,
         max_tokens: int | None = None,
         temperature: float | None = None,
         cancel: CancelToken | None = None,
         recorder: RunRecorder | None = None,
     ) -> StructuredResult[T]:
+        """Hard checks (schema, allowed IDs, `validate`) must pass or the call fails.
+
+        Advisory checks (`advise`: craft rules such as "no two chapters with the same purpose") get one
+        repair attempt; if the model still doesn't comply, the value is accepted and the problems come
+        back as `warnings` for the author. If a later attempt breaks a hard rule, the best earlier value
+        that only had advisory problems is returned instead of failing (found on llama3.2:1b, 2026-10-10).
+        """
         p = self.profile(profile)
         base_temp = p.temperature if temperature is None else temperature
         tokens = max_tokens or self.default_max_tokens(profile)
         json_schema = schema.model_json_schema()
         convo = list(messages)
         attempts: list[Attempt] = []
+        fallback: tuple[T, list[str]] | None = None
+        advisory_repairs = 0
         for n in range(1, max_attempts + 1):
             temp = base_temp if n < 3 else max(0.1, base_temp / 2) if base_temp > 0.1 else base_temp
             gen = await self.generate(
@@ -239,6 +252,20 @@ class ModelRouter:
                     recorder.attempt(n, gen, ["cancelled"], temperature=temp)
                 raise GenerationCancelled(gen)
             value, errors = self._check(gen, schema, allowed_ids, validate)
+            advice = advise(value) if value is not None and advise else []
+            if value is not None and advice:
+                if fallback is None or len(advice) < len(fallback[1]):
+                    fallback = (value, advice)
+                if advisory_repairs >= 1 or n == max_attempts:
+                    attempts.append(Attempt(gen, [f"advisory: {a}" for a in advice], temp, tokens))
+                    if recorder:
+                        recorder.attempt(
+                            n, gen, [f"advisory (accepted): {a}" for a in advice], temperature=temp
+                        )
+                    return StructuredResult(value, attempts, advice)
+                advisory_repairs += 1
+                errors = advice
+                value = None
             attempts.append(Attempt(gen, errors, temp, tokens))
             repair = None if not errors else _repair_message(errors, truncated=gen.finish_reason == "length")
             if recorder:
@@ -249,6 +276,8 @@ class ModelRouter:
             convo = [*messages, Message("assistant", gen.text), Message("user", repair)]
             if gen.finish_reason == "length":
                 tokens = min(int(tokens * 1.5), p.num_ctx // 2)
+        if fallback is not None:
+            return StructuredResult(fallback[0], attempts, fallback[1])
         raise StructuredOutputError(schema.__name__, attempts)
 
     @staticmethod

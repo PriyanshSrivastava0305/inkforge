@@ -129,7 +129,7 @@ class ChaptersStage(Stage):
         proms = [p.id for p in ctx.store.get_promises().promises if p.status == PromiseStatus.OPEN]
         return act_plan_model(self._counts(ctx)[target], chars, proms)
 
-    def validate(self, ctx: StageContext, target: str | None, value: Any) -> list[str]:
+    def advise(self, ctx: StageContext, target: str | None, value: Any) -> list[str]:
         if target == ENHANCE:
             return []
         purposes = [c.purpose.strip().lower() for c in value.chapters]
