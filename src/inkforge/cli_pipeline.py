@@ -359,17 +359,91 @@ def register(app: typer.Typer, console: Console, open_store, workspace_opt, proj
         redraft: bool = typer.Option(
             False, "--redraft", help="Redraft scenes that already have a fresh draft"
         ),
+        memory: bool = typer.Option(
+            True, "--memory/--no-memory", help="Use long-book memory (CORE, digests, recall)"
+        ),
+        model_digests: bool = typer.Option(
+            True,
+            "--model-digests/--extract-digests",
+            help="Summarize each new scene with the model (one extra call) or by extraction",
+        ),
         profile_set: str | None = profile_opt,
         workspace: Path | None = workspace_opt,
     ) -> None:
         """Stage E — draft scenes (default: those without a draft or with a stale one)."""
-        start(
-            project,
-            workspace,
-            ["drafts"],
-            {"scene": scene, "chapter": chapter, "redraft": redraft},
-            profile_set,
-        )
+        params = {
+            "scene": scene,
+            "chapter": chapter,
+            "redraft": redraft,
+            "memory": memory,
+            "digest_model": model_digests,
+        }
+        start(project, workspace, ["drafts"], params, profile_set)
+
+    @app.command()
+    def memory(
+        project: str = project_opt,
+        action: str = typer.Argument("status", help="status | update | rebuild | consolidate"),
+        extract: bool = typer.Option(
+            False, "--extract", help="No model calls: deterministic extract digests"
+        ),
+        profile_set: str | None = profile_opt,
+        workspace: Path | None = workspace_opt,
+    ) -> None:
+        """Long-book memory: digests, recall index and CORE snapshot (all rebuildable from files)."""
+        from inkforge.memory.core import build_core
+        from inkforge.memory.service import MemoryService
+        from inkforge.models.tokens import estimate
+
+        store = open_store(workspace, project)
+        if action == "status":
+            st = MemoryService(store).status()
+            console.print(
+                f"scenes with text: {st.scenes_with_text} ({st.provisional} provisional = not approved yet)\n"
+                f"digests: {st.digests_fresh} fresh ({st.extract_digests} extract), {len(st.digests_stale)} stale\n"
+                f"recall index: {st.recall_scenes} scenes, {st.recall_chunks} chunks"
+            )
+            if st.up_to_date:
+                console.print("[green]memory is up to date[/green]")
+            else:
+                console.print(f"[yellow]out of date — run `inkforge memory -p {store.id} update`[/yellow]")
+            if st.digests_stale:
+                more = " ..." if len(st.digests_stale) > 12 else ""
+                console.print("stale: " + ", ".join(st.digests_stale[:12]) + more, markup=False)
+            order = store.scenes_in_order()
+            if order:
+                console.print(f"\nCORE as of {order[-1]}:")
+                console.print(
+                    build_core(store, order[-1], estimate).text() or "(empty)", markup=False, highlight=False
+                )
+            return
+        if action not in ("update", "rebuild", "consolidate"):
+            console.print("[red]action must be status | update | rebuild | consolidate[/red]")
+            raise typer.Exit(2)
+
+        async def go() -> int:
+            router = None if extract else ModelRouter.from_config(profile_set)
+            svc = MemoryService(store, router)
+
+            def show(d: Any) -> None:
+                note = ", provisional" if d.provisional else ""
+                console.print(f"[green]ok[/green] {d.kind}:{d.target} ({d.method}{note})")
+
+            try:
+                if action == "rebuild":
+                    built = await svc.rebuild(use_model=not extract, on_built=show)
+                else:
+                    built = await svc.update(use_model=not extract, on_built=show)
+                    if action == "consolidate" and not extract:
+                        built += await svc.upgrade_extracts(on_built=show)
+                return len(built)
+            finally:
+                if router is not None:
+                    await router.aclose()
+
+        with store_run_lock(store):
+            n = asyncio.run(go())
+        console.print(f"memory {action}: {n} digest(s) written; recall index and CORE snapshot refreshed")
 
     @app.command()
     def export(
@@ -598,6 +672,13 @@ def register(app: typer.Typer, console: Console, open_store, workspace_opt, proj
             color = {"candidate": "yellow", "accepted": "green", "rejected": "red"}[str(e.codex_status)]
             table.add_row(e.id, e.name, f"[{color}]{e.codex_status}[/{color}]", str(extra)[:50])
         console.print(table)
+
+
+def store_run_lock(store: ProjectStore) -> Any:
+    """Memory jobs make model calls too: hold the same lock as pipeline runs."""
+    from inkforge.policy.lock import ProjectLock
+
+    return ProjectLock(store.dir, timeout=1.0, name=".run.lock")
 
 
 def editor_command(editor: str) -> list[str]:

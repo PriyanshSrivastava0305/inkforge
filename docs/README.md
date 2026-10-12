@@ -4,7 +4,7 @@ InkForge is a **local-first story and script writing agent**. It takes an author
 
 This folder (`docs/`) is the working plan. It is built on top of [`reference/INKFORGE_BUILD_GUIDE.md`](reference/INKFORGE_BUILD_GUIDE.md) and the architecture diagrams in [`reference/`](reference/), and on a review of three reference agents (AuthorAgent, GOAT-Storytelling-Agent, OpenWrite).
 
-> **Status:** Phases 0–4 ✓ — **M1 MVP**: idea → planned, drafted, approved Markdown manuscript, offline, CLI. Next: Phase 5 (long-book memory). Last updated 2026-10-09.
+> **Status:** Phases 0–5 ✓ — MVP plus long-book memory (digests, established facts, recalled passages). Next: Phase 6 (quality engine). Last updated 2026-10-09.
 >
 > **Fixed context:** personal tool, strictly local, CPU-only laptop (i7-1165G7, 16 GB). Models: `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests). See D16–D18 in [12](12-decisions-and-open-questions.md).
 

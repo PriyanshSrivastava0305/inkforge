@@ -36,7 +36,7 @@ inkforge draft --project glass-orchard [--scene ch03-sc02 | --chapter ch03] [--r
 inkforge approve --project glass-orchard drafts --chapter ch03 [--confirm]   # lists, then asks
 inkforge diff --project glass-orchard draft ch03-sc02 [--from 1 --to 2] | show … manifest ch03-sc02
 inkforge findings --project glass-orchard [--scene …] [--dismiss find-0003] [--intentional …]
-inkforge memory rebuild|consolidate
+inkforge memory --project glass-orchard [status|update|rebuild|consolidate] [--extract]   # derived, rebuildable
 inkforge reindex | backup | restore <zip> | stats | doctor | bench
 ```
 

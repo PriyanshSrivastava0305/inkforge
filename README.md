@@ -3,7 +3,7 @@
 Local-first story and script writing agent — personal tool, strictly local (no network calls at runtime).
 
 - **Plan & docs:** [`docs/`](docs/README.md) — start with `01`, then the roadmap in `10`.
-- **Status:** M1 MVP (Phases 0–4): idea → plan → drafts → approved Markdown, offline. Next: Phase 5 (long-book memory). See [`CHANGELOG.md`](CHANGELOG.md).
+- **Status:** Phases 0–5: MVP (idea → plan → drafts → approved Markdown, offline) plus long-book memory. Next: Phase 6 (quality engine). Sample output: [`examples/salt-letters`](examples/salt-letters/README.md). See [`CHANGELOG.md`](CHANGELOG.md).
 - **Models (D16):** `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests), via Ollama on `127.0.0.1`.
 
 ## Setup

@@ -19,6 +19,7 @@ from inkforge.context.builder import ContextTooSmall, DraftContextBuilder, card_
 from inkforge.domain.codex import active_characters
 from inkforge.domain.common import Actor, Staleness
 from inkforge.domain.models import Character, Evidence, Finding, SceneVersionMeta
+from inkforge.memory.digests import Digester
 from inkforge.models.recorder import RunRecorder
 from inkforge.models.router import GenerationCancelled
 from inkforge.pipeline.stage import Problem, Stage, StageContext, StageError, StepResult
@@ -39,6 +40,12 @@ LENGTH_TOLERANCE = 0.35  # ±35% of the card's target before warning
 HARD_CAP = 1.6  # stop continuing beyond 160% of target
 EXTEND_BELOW = 0.6  # a scene that ends under 60% of target gets one extension
 ANCHOR_CHARS = 1300  # ≈300 tokens of prose
+
+
+def memory_on(ctx: StageContext) -> bool:
+    """Long-book memory is on unless switched off per run (`--no-memory`) or per project."""
+    v = ctx.params.get("memory")
+    return bool(ctx.store.project.settings.get("memory", True) if v is None else v)
 
 
 class DraftStage(Stage):
@@ -88,7 +95,7 @@ class DraftStage(Stage):
         step_dir = ctx.run_dir / ctx.step_key(self.name, target).replace(":", "_")
         builder = DraftContextBuilder(s, router, ctx.prompts, profile=self.profile)
         try:
-            built = builder.build(target, job_id=ctx.job.job_id)
+            built = builder.build(target, job_id=ctx.job.job_id, memory=memory_on(ctx))
         except ContextTooSmall as e:
             raise StageError(str(e)) from e
         card = s.read("card", target)
@@ -214,12 +221,21 @@ class DraftStage(Stage):
             job_id=ctx.job.job_id,
         )
         findings = self._name_findings(ctx, target, vrec.version, body)
+        digests: list[str] = []
+        if memory_on(ctx):  # DIGEST tier: this scene now, its chapter/act once complete (D34)
+            use_model = bool(ctx.params.get("digest_model", s.project.settings.get("digest_model", True)))
+            built_digests = await Digester(s, router, ctx.prompts).after_scene(
+                target, use_model=use_model, cancel=ctx.cancel
+            )
+            digests = [f"digest:{d.kind}:{d.target}({d.method})" for d in built_digests]
         rec.finish(
             "succeeded", output_refs=[f"draft:{target}@v{vrec.version}"], checks=checks, findings=findings
         )
         for c in checks:
             ctx.emit("draft.check", {"scene": target, **c})
-        return StepResult([f"draft:{target}@v{vrec.version}", *(f"finding:{f}" for f in findings)], [], calls)
+        return StepResult(
+            [f"draft:{target}@v{vrec.version}", *(f"finding:{f}" for f in findings), *digests], [], calls
+        )
 
     def _name_findings(self, ctx: StageContext, scene: str, version: int, text: str) -> list[str]:
         """Name/alias typos → Findings with verbatim evidence. Replaces this rule's open findings for the scene."""

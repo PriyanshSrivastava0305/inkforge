@@ -2,6 +2,10 @@
 
 Local models have small context windows (8k–32k typical) and degrade well before the limit. The memory system's job is to give each call the *smallest* context that still keeps the story consistent — and to record exactly what was included.
 
+## Effective versions (D34)
+
+Memory is built from each scene's **effective version**: its approved version if it has one, otherwise its active draft (marked *provisional*). The original plan said "on approval", but `run --mode full --yes` never approves drafts (D23), so an overnight run would have had no memory. Everything derived is keyed by the effective text's hash, so approving, editing or redrafting a scene makes its digest, its chapter's and act's digests and its recall chunks stale without any trigger bookkeeping. `inkforge memory status` shows what is stale.
+
 ## Three tiers
 
 | Tier | Contents | Size | Updated | Source of truth? |
@@ -25,7 +29,7 @@ AuthorAgent runs a nightly "sleep-time" job. We make it a command/button: `inkfo
 
 ## Context builder
 
-*Phase 4 status:* v1 is built for drafting (`src/inkforge/context/builder.py`). Sections render as spec → codex → chapter stand-in → recap → card; the stand-in (chapter plan + earlier cards' events) replaces digests until Phase 5, and CORE/RECALL are not wired yet. Trimming: stand-in events → stand-in → recap to ~150 tokens → codex to names + voice cards → `ContextTooSmall`. Manifest: `runs/<job>/drafts_<scene>/manifest.json`, linked from the draft version's `context_manifest_path`.
+*Status (Phase 5):* v2 is built (`src/inkforge/context/builder.py`, prompt `draft.scene@3`). Render order: spec → CORE → codex → digests → chapter plan → RECALL → recap → card. Trimming: RECALL passages lowest-ranked first → digests (acts → earlier chapters → this chapter's scenes) → chapter plan → recap to ~150 tokens → codex to names + voice cards → `ContextTooSmall`. Card and CORE are never trimmed. A missing or stale digest is replaced by an on-the-fly extract. Manifest: `runs/<job>/drafts_<scene>/manifest.json`, with every recalled passage cited as `draft:<scene>@v<n>#<start>-<end>`.
 
 Assembly order (highest priority first; trimming happens from the bottom up):
 

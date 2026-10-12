@@ -72,7 +72,16 @@ def test_context_manifest_and_stable_prefix(planned: ProjectStore):
         b.build("ch01-sc02", job_id="job-20261009-000000-bbbb"),
     )
     names = [x.name for x in built1.manifest.sections]
-    assert names == ["spec", "codex", "chapter", "recap", "card"]  # render order: stable first
+    assert names == [
+        "spec",
+        "core",
+        "codex",
+        "digests",
+        "chapter",
+        "recall",
+        "recap",
+        "card",
+    ]  # stable first (D25)
     assert built1.prompt.sha256 == built2.prompt.sha256  # byte-stable
     assert [x.prefix_hash for x in built1.manifest.sections] == [
         x.prefix_hash for x in built2.manifest.sections
@@ -129,7 +138,7 @@ def test_truncated_draft_is_continued_without_duplication(planned: ProjectStore,
         and "Continue from exactly where it stops (finish the interrupted sentence first)" in calls[1]
     )
     extra = s.meta("draft", "ch01-sc01").get(1).extra
-    assert extra["calls"] == 2 and extra["prompt_ref"] == "draft.scene@2"
+    assert extra["calls"] == 2 and extra["prompt_ref"] == "draft.scene@3"
     assert (s.dir / extra["context_manifest_path"]).is_file()
 
 

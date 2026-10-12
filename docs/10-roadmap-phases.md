@@ -139,18 +139,19 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 
 **Goal:** books of 60–90k words without forgetting.
 
-- [ ] Scene / chapter / act digests generated on approval
-- [ ] CORE builder (deterministic from canon facts + character state + promises, hard budget)
-- [ ] FTS5 indexing of approved scenes (paragraph chunks with offsets) and Codex
-- [ ] Deterministic retrieval queries from scene cards; ranking; de-dup
-- [ ] Context builder v2 with the full priority order and trimming algorithm from [06](06-memory-and-context.md)
-- [ ] Memory update triggers (approve, edit, card change)
-- [ ] `memory rebuild` and `memory consolidate`
-- [ ] Optional: embeddings + FAISS hybrid retrieval behind a flag
-- [ ] Context recall evaluation on the golden book
+- [x] Scene / chapter / act digests (`memory/digests.py`): hash-keyed, so staleness propagates upward by itself; model-written with a deterministic extract fallback. Built right after each scene is drafted, from the **effective version** (D34), not only on approval
+- [x] CORE builder (`memory/core.py`): deterministic; world rules, canon facts valid at the scene's *story time* (a flashback sees the past), open promises, time anchor; hard 800-token budget, lowest priority dropped first; candidates never included
+- [x] RECALL (`memory/recall.py`): paragraph chunks (~400–1,200 chars) with exact offsets in `recall.sqlite` (FTS5/BM25); incremental `sync()`, self-healing if the file is corrupt
+- [x] Deterministic retrieval queries from the scene card (names, aliases, location, items, promise keywords); only scenes earlier in narrative order; de-duplicated against the recap
+- [x] Context builder v2 (prompt `draft.scene@3`): render order spec → CORE → codex → digests → chapter plan → RECALL → recap → card; trimming ladder RECALL (lowest first) → digests (acts → earlier chapters → this chapter) → chapter plan → recap → codex; card and CORE never trimmed
+- [x] Memory follows the text automatically (hash-keyed): approve, edit, redraft and card changes need no explicit triggers
+- [x] `inkforge memory status|update|rebuild|consolidate [--extract]`; `draft --no-memory`, `--extract-digests`
+- [ ] Optional: embeddings + FAISS hybrid retrieval — **deferred**: lexical recall met the target on the fixture; revisit with real-prose evaluation in Phase 6
+- [x] Context recall evaluation on the golden memory book (`tests/support/memory_book.py`, `tests/integration/test_recall_eval.py`)
 
-**Deliverables:** `packages/memory`, context builder v2.
+**Deliverables:** `inkforge.memory`, context builder v2. **Status: done 2026-10-12.**
 **Exit criteria:** recall@context ≥ 90% on golden dependent facts; context test (overlong input trimmed by priority, manifest correct) passes; rebuild reproduces memory from files.
+**Result:** recall@context **25/25 (100%)** on the golden memory book (30 scenes, 11.8k words, 25 planted facts needed 3–13 scenes later) at a mean prompt of 2,755 tokens (budget 3,993). Baselines: "last three scenes" 3/25 (12%); memory off ≤ 2/25; "all earlier text" would need ~7,700 tokens. Rebuild reproduces digests and the recall index exactly. **Caveat:** the fixture is synthetic and favourable (distinctive entity names, cards that name the entity); it proves the mechanism, not real-prose recall. Phase 6's continuity book is the harder test.
 **Risks:** summaries drift from text → digests are regenerated, never edited incrementally; manuscript remains truth.
 
 ---
