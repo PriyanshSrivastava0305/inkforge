@@ -37,6 +37,7 @@ from inkforge.storage.workspace import ArtifactKind
 MAX_CONTINUATIONS = 3
 LENGTH_TOLERANCE = 0.35  # ±35% of the card's target before warning
 HARD_CAP = 1.6  # stop continuing beyond 160% of target
+EXTEND_BELOW = 0.6  # a scene that ends under 60% of target gets one extension
 ANCHOR_CHARS = 1300  # ≈300 tokens of prose
 
 
@@ -106,6 +107,7 @@ class DraftStage(Stage):
         loc = s.get_codex(card.location_id) if card.location_id else None
         cb = card_block(card, names, loc if loc is not None and loc.id.startswith("loc-") else None)  # type: ignore[arg-type]
         messages, text, calls, finish = built.prompt.messages, "", 0, "stop"
+        extended = False
         try:
             for i in range(1 + MAX_CONTINUATIONS):
                 g = await router.generate(
@@ -118,7 +120,11 @@ class DraftStage(Stage):
                 text = g.text if i == 0 else join_without_overlap(text, g.text)
                 finish = g.finish_reason
                 cut_off = g.finish_reason in ("length", "repetition") or ends_mid_sentence(text)
-                if not cut_off or word_count(text) >= target_words * HARD_CAP:
+                # The 8B ends long scenes early (635-865 words for a 1,200 target, 2026-10-12): extend once.
+                too_short = not cut_off and not extended and word_count(text) < target_words * EXTEND_BELOW
+                if too_short:
+                    extended = True
+                elif not cut_off or word_count(text) >= target_words * HARD_CAP:
                     break
                 cont = ctx.prompts.render(
                     "draft.continue",
@@ -144,7 +150,10 @@ class DraftStage(Stage):
         words = word_count(body)
         if abs(words - target_words) > target_words * LENGTH_TOLERANCE:
             checks.append({"check": "length", "message": f"{words} words vs target {target_words}"})
-        present = [c for c in active_characters(s) if c.id in card.participants]
+        spec = s.read("spec")
+        # a first-person narrator is rarely named in their own scene
+        skip = {card.pov_character_id} if spec.pov == "first" else set()
+        present = [c for c in active_characters(s) if c.id in card.participants and c.id not in skip]
         for c in missing_participants(body, present):
             checks.append(
                 {"check": "participants", "message": f"{c.name} is in the card but never named in the scene"}
@@ -170,6 +179,10 @@ class DraftStage(Stage):
         spec = s.read("spec")
         if spec.pov == "first" and " I " not in f" {body} ":
             checks.append({"check": "pov", "message": "spec is first person but the scene never uses 'I'"})
+        if extended:
+            checks.append(
+                {"check": "extended", "message": "first pass ended under 60% of target; extended once"}
+            )
         if finish in ("length", "repetition") or ends_mid_sentence(body):
             checks.append(
                 {"check": "truncated", "message": "scene still ends mid-sentence after continuations"}

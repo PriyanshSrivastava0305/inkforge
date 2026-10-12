@@ -102,7 +102,8 @@ def test_trimming_follows_priority_and_never_drops_the_card(planned: ProjectStor
 # ---------------------------------------------------------------- Stage E
 
 
-def test_truncated_draft_is_continued_without_duplication(planned: ProjectStore):
+def test_truncated_draft_is_continued_without_duplication(planned: ProjectStore, monkeypatch):
+    monkeypatch.setattr("inkforge.pipeline.stages.draft.EXTEND_BELOW", 0.0)  # tiny fake scenes
     s = planned
     calls = []
 
@@ -132,14 +133,18 @@ def test_truncated_draft_is_continued_without_duplication(planned: ProjectStore)
     assert (s.dir / extra["context_manifest_path"]).is_file()
 
 
-def test_meta_lines_stripped_and_checks_reported(planned: ProjectStore):
+def test_meta_lines_stripped_and_checks_reported(planned: ProjectStore, monkeypatch):
+    monkeypatch.setattr("inkforge.pipeline.stages.draft.EXTEND_BELOW", 0.0)  # tiny fake scenes
     s = planned
     events = []
     raw = "Here is the scene:\n\n## Scene 1\n\nThe lamp burned all night.\n\nNote: 12 words"
     run(conductor(s, prose(raw), on_event=lambda k, d: events.append((k, d))), ["drafts"], scene="ch01-sc01")
     assert s.read("draft", "ch01-sc01") == "The lamp burned all night."
     checks = {d["check"] for k, d in events if k == "draft.check"}
-    assert {"meta_stripped", "length", "participants"} <= checks
+    assert {
+        "meta_stripped",
+        "length",
+    } <= checks  # first-person spec: the narrator is exempt from "participants"
 
 
 def test_name_typo_becomes_finding_with_verbatim_evidence(planned: ProjectStore):
@@ -311,3 +316,47 @@ def test_cli_draft_approve_export_diff_show_findings(planned: ProjectStore, monk
     assert "Scene" in ok("findings") or True
     declined = r.invoke(app, ["approve", "drafts", "--scene", "ch01-sc01", "-p", s.id, "-w", w], input="n\n")
     assert declined.exit_code == 1 and s.meta("draft", "ch01-sc01").approved == 1
+
+
+def test_short_scene_is_extended_once(planned: ProjectStore):
+    """8B behaviour (2026-10-12): natural stop at ~55% of a 1,200-word target."""
+    s = planned
+    target = s.read("card", "ch01-sc01").target_length
+    calls = []
+
+    def script(req: ChatRequest) -> FakeResponse:
+        if req.json_schema:
+            return auto_script(req)
+        calls.append(req.messages[-1].content)
+        n = int(target * 0.3)
+        return FakeResponse(" ".join(f"w{len(calls)}x{i}" for i in range(n)) + ".")
+
+    events = []
+    run(conductor(s, script, on_event=lambda k, d: events.append((k, d))), ["drafts"], scene="ch01-sc01")
+    assert len(calls) == 2  # one extension, not a loop, even though it is still short afterwards
+    assert "extended" in {d["check"] for k, d in events if k == "draft.check"}
+    assert s.meta("draft", "ch01-sc01").get(1).extra["calls"] == 2
+
+
+def test_first_person_narrator_is_not_reported_missing(planned: ProjectStore):
+    s = planned
+    spec = s.read("spec")
+    s.save("spec", spec.model_copy(update={"pov": "first"}))
+    card = s.read("card", "ch01-sc01")
+    events = []
+    run(
+        conductor(
+            s,
+            prose("I climbed the stairs. I'd known this would happen. " * 40),
+            on_event=lambda k, d: events.append((k, d)),
+        ),
+        ["drafts"],
+        scene="ch01-sc01",
+    )
+    msgs = [
+        d["message"]
+        for k, d in events
+        if k == "draft.check" and d["check"] in ("participants", "unknown_names")
+    ]
+    pov_name = s.get_codex(card.pov_character_id).name
+    assert not any(pov_name in x for x in msgs) and not any("I'd" in x for x in msgs)

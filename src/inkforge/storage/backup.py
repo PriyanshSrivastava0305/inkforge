@@ -18,7 +18,7 @@ from inkforge.storage.hashing import sha256_bytes
 from inkforge.storage.workspace import ProjectExistsError, ProjectStore, Workspace
 
 MANIFEST = "inkforge-backup.json"
-_EXCLUDE_TOP = {"index.sqlite", "index.sqlite.tmp", ".lock", ".run.lock", "backups"}
+_EXCLUDE_TOP = {"index.sqlite", "index.sqlite.tmp", "recall.sqlite", ".lock", ".run.lock", "backups"}
 
 
 def _files(project_dir: Path) -> list[Path]:

@@ -97,6 +97,21 @@ CONTEXTS: dict[tuple[str, int], dict] = {
         "exit_condition": "the storm hits",
     },
     ("critique.scene", 1): {"text": "Some scene.", "max_findings": 5},
+    ("draft.scene", 3): {
+        "spec_block": "SPEC",
+        "core_block": "- rule",
+        "codex_block": "- Ailsa",
+        "digest_block": "so far",
+        "chapter_block": "",
+        "recall_block": "[ch01-sc01] text",
+        "recap": "…end",
+        "card_block": "CARD",
+        "target_words": 1200,
+        "pov": "third-limited",
+        "tense": "past",
+        "pov_name": "Ailsa",
+    },
+    ("memory.digest", 1): {"kind": "scene", "target": "ch01-sc01", "limit": 120, "material": "Text."},
 }
 
 

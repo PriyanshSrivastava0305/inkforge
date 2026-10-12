@@ -1,0 +1,45 @@
+{
+  "mode": "final",
+  "ok": true,
+  "blockers": [],
+  "warnings": [
+    "open high-importance promises: prom-001, prom-002"
+  ],
+  "scenes": [
+    {
+      "scene_id": "ch01-sc01",
+      "chapter_id": "ch01",
+      "version": 1,
+      "approved": true,
+      "stale": false
+    },
+    {
+      "scene_id": "ch02-sc01",
+      "chapter_id": "ch02",
+      "version": 1,
+      "approved": true,
+      "stale": false
+    },
+    {
+      "scene_id": "ch03-sc01",
+      "chapter_id": "ch03",
+      "version": 1,
+      "approved": true,
+      "stale": false
+    }
+  ],
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "Setup the Protagonist's Ordinary World and Introduce the Inciting Incidnt"
+    },
+    {
+      "id": "ch02",
+      "title": "The Search for Answers"
+    },
+    {
+      "id": "ch03",
+      "title": "The Truth Revealed"
+    }
+  ]
+}

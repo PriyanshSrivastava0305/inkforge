@@ -1,0 +1,20 @@
+---
+id: memory.digest
+version: 1
+profile: planner
+description: DIGEST tier — summarize a scene (from its text) or a chapter/act (from its members' digests) for later context.
+---
+[system]
+You write continuity notes for a novelist. Record only what the text states: no interpretation, no praise, no new facts.
+[user]
+{% if kind == "scene" %}
+SCENE {{ target }}
+"""{{ material }}"""
+{% else %}
+{{ kind | upper }} {{ target }} — digests of its parts, in order
+{{ material }}
+{% endif %}
+
+Write the {{ kind }} digest:
+- "summary": at most {{ limit }} words, plain past tense: who did what, where, and how it ended.
+- "changes": up to 5 short facts that later scenes must respect (who learned what, who now holds what, injuries, decisions, promises made).

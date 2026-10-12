@@ -165,6 +165,14 @@ def _base(word: str) -> str:
     return re.sub(r"['’]s$|['’]$", "", word)
 
 
+_CONTRACTION = re.compile(r"['’](?:d|m|ll|ve|re|t)$|n['’]t$", re.IGNORECASE)
+
+
+def _is_contraction(word: str) -> bool:
+    """ "I'd", "She'll", "Don't", "It's" (when the stem is a pronoun) are not names."""
+    return bool(_CONTRACTION.search(word)) or _base(word) in _COMMON
+
+
 def _edit_distance(a: str, b: str, limit: int = 2) -> int:
     """Damerau (optimal string alignment) distance: a swapped pair of letters counts as one edit —
     the commonest name typo ("Astird" for "Astrid"). Exits early above `limit`."""
@@ -206,6 +214,8 @@ def name_inconsistencies(text: str, entries: list[CodexEntry]) -> list[NameHit]:
     known_lower = {k.lower() for k in known}
     hits = []
     for m in _WORD.finditer(text):
+        if _is_contraction(m.group()):
+            continue
         w = _base(m.group())
         if w in known or w.lower() in known_lower or w in _COMMON or len(w) < 4:
             continue
@@ -235,6 +245,8 @@ def unknown_names(text: str, entries: list[CodexEntry], min_count: int = 2) -> l
         before = text[max(0, m.start() - 2) : m.start()]
         if re.search(r"[.!?\"“]\s*$|^\s*$", before) and m.start() > 0:
             continue  # sentence-initial: capitalized anyway
+        if _is_contraction(m.group()):
+            continue
         w = _base(m.group())
         if w not in _COMMON and w.lower() not in known and len(w) >= 3:
             counts[w] += 1

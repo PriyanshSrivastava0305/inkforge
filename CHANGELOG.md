@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased] — Phase 5: long-book memory (in progress)
+
+### Added
+- D34: memory is derived from each scene's effective version (approved, else active).
+- `inkforge.memory`: DIGEST (scene/chapter/act, hash-keyed, model-written with extract fallback), CORE (deterministic, story-time-aware canon facts, budgeted), RECALL (paragraph chunks with offsets in `recall.sqlite`, card-derived queries), `MemoryService`.
+- Golden memory book (30 scenes, 25 planted facts); `examples/salt-letters` (8B sample).
+- Drafting: one extension pass for scenes under 60% of target; first-person narrator exempt from the participants check; contractions are not names.
+
 ## [Unreleased] — Phase 4: drafting + Markdown export (MVP)
 
 ### Added
