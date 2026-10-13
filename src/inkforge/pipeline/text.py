@@ -66,7 +66,10 @@ _TIMESTAMP = re.compile(
     re.IGNORECASE,
 )
 _LEAK = re.compile(
-    r"\b(?:as an ai|language model|i cannot (?:write|continue)|\[insert|\{\{|word count:)", re.IGNORECASE
+    r"\b(?:as an ai|language model|i cannot (?:write|continue)|\[insert|\{\{|word count:)"
+    # context section headers that must never survive into prose (backstop for strip_prompt_echo)
+    r"|THE STORY SO FAR|EARLIER PASSAGES|REFERENCE NOTES|SCENE CARD|ESTABLISHED FACTS|THE PREVIOUS SCENE ENDED",
+    re.IGNORECASE,
 )
 
 
@@ -116,6 +119,81 @@ def clean_scene_text(text: str) -> Cleaned:
 def meta_leaks(text: str) -> list[tuple[int, str]]:
     """Positions of model/meta artifacts that survived cleaning (for findings with evidence)."""
     return [(m.start(), text[max(0, m.start() - 20) : m.end() + 20]) for m in _LEAK.finditer(text)]
+
+
+# ---------------------------------------------------------------- prompt echo
+
+_CONTEXT_LABEL = re.compile(
+    r"^\s*(?:THE STORY SO FAR|EARLIER PASSAGES[^\n]*|REFERENCE NOTES[^\n]*|THE PREVIOUS SCENE ENDED:?|SCENE CARD|BOOK SPEC|"
+    r"ESTABLISHED FACTS[^\n]*|CHARACTERS IN THIS SCENE|CHAPTER:[^\n]*|(?:Purpose|Conflict|Outcome|POV|Present|Place|When|Want|"
+    r"Obstacle|What happens|Turn|Change|Mood|Beats|End the scene when|Logline|Premise|Genre|Audience|Setting|Themes|"
+    r"Avoid|Reader promises|Style):[^\n]*|(?:act\d+|ch\d{2,3}(?:-sc\d{2,3})?):[^\n]*|\[ch\d{2,3}-sc\d{2,3}\][^\n]*|\"{3})\s*$"
+)
+
+
+def _squash(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def strip_prompt_echo(text: str, prompt: str, *, min_chars: int = 40) -> tuple[str, list[str]]:
+    """Remove prompt material the model copied into its output (llama3.2:1b, 2026-10-12: a third of a
+    scene was the context — digests, the scene card and whole recalled passages — repeated verbatim).
+
+    Dropped: any line of >= `min_chars` characters that occurs verbatim in the prompt, wherever it
+    appears, and context labels/headers ("THE STORY SO FAR", "Purpose: ...", "ch01: ...") in the echoed
+    block at the top. Short lines are kept unless they are labels, so ordinary dialogue that happens to
+    match a few words survives.
+    """
+    haystack = _squash(prompt)
+    prompt_lines = {_squash(ln) for ln in prompt.replace("\r\n", "\n").split("\n") if ln.strip()}
+    lines = text.replace("\r\n", "\n").split("\n")
+    removed: list[str] = []
+    out: list[str] = []
+    in_head = True  # until the first line of genuine prose
+    for line in lines:
+        bare = _squash(line)
+        if not bare:
+            out.append(line)
+            continue
+        probe = bare.strip("\"“”' ")
+        if len(probe) >= min_chars and probe in haystack:
+            removed.append(bare)
+            continue
+        # in the echoed block at the top, short copies count too: labels and whole prompt lines
+        # (numbered beats, "POV: …"); after real prose starts, short lines are left alone
+        if in_head and (_CONTEXT_LABEL.match(line) or bare in prompt_lines):
+            removed.append(bare)
+            continue
+        in_head = False
+        out.append(line)
+    cleaned = re.sub(r"\n{3,}", "\n\n", "\n".join(out)).strip()
+    return cleaned, removed
+
+
+def near_copies(
+    text: str, sources: list[str], *, threshold: float = 0.8, min_chars: int = 80
+) -> list[tuple[str, float]]:
+    """Paragraphs of `text` that closely paraphrase a sentence run from `sources` (recalled passages,
+    recap). Small models reuse the wording of what they were shown; verbatim copies are stripped, these
+    near-copies are reported for the author. Returns (paragraph opening, similarity)."""
+    sentences = [
+        x for src in sources for x in re.split(r"(?<=[.!?])\s+", _squash(src)) if len(x) >= min_chars // 2
+    ]
+    hits: list[tuple[str, float]] = []
+    for para in (p_ for p_ in re.split(r"\n\s*\n", text) if len(p_.strip()) >= min_chars):
+        first = re.split(r"(?<=[.!?])\s+", _squash(para))[0]
+        if len(first) < min_chars // 2:
+            continue
+        best = max(
+            (
+                difflib.SequenceMatcher(None, first.lower(), x.lower(), autojunk=False).ratio()
+                for x in sentences
+            ),
+            default=0.0,
+        )
+        if best >= threshold:
+            hits.append((first[:90], round(best, 2)))
+    return hits
 
 
 # ---------------------------------------------------------------- word diff

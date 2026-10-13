@@ -28,6 +28,8 @@ from inkforge.pipeline.text import (
     ends_mid_sentence,
     join_without_overlap,
     meta_leaks,
+    near_copies,
+    strip_prompt_echo,
     word_count,
 )
 from inkforge.prompts.registry import RenderedPrompt
@@ -115,6 +117,8 @@ class DraftStage(Stage):
         cb = card_block(card, names, loc if loc is not None and loc.id.startswith("loc-") else None)  # type: ignore[arg-type]
         messages, text, calls, finish = built.prompt.messages, "", 0, "stop"
         extended = False
+        echoed: list[str] = []
+        prompt_text = "\n".join(m.content for m in built.prompt.messages)
         try:
             for i in range(1 + MAX_CONTINUATIONS):
                 g = await router.generate(
@@ -124,7 +128,9 @@ class DraftStage(Stage):
                 rec.attempt(i + 1, g)
                 if g.finish_reason == "cancelled":
                     raise GenerationCancelled(g)
-                text = g.text if i == 0 else join_without_overlap(text, g.text)
+                piece, echoed_now = strip_prompt_echo(g.text, prompt_text)
+                echoed += echoed_now
+                text = piece if i == 0 else join_without_overlap(text, piece)
                 finish = g.finish_reason
                 cut_off = g.finish_reason in ("length", "repetition") or ends_mid_sentence(text)
                 # The 8B ends long scenes early (635-865 words for a 1,200 target, 2026-10-12): extend once.
@@ -186,6 +192,26 @@ class DraftStage(Stage):
         spec = s.read("spec")
         if spec.pov == "first" and " I " not in f" {body} ":
             checks.append({"check": "pov", "message": "spec is first person but the scene never uses 'I'"})
+        if echoed:
+            n = sum(len(x.split()) for x in echoed)
+            checks.append(
+                {
+                    "check": "prompt_echo",
+                    "message": f"removed {len(echoed)} line(s) / {n} words copied from the prompt",
+                }
+            )
+        shown = [
+            built.sections[k].text
+            for k in ("recall", "recap")
+            if k in built.sections and built.sections[k].text
+        ]
+        for opening, sim in near_copies(body, shown):
+            checks.append(
+                {
+                    "check": "near_copy",
+                    "message": f"paragraph closely repeats earlier text ({sim:.0%}): {opening!r}",
+                }
+            )
         if extended:
             checks.append(
                 {"check": "extended", "message": "first pass ended under 60% of target; extended once"}

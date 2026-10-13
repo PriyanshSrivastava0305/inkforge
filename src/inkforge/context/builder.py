@@ -266,7 +266,7 @@ class DraftContextBuilder:
         def render() -> RenderedPrompt:
             return self.prompts.render(
                 "draft.scene",
-                3,
+                4,
                 spec_block=sections["spec"].text,
                 core_block=sections["core"].text,
                 codex_block=sections["codex"].text,

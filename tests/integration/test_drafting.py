@@ -138,7 +138,7 @@ def test_truncated_draft_is_continued_without_duplication(planned: ProjectStore,
         and "Continue from exactly where it stops (finish the interrupted sentence first)" in calls[1]
     )
     extra = s.meta("draft", "ch01-sc01").get(1).extra
-    assert extra["calls"] == 2 and extra["prompt_ref"] == "draft.scene@3"
+    assert extra["calls"] == 2 and extra["prompt_ref"] == "draft.scene@4"
     assert (s.dir / extra["context_manifest_path"]).is_file()
 
 

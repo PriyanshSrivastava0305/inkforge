@@ -141,7 +141,7 @@ def test_drafting_writes_digests_and_later_scenes_see_them(store: ProjectStore):
     )
     assert any(r.startswith("digest:scene:") for r in job.steps[-1].output_refs)
     extra = store.meta("draft", "ch03-sc02").get(1).extra
-    assert extra["prompt_ref"] == "draft.scene@3"
+    assert extra["prompt_ref"] == "draft.scene@4"
     manifest = json.loads((store.dir / extra["context_manifest_path"]).read_text(encoding="utf-8"))
     digests = next(x for x in manifest["sections"] if x["name"] == "digests")
     assert digests["disposition"] == "included" and "digest:scene:ch03-sc01" in digests["source_refs"]

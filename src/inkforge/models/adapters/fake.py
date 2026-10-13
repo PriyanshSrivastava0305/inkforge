@@ -261,4 +261,7 @@ def auto_script(req: ChatRequest) -> FakeResponse:
     """FakeAdapter(auto_script): schema-valid JSON for structured calls, short prose otherwise."""
     if req.json_schema is not None:
         return FakeResponse(json.dumps(SchemaExample(req.json_schema).build()))
-    return FakeResponse("The keeper climbed the stairs while the storm gathered over the drowned coast.")
+    # Unique per request: identical prose for every scene would (rightly) be stripped as a copy of
+    # the previous scene's recap.
+    n = int(request_key(req)[:6], 16) % 900 + 100
+    return FakeResponse(f"The keeper climbed stair {n} while the storm gathered over the drowned coast.")
