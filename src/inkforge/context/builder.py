@@ -23,7 +23,7 @@ from typing import Literal
 from inkforge.domain.codex import active_characters
 from inkforge.domain.models import Character, ContextManifest, Location, ManifestSection, SceneCard
 from inkforge.memory.core import build_core
-from inkforge.memory.digests import LIMITS, DigestStore, Kind, extract_summary
+from inkforge.memory.digests import LIMITS, DigestStore, Kind, clip_words, extract_summary
 from inkforge.memory.effective import effective_text, scenes_before
 from inkforge.memory.recall import Passage, RecallIndex
 from inkforge.models.router import ModelRouter
@@ -151,7 +151,15 @@ class DraftContextBuilder:
         if kind == "scene":
             got = effective_text(self.store, target)
             return extract_summary(got[1], LIMITS["scene"]) if got else None
-        return d.text() if d is not None else None  # a stale group digest still beats nothing
+        if d is not None:
+            return d.text()  # a stale group digest still beats nothing
+        # no stored digest at all (e.g. a project drafted before memory existed): compose from members
+        child: Kind = "scene" if kind == "chapter" else "chapter"
+        members = (
+            self.digests.chapter_scenes(target) if kind == "chapter" else self.digests.act_chapters(target)
+        )
+        parts = [t for m in members if (t := self._digest_text(child, m))]
+        return clip_words(" ".join(parts), LIMITS[kind]) if parts else None
 
     def _digest_tiers(
         self, scene_id: str, chapter: str
@@ -201,6 +209,9 @@ class DraftContextBuilder:
         present = [chars[p] for p in card.participants if p in chars]
         plan = s.read("chapter", card.chapter_id)
         target = target_words or card.target_length or 1500
+        prof = self.router.profile(self.profile)
+        # ask for more on long scenes if this model is known to stop early (config: long_scene_factor)
+        asked = round(target * prof.long_scene_factor) if target >= prof.long_scene_words else target
         spec = s.read("spec")
         limit, reserve, budget = self.budget()
 
@@ -275,7 +286,7 @@ class DraftContextBuilder:
                 recall_block=sections["recall"].text,
                 recap=sections["recap"].text,
                 card_block=sections["card"].text,
-                target_words=target,
+                target_words=asked,
                 pov=spec.pov or "third-limited",
                 tense=spec.tense or "past",
                 pov_name=names.get(card.pov_character_id or "", "the POV character"),
@@ -364,7 +375,7 @@ class DraftContextBuilder:
             sections=out_sections,
             total_tokens=total,
         )
-        max_tokens = min(reserve, int(target * 1.33 * 1.3))
+        max_tokens = min(reserve, int(asked * 1.33 * 1.3))
         return BuiltContext(rp, manifest, sections, max_tokens)
 
     def _recap(self, scene_id: str) -> Section:
