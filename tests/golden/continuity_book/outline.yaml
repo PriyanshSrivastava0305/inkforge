@@ -29,6 +29,7 @@ entities:
     - {id: obj-revolver,    name: Elias's revolver,     significance: plot,      unique: true}
     - {id: obj-locket,      name: June's silver locket, significance: plot,      unique: true}
     - {id: obj-silver-pear, name: the silver pear (glass tree), significance: plot, unique: true}
+    - {id: obj-tom-letter,  name: "Tom's letter from Carrow", significance: plot, unique: true}
   lore:
     - {id: lore-frost-rule, rule: "Glass trees shatter in hard frost unless the stove-pipes are lit."}
 
@@ -156,7 +157,8 @@ scenes:
     participants: [char-tom]
     summary: Tom writes to Mira about the forgery, dated 10 October, saying he leaves Carrow on the 12th.
     establishes:
-      - [fact-tom-letter, date_of_event, 1892-10-10]
+      - [obj-tom-letter, date_of_event, "1892-10-10"]
+      - [char-tom, departs_on, "loc-carrow@1892-10-12"]
       - [char-tom, location_at, loc-carrow]
   - id: ch03-sc03
     when: 1892-10-11
@@ -336,7 +338,7 @@ contradictions:
   # age / date arithmetic (3)
   - {id: c20, rule: age_date,      scene: ch06-sc03, plant: "June, now twenty-one",                  conflicts_with: [char-june, born]}
   - {id: c21, rule: age_date,      scene: ch04-sc05, plant: "Elias, barely thirty",                  conflicts_with: [char-elias, born]}
-  - {id: c22, rule: age_date,      scene: ch03-sc04, plant: "the letter is dated 14 October",        conflicts_with: [ch03-sc02, fact-tom-letter, date_of_event]}
+  - {id: c22, rule: age_date,      scene: ch03-sc04, plant: "the letter is dated 14 October",        conflicts_with: [ch03-sc02, obj-tom-letter, date_of_event]}
   # promises (2)
   - {id: c23, rule: promise,       scene: null,      plant: "prom-003 never paid off",               conflicts_with: [prom-003]}
   - {id: c24, rule: promise,       scene: ch06-sc03, plant: "June produces her mother's second will (never set up)", conflicts_with: []}

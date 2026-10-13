@@ -1,0 +1,44 @@
+# What each planted contradiction (c01–c25) and decoy (d01–d10) asserts, as observations in the
+# controlled vocabulary of src/inkforge/quality/rules.py. Fact extraction will have to produce these
+# from prose (Phase 6, later slice); here they let the rules be scored on their own.
+# Format: id → {scene, obs: [[subject, predicate, value], ...]}
+schema: inkforge/fixture-continuity-observations@1
+
+contradictions:
+  c01: {scene: ch02-sc03, obs: [[char-mira, eye_color, blue]]}
+  c02: {scene: ch03-sc01, obs: [[char-june, eye_color, green]]}
+  c03: {scene: ch04-sc01, obs: [[char-mira, handedness, right]]}
+  c04: {scene: ch05-sc03, obs: [[char-bram, title_rank, sergeant]]}
+  c05: {scene: ch06-sc04, obs: [[char-tom, hair, black]]}
+  c06: {scene: ch05-sc02, obs: [[char-elias, active, speaks]]}
+  c07: {scene: ch06-sc02, obs: [[char-elias, active, attends the inquiry]]}
+  c08: {scene: ch06-sc01, obs: [[char-elias, active, spoke with Nell the day before]]}
+  c09: {scene: ch03-sc01, obs: [[char-mira, mentions_fact, fact-deed-forged]]}
+  c10: {scene: ch01-sc03, obs: [[char-mira, mentions_fact, fact-elias-debts]]}
+  c11: {scene: ch04-sc02, obs: [[char-tom, mentions_fact, fact-mother-died-1879]]}
+  c12: {scene: ch05-sc03, obs: [[char-bram, mentions_fact, obj-ledger.located_at]]}
+  c13: {scene: ch03-sc01, obs: [[char-tom, location_at, loc-glass-orchard]]}
+  c14: {scene: ch02-sc03, obs: [[char-elias, location_at, loc-crane-house]]}
+  c15: {scene: ch04-sc01, obs: [[char-tom, location_at, loc-crane-house]]}
+  c16: {scene: ch05-sc05, obs: [[obj-silver-pear, condition, intact]]}
+  c17: {scene: ch05-sc05, obs: [[char-mira, has_item, obj-brass-key]]}
+  c18: {scene: ch06-sc02, obs: [[char-june, has_item, obj-ledger]]}
+  c19: {scene: ch06-sc04, obs: [[char-mira, has_item, obj-locket]]}
+  c20: {scene: ch06-sc03, obs: [[char-june, age, "21"]]}
+  c21: {scene: ch04-sc05, obs: [[char-elias, age, "30"]]}
+  c22: {scene: ch03-sc04, obs: [[obj-tom-letter, date_of_event, "1892-10-14"]]}
+  c23: {scene: null, obs: []}                       # book-level: prom-003 is never paid off
+  c24: {scene: ch06-sc03, obs: [[char-june, pays_off, "her mother's second will"]]}
+  c25: {scene: ch04-sc02, obs: [[char-tom, departs_on, "loc-carrow@1892-10-14"]]}
+
+decoys:
+  d01: {scene: ch04-sc05, obs: [[char-elias, active, argues with his wife]]}       # flashback to 1879
+  d02: {scene: ch04-sc05, obs: [[char-june, age, "6"]]}                            # matches her birthdate
+  d03: {scene: ch05-sc01, obs: [[char-elias, active, speaks to June]]}             # dream
+  d04: {scene: ch05-sc01, obs: [[obj-silver-pear, condition, intact]]}             # dream
+  d05: {scene: ch05-sc04, obs: [[char-tom, location_at, loc-glass-orchard]]}       # unreliable account
+  d06: {scene: ch03-sc01, obs: [[char-june, has_item, obj-locket]]}                # after the on-page handover
+  d07: {scene: ch05-sc03, obs: [[char-june, mentions_fact, fact-deed-forged]]}     # learned earlier in the same scene
+  d08: {scene: ch06-sc05, obs: [[char-mira, age, "35"]]}                           # a year later
+  d09: {scene: ch01-sc02, obs: [[char-june, eye_color, sea-coloured]]}             # compatible with blue (needs judgement)
+  d10: {scene: ch06-sc04, obs: []}                                                 # Elias only mentioned, not acting

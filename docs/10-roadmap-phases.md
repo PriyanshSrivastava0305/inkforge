@@ -164,8 +164,8 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 - [ ] Deterministic checks suite (names, repetition, slop lint, meta, POV/tense, length)
 - [ ] Fact extraction with verbatim-quote verification → review queue; CLI review
 - [ ] Canon store with temporal validity resolved through the Timeline (`story_index`); predicate vocabulary incl. item predicates (`held_by`, `located_at`, `condition`)
-- [ ] Conflict rules: single-valued, temporal, knowledge, presence, object state, age/date, promises (travel opt-in)
-- [ ] Scene `temporal_mode` relaxations per [07](07-quality-engine.md#3-canon-conflict-rules) (flashback/flashforward/dream/unreliable)
+- [x] Conflict rules: single-valued, temporal, knowledge, presence, object state, age/date, promises (travel opt-in) — `quality/rules.py`, no model; input is observations in a controlled vocabulary
+- [x] Scene `temporal_mode` relaxations per [07](07-quality-engine.md#3-canon-conflict-rules) (flashback/flashforward/dream/unreliable)
 - [ ] Model adjudication for ambiguous conflicts
 - [ ] Voice critics per character; craft rubric
 - [ ] Finding lifecycle + severities + "intentional" suppression
@@ -173,6 +173,8 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 - [ ] Specialist pass order for "polish chapter"
 - [ ] Lessons (promote recurring finding → style rule)
 - [ ] Golden continuity evaluation + critic calibration set
+
+**Slice 1 result (2026-10-13, rules only):** on the golden continuity book the rules find **25/25** planted contradictions, each under the rule it was planted for, with **1/10** decoy false positives (d09, "sea-coloured" vs blue — needs judgement, left for model adjudication) and no hits on the clean book. **Caveat:** observations come from the fixture, so this measures the rules, not the pipeline; end-to-end recall will be bounded by fact extraction from prose (next slice).
 
 **Deliverables:** `packages/quality`; `check`, `revise`, `facts review` commands.
 **Exit criteria:** seeded contradiction recall ≥ 80%, decoy false-positive ≤ 20%; every finding has verifiable evidence; no canon change without confirmation (test); revision never changes text outside allowed spans for span edits.

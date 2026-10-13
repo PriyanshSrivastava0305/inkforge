@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] — Phase 6: quality engine
+
+### Added
+- Canon conflict rules (`quality/rules.py`): single-valued, death/temporal, knowledge, presence, object state, age/date, promises, travel; judged in story order, with dream and unreliable-account relaxations. No model calls.
+- Golden continuity book is machine-checkable (`observations.yaml`, loader); rules score 25/25 recall, 1/10 decoy false positives.
+
 ## [Unreleased] — Phase 5: long-book memory
 
 ### Added
