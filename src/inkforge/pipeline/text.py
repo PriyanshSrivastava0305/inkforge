@@ -60,6 +60,8 @@ _META_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ),
     ("note", re.compile(r"^\s*(?:note|author'?s note|word count)\s*:.*$", re.IGNORECASE | re.MULTILINE)),
     ("rule", re.compile(r"^\s*(?:-{3,}|\*{3,}|_{3,})\s*$", re.MULTILINE)),
+    # an invented ALL-CAPS title line ("THE SOUND OF THE WAVES") at the top of a scene (llama3.2:1b)
+    ("title", re.compile(r"^\s*\**[A-Z][A-Z0-9 ,'’:\-]{6,80}\**\s*$", re.MULTILINE)),
 ]
 _TIMESTAMP = re.compile(
     r"\s*\[?\d{4}-\d{2}-\d{2}(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?\]?\s*|\s*\[?\d{1,2}:\d{2}(?::\d{2})?\s*(?:am|pm)?\]?\s*",

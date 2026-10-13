@@ -248,6 +248,8 @@ def unknown_names(text: str, entries: list[CodexEntry], min_count: int = 2) -> l
         if _is_contraction(m.group()):
             continue
         w = _base(m.group())
+        if w.isupper():
+            continue  # shouted words and stray headings are not names
         if w not in _COMMON and w.lower() not in known and len(w) >= 3:
             counts[w] += 1
     return sorted(w for w, n in counts.items() if n >= min_count)
