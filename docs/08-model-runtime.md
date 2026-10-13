@@ -136,6 +136,8 @@ Intel i7-1165G7 (4C/8T, Iris Xe), **16 GB RAM, no discrete GPU**, so inference r
 - **One model in RAM at a time.** With the 8B loaded, about 0.8 GB of RAM was free. Loading the 8B while the 1B was still resident gave an HTTP 500. The router must (a) unload the other model (`keep_alive: 0`) before switching, (b) turn load failures into a clear "not enough memory" error, and (c) `doctor` should report free RAM.
 - **No `/api/tokenize` on Ollama 0.34** (404 confirmed). Token counting uses the Llama-3 tokenizer built **offline from Ollama's own GGUF** (`scripts/build_tokenizer.py` → `~/InkForge/cache/tokenizers/llama3.json`); it matches Ollama's prompt counts exactly (+1 BOS) and serves both models. Fallback: ~3.7 chars/token for JSON, ~4.5 for prose, plus a 10% margin.
 - Structured output is reliable at both sizes for small, flat schemas. Keep the per-call-small-schema rule.
+- **The 8B writes ~800-word scenes, full stop.** Asking for 1,200 gave 635–865 words; asking for 1,680 gave 782. The prose profile's `scene_words = 800` makes Stage D plan more, shorter scenes instead (D35).
+- **Small models copy their context.** The 1B repeated digests, the scene card and recalled passages verbatim; output is cleaned against the prompt before saving and near-copies are reported (D36). The 8B has not echoed so far.
 
 Larger models or a GPU tier are out of scope until the hardware changes. The setup wizard (Phase 11) just verifies these two models are present.
 

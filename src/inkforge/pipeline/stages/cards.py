@@ -33,7 +33,6 @@ from inkforge.pipeline.stage import Problem, Stage, StageContext
 from inkforge.prompts.registry import RenderedPrompt
 from inkforge.storage.workspace import ArtifactKind
 
-WORDS_PER_SCENE = 1500
 NON_LINEAR = {"flashback", "flashforward"}
 
 
@@ -41,7 +40,9 @@ def scenes_for(ctx: StageContext, plan_target: int | None) -> int:
     explicit = ctx.params.get("scenes_per_chapter") or ctx.store.project.settings.get("scenes_per_chapter")
     if explicit:
         return int(explicit)
-    return min(6, max(1, round((plan_target or 3000) / WORDS_PER_SCENE)))
+    # plan scenes at the size the prose model actually writes (profile `scene_words`), not a fixed 1,500
+    natural = ctx.router.profile("prose").scene_words
+    return min(8, max(1, round((plan_target or 3000) / natural)))
 
 
 _CHARGE = re.compile(r"^\s*([+-])\s*(?:->|→)\s*([+-])\s*$")

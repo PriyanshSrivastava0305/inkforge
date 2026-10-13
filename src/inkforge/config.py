@@ -66,10 +66,9 @@ class ModelProfile(BaseModel):
     repeat_penalty: float | None = Field(default=None, gt=0.0)
     output_fraction: float = Field(default=0.3, gt=0.0, lt=1.0)
     min_output_tokens: int = Field(default=512, ge=1)
-    # Prose only: how much longer than the target to *ask* for, above `long_scene_words`. Calibrated per
-    # model: a model that ends long scenes early is asked for more; checks still use the real target.
-    long_scene_factor: float = Field(default=1.0, ge=1.0, le=2.0)
-    long_scene_words: int = Field(default=700, ge=100)
+    # Prose only: the scene length this model naturally writes. Stage D plans scenes of about this size
+    # instead of asking for lengths the model won't deliver (docs/08 § Your hardware).
+    scene_words: int = Field(default=1000, ge=200, le=4000)
     seed: int | None = None
     # CPU inference: reading a cold prompt can take minutes before the first token (docs/08).
     first_token_timeout_s: float = Field(default=900, gt=0)

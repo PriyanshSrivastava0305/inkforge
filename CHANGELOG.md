@@ -8,6 +8,8 @@
 - Golden memory book (30 scenes, 25 planted facts); `examples/salt-letters` (8B sample).
 - Context builder v2 (`draft.scene@3`): CORE, digests and RECALL sections with the full trimming ladder; recall@context 25/25 on the golden book (last-three-scenes baseline: 3/25).
 - `inkforge memory status|update|rebuild|consolidate`; `draft --no-memory / --extract-digests`.
+- Prompt-echo stripping, near-copy check, `draft.scene@4`, invented-title cleanup (D36).
+- Scenes are planned at the prose model's natural length (`scene_words`, D35); group digests fall back to scene extracts when none are stored.
 - Drafting: one extension pass for scenes under 60% of target; first-person narrator exempt from the participants check; contractions are not names.
 
 ## [Unreleased] — Phase 4: drafting + Markdown export (MVP)

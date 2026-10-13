@@ -209,9 +209,6 @@ class DraftContextBuilder:
         present = [chars[p] for p in card.participants if p in chars]
         plan = s.read("chapter", card.chapter_id)
         target = target_words or card.target_length or 1500
-        prof = self.router.profile(self.profile)
-        # ask for more on long scenes if this model is known to stop early (config: long_scene_factor)
-        asked = round(target * prof.long_scene_factor) if target >= prof.long_scene_words else target
         spec = s.read("spec")
         limit, reserve, budget = self.budget()
 
@@ -286,7 +283,7 @@ class DraftContextBuilder:
                 recall_block=sections["recall"].text,
                 recap=sections["recap"].text,
                 card_block=sections["card"].text,
-                target_words=asked,
+                target_words=target,
                 pov=spec.pov or "third-limited",
                 tense=spec.tense or "past",
                 pov_name=names.get(card.pov_character_id or "", "the POV character"),
@@ -375,7 +372,7 @@ class DraftContextBuilder:
             sections=out_sections,
             total_tokens=total,
         )
-        max_tokens = min(reserve, int(asked * 1.33 * 1.3))
+        max_tokens = min(reserve, int(target * 1.33 * 1.3))
         return BuiltContext(rp, manifest, sections, max_tokens)
 
     def _recap(self, scene_id: str) -> Section:

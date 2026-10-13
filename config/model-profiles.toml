@@ -30,9 +30,9 @@ temperature = 0.85
 top_p = 0.92
 repeat_penalty = 1.08
 min_output_tokens = 1500
-# llama3.1 8B ends long scenes early: 635, 865, 704 and 753 words for a 1,200-word target (2026-10-12/13),
-# but hits ~450-word targets. Ask for 1.4x above 700 words; draft checks still compare with the real target.
-long_scene_factor = 1.4
+# llama3.1 8B writes one scene arc of ~750-850 words whatever length is requested: 635, 865, 704, 753 words
+# for a 1,200 target, and 782 when asked for 1,680 (2026-10-12/13). So scenes are *planned* at this size.
+scene_words = 800
 
 [profiles.critic]
 model = "llama3.1:8b-instruct-q4_K_M"

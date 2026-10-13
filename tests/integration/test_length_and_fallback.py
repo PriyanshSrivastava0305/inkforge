@@ -1,5 +1,9 @@
-"""8B findings (2026-10-13): long scenes come out short → ask for more; projects drafted before memory
-existed have no stored group digests → compose them from scene extracts."""
+"""8B findings (2026-10-13).
+
+- The 8B writes one scene arc of ~750-850 words whatever length is requested (782 words when asked for
+  1,680), so Stage D plans scenes at the prose profile's natural size instead of asking for more.
+- Projects drafted before memory existed have no stored group digests: compose them from scene extracts.
+"""
 # pyright: reportArgumentType=false, reportOptionalMemberAccess=false
 
 import asyncio
@@ -25,8 +29,44 @@ def router(**prose) -> ModelRouter:
     return ModelRouter(cfg, FakeAdapter(auto_script))
 
 
+def plan(store: ProjectStore, r: ModelRouter, **settings) -> None:
+    store.update_project(settings=settings, target_length=settings.pop("_target", 9600))
+    c = Conductor(store, r)
+    job = asyncio.run(c.run(c.create_job(stages_for("plan"), {"idea": "Bottled letters.", "yes": True})))
+    assert job.status == JobStatus.SUCCEEDED, job.error_summary
+
+
+def test_default_prose_profile_plans_800_word_scenes():
+    assert load_model_config().profiles["prose"].scene_words == 800
+
+
+def test_scene_count_and_targets_follow_the_models_natural_scene_length(store: ProjectStore):
+    # 9,600 words over 4 chapters = 2,400 per chapter → 3 scenes of 800 with the default profile
+    plan(store, router(), chapters=4)
+    scenes = [x for x in store.scenes_in_order() if x.startswith("ch01-")]
+    assert len(scenes) == 3
+    assert {store.read("card", x).target_length for x in scenes} == {800}
+
+
+def test_a_model_that_writes_longer_scenes_gets_fewer_of_them(store: ProjectStore):
+    plan(store, router(scene_words=1200), chapters=4)
+    scenes = [x for x in store.scenes_in_order() if x.startswith("ch01-")]
+    assert len(scenes) == 2 and store.read("card", scenes[0]).target_length == 1200
+
+
+def test_explicit_scenes_per_chapter_still_wins(store: ProjectStore):
+    plan(store, router(), chapters=4, scenes_per_chapter=2)
+    assert len([x for x in store.scenes_in_order() if x.startswith("ch01-")]) == 2
+
+
+def test_prompt_asks_for_the_cards_own_target(store: ProjectStore):
+    plan(store, router(), chapters=4)
+    built = DraftContextBuilder(store, router(), PromptRegistry()).build("ch01-sc01", job_id=JOB)
+    assert "in about 800 words" in built.prompt.text()
+
+
 @pytest.fixture
-def drafted(store: ProjectStore) -> ProjectStore:
+def drafted_without_memory(store: ProjectStore) -> ProjectStore:
     store.update_project(
         settings={"chapters": 3, "scenes_per_chapter": 2, "memory": False}, target_length=6000
     )
@@ -38,37 +78,9 @@ def drafted(store: ProjectStore) -> ProjectStore:
     return store
 
 
-def test_default_profile_asks_for_more_on_long_scenes():
-    assert load_model_config().profiles["prose"].long_scene_factor == 1.4
-
-
-def test_long_scene_factor_changes_the_request_not_the_target(drafted: ProjectStore):
-    s = drafted
-    card = s.read("card", "ch02-sc01")
-    assert card.target_length == 1000
-    b = DraftContextBuilder(s, router(long_scene_factor=1.4, long_scene_words=700), PromptRegistry())
-    built = b.build("ch02-sc01", job_id=JOB)
-    assert "in about 1400 words" in built.prompt.text()
-    assert built.max_tokens == min(b.budget()[1], int(1400 * 1.33 * 1.3))
-    plain = DraftContextBuilder(s, router(long_scene_factor=1.0), PromptRegistry()).build(
-        "ch02-sc01", job_id=JOB
-    )
-    assert "in about 1000 words" in plain.prompt.text()
-
-
-def test_short_scenes_are_not_inflated(drafted: ProjectStore):
-    s = drafted
-    card = s.read("card", "ch02-sc01")
-    s.save("card", card.model_copy(update={"target_length": 450}))
-    built = DraftContextBuilder(s, router(long_scene_factor=1.4), PromptRegistry()).build(
-        "ch02-sc01", job_id=JOB
-    )
-    assert "in about 450 words" in built.prompt.text()
-
-
-def test_group_digests_fall_back_to_scene_extracts_when_none_are_stored(drafted: ProjectStore):
+def test_group_digests_fall_back_to_scene_extracts_when_none_are_stored(drafted_without_memory: ProjectStore):
     """A project drafted with memory off: no digest files at all, yet later scenes still get the story so far."""
-    s = drafted
+    s = drafted_without_memory
     assert not (s.dir / "memory" / "digests").exists()
     built = DraftContextBuilder(s, router(), PromptRegistry()).build("ch03-sc02", job_id=JOB)
     digests = built.sections["digests"]
