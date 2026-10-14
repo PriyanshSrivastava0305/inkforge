@@ -33,6 +33,12 @@ entities:
   lore:
     - {id: lore-frost-rule, rule: "Glass trees shatter in hard frost unless the stove-pipes are lit."}
 
+# what each knows_fact label means (shown to the fact extractor)
+secrets:
+  fact-deed-forged: the deed to the orchard was forged by Elias
+  fact-elias-debts: Elias is deep in debt
+  fact-mother-died-1879: June's mother died in the frost of 1879
+
 promises:
   - {id: prom-001, description: "The locked central glasshouse", setup: ch01-sc05, payoff: ch05-sc05}
   - {id: prom-002, description: "The forged deed", setup: ch02-sc05, payoff: ch06-sc03}

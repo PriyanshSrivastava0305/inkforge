@@ -126,6 +126,14 @@ CONTEXTS: dict[tuple[str, int], dict] = {
         "pov_name": "Ailsa",
     },
     ("memory.digest", 1): {"kind": "scene", "target": "ch01-sc01", "limit": 120, "material": "Text."},
+    ("facts.extract", 1): {
+        "scene_id": "ch01-sc01",
+        "when": "1892-10-01",
+        "text": "Mira's grey eyes.",
+        "entities": [{"id": "char-mira", "name": "Mira Vale", "aliases": []}],
+        "secrets": [("fact-deed-forged", "the deed was forged")],
+        "max_facts": 8,
+    },
 }
 
 

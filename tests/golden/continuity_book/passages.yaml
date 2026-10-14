@@ -1,0 +1,136 @@
+# Short prose passages for the golden continuity book: one per planted contradiction or decoy, each
+# containing the planted words in an ordinary paragraph. Used by scripts/eval_continuity.py to measure
+# the whole chain (model extraction → quote check → rules) on real local models. c23 (a promise never
+# paid off) is book-level and has no passage.
+schema: inkforge/fixture-continuity-passages@1
+
+contradictions:
+  c01: |
+    June's room smelled of lavender and lamp oil. Mira held out the silver locket on her open palm, and
+    for a moment neither of them spoke. June's fingers closed over it. When she looked up, she met
+    Mira's blue eyes and laughed, a short surprised sound. "I lost this when I was nine," she said, and
+    fastened the chain at once.
+  c02: |
+    The frost warning came at dusk. Mira and June carried coal between the rows, feeding the stove-pipes
+    one by one while the glass ticked in the cold. June's green eyes watered in the smoke. The locket
+    swung at her throat each time she bent to the grate. "Three more," Mira said, and they went on.
+  c03: |
+    Elias sat behind his desk as if it were a wall. Mira laid the copy of the deed in front of him and
+    asked him to explain the signature. He talked for a long time and said very little. Mira writes with
+    her right hand, quickly, and she took down every word he said in the margin of her notebook.
+  c04: |
+    The chapel was cold and smelled of candle wax. Sergeant Okafor set his helmet on the pew beside him
+    and asked June to tell it again from the beginning. She did. Nell, kneeling two rows back, kept her
+    eyes on her hands and did not pretend to pray.
+  c05: |
+    The wind came straight off the water and the harbor wall was wet with spray. Tom's black hair was
+    plastered flat against his forehead. Mira sat beside him with her collar up, watching the Carrow
+    boat take on coal. "Well," he said. "Do we stay?"
+  c06: |
+    Mira and Tom worked through the study drawer by drawer. The safe stood open; its door had never been
+    locked. Tom lifted out the ledger and tucked it under his arm. When Mira called out to ask whether the
+    lamp should stay lit, Elias mutters an answer from the doorway and is gone before she can turn.
+  c07: |
+    The inquiry was held in the chapel hall, with chairs carried in from the vestry. Bram read the
+    statements aloud in a flat voice. Mira sat with Tom near the back; June sat alone. Elias sits in the
+    front pew at the inquiry, his hat on his knee, and does not look round once.
+  c08: |
+    The revolver lay in Nell's sewing basket under a half-darned stocking. Bram lifted it out with a
+    handkerchief. Nell went white, then red. "I never touched it," she said. "I spoke with Elias
+    yesterday, in the kitchen, and he said nothing about any gun." Mira watched Bram write that down.
+  c09: |
+    They had the stove-pipes lit by midnight and sat on upturned crates between the rows, too cold to
+    sleep. June asked why Mira had come to Saltmere at all. Mira hesitated, then told her the truth:
+    the deed to the orchard was forged, and her father had forged it. June said nothing for a long time.
+  c10: |
+    Mira walked the glasshouses alone with a lamp. The stove-pipes were cold and the trees rang faintly
+    when she touched them. On a potting bench she found a ledger, its pages swollen with damp. She
+    worried about Elias's debts, and wondered who else in Saltmere already knew how deep they ran.
+  c11: |
+    Tom came up the harbor steps with his bag and Mira ran the last yards to him. He looked thinner. They
+    talked over each other all the way to the inn. Over supper he said, "Strange house to work in, after
+    what happened. June's mother died out there in the frost of '79, didn't she?"
+  c12: |
+    Bram kept his notebook open on his knee. June answered his questions slowly. Nell, two rows behind,
+    leaned in to whisper to June about the deed, and June told Bram what she had heard. Bram nodded as if
+    he had expected it. "And the ledger was in the study safe all along," he said.
+  c13: |
+    The frost warning came at dusk. Mira and June hurried between the glasshouses with the coal scuttles,
+    and Tom helps light the stove-pipes along the north row, his sleeves rolled to the elbow. By midnight
+    every pipe was burning and June wore her locket outside her collar for luck.
+  c14: |
+    June's room smelled of lavender. Mira gave her the locket and June put it on at once, turning to the
+    mirror. Behind them, Elias watches from the doorway, arms folded, saying nothing. When Mira looked
+    round again he had gone, and the landing was empty.
+  c15: |
+    Mira laid the deed in front of Elias and asked him who had signed it. Tom stands behind Mira as she
+    confronts Elias, one hand on the back of her chair. Elias looked from one of them to the other and
+    began, very carefully, to lie.
+  c16: |
+    The key turned stiffly and the door of the central glasshouse swung inward. Inside, the air was
+    still. Mira and June walked the aisle together. At the far end, the silver pear glitters, untouched,
+    every leaf of it whole and catching the light.
+  c17: |
+    The central glasshouse had been locked for thirteen years. June held the lamp. Mira unlocks it with
+    the brass key from her pocket, and the door shudders open on a smell of earth and old frost. They
+    stood a moment on the threshold before either of them went in.
+  c18: |
+    The inquiry was held in the chapel hall. Bram asked whether anyone had seen Elias's accounts. June
+    stood. June produces the ledger from her father's desk drawer, where she says she found it that
+    morning, and lays it on the table in front of him.
+  c19: |
+    The harbor wall was wet with spray. Tom talked about Carrow and the records office and the price of
+    a room there. Mira barely listened. Mira turns June's locket over in her pocket, feeling the warm
+    silver, and thinks about the orchard and the frost.
+  c20: |
+    The lawyer read the will twice. When he had finished, June, now twenty-one, folded her hands on the
+    table and asked what would happen to the forged deed. "Set aside," the lawyer said. Mira let out a
+    breath she had been holding.
+  c21: |
+    The frost of that winter came early. Elias, barely thirty, stood among the glass trees and shouted
+    at his wife while the stove-pipes smoked behind them. Little June watched from the doorway with her
+    thumb in her mouth. The silver pear stood whole in the lamplight.
+  c22: |
+    The post came late. Mira took Tom's letter up to her room and read it by the window. It was dated
+    14 October in his cramped hand. The deed was forged, he wrote; he had seen the register himself, and
+    he would leave Carrow as soon as he could.
+  c24: |
+    The lawyer had nearly finished when June stood up. From her bag she drew a folded paper, yellowed at
+    the edges. "My mother's second will," she said. "Nell kept it for me." The lawyer read it twice and
+    set the forged deed aside without another word.
+  c25: |
+    Tom came up the harbor steps at four o'clock with his bag over his shoulder. Mira ran to him. "You're
+    early," she said. He grinned. "I left Carrow only that morning — the 14th — and I've not stopped
+    once." They walked up to the inn together.
+
+decoys:
+  d01: |
+    The frost of '79 came early. Elias argues with his wife among the trees, his voice carrying through
+    the glass, while the stove-pipes smoke behind them. The silver pear stands whole in the lamplight.
+  d02: |
+    June, a child of six, watched from the glasshouse doorway with her thumb in her mouth. Her father
+    and mother were shouting among the trees and neither of them saw her.
+  d03: |
+    In the dream, her father walked the orchard in his shirtsleeves. Elias speaks to June gently, as he
+    never did awake: "Look under the silver pear." She woke with her face wet.
+  d04: |
+    In the dream the orchard was whole. The silver pear stood intact at the end of the row, every leaf
+    catching the moon, and her father was walking towards it.
+  d05: |
+    Nell told it her own way, and told it often. She said she had seen Tom at the glasshouse that night,
+    standing in the doorway of The Glass Orchard with a lamp. Nobody else had seen him there.
+  d06: |
+    The frost warning came at dusk. June carried coal between the rows beside Mira, and June's silver
+    locket swung at her throat each time she bent to feed a stove-pipe.
+  d07: |
+    Nell leaned in and whispered to June that the deed was forged. A little later, when Bram asked her
+    what she knew, June told him plainly: the deed to the orchard was forged.
+  d08: |
+    A year later, Mira was thirty-five and still in Saltmere. She knelt by the central glasshouse and
+    planted a new pear in the turned earth while June held the lamp.
+  d09: |
+    Elias introduced his daughter with a wave of his hand. June was nineteen and watchful. Mira thought
+    June's eyes were sea-coloured, the grey-blue of the harbor at noon.
+  d10: |
+    On the harbor wall Tom said, "Elias would have hated this," and Mira laughed for the first time in a
+    week. Neither of them said his name again.

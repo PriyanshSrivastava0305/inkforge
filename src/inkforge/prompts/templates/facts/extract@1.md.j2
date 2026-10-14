@@ -1,0 +1,53 @@
+---
+id: facts.extract
+version: 1
+profile: planner
+description: Stage F — candidate facts from one scene, each with the exact words that state it. Code verifies every quote.
+---
+[system]
+You keep the continuity bible for a novelist. You record only what the scene's own words state. You never guess, infer or add.
+[user]
+WHO AND WHAT (use these ids as "subject")
+{% for e in entities %}
+- {{ e.id }} = {{ e.name }}{% if e.aliases %} (also: {{ e.aliases | join(", ") }}){% endif %}
+
+{% endfor %}
+{% if secrets %}
+
+THINGS NOT EVERYONE KNOWS (for "mentions_fact")
+{% for label, about in secrets %}
+- {{ label }}{% if about != label %}: {{ about }}{% endif %}
+
+{% endfor %}
+{% endif %}
+
+SCENE {{ scene_id }}{% if when %} (story date: {{ when }}){% endif %}
+
+"""{{ text }}"""
+
+List up to {{ max_facts }} facts this scene states about the people, places and things above.
+For each fact:
+- "subject": one id from the list.
+- "predicate": what kind of fact (allowed values below).
+- "value": the fact itself, short. For a person, place or thing, write its id.
+- "quote": copy 4–25 words exactly as they appear in the scene that state this fact.
+
+Predicates:
+- eye_color, hair, height, handedness, title_rank, age — a person's lasting details ("value": grey / left / constable / 34).
+- status — alive, dead or injured.
+- location_at — the person is physically in this place now ("value": a location id).
+- active — the person speaks or acts in this scene in person ("value": what they do, 2–6 words).
+- has_item — the person holds or uses a thing ("value": an item id).
+- held_by — a thing changes hands; subject is the item ("value": the id of who has it now).
+- located_at — where a thing is kept; subject is the item ("value": a location id).
+- condition — a thing is intact, broken, lost or destroyed; subject is the item.
+- date_of_event — a date written in the scene for a letter, document or event ("value": YYYY-MM-DD).
+{% if secrets %}
+- mentions_fact — the person shows they know one of the THINGS NOT EVERYONE KNOWS ("value": that line's label, before the colon).
+{% endif %}
+
+Skip anything the scene does not state in words. An empty list is a correct answer.
+
+Example of the expected shape (different story):
+{"facts": [{"subject": "char-anna", "predicate": "eye_color", "value": "brown", "quote": "Anna's brown eyes narrowed at the open ledger"},
+  {"subject": "obj-lantern", "predicate": "held_by", "value": "char-anna", "quote": "He pressed the lantern into Anna's hands"}]}

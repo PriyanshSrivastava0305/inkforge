@@ -467,6 +467,20 @@ class ProjectStore:
             self.audit.record(f"{table}.{'update' if replaced else 'add'}", record.id, actor=actor)
             self.index.refresh(table, record.id)
 
+    def remove(
+        self,
+        table: Literal["facts", "review_queue", "findings"],
+        record_id: str,
+        *,
+        actor: Actor = Actor.SYSTEM,
+    ) -> bool:
+        with self._writing():
+            removed = getattr(self, table).remove(record_id)
+            if removed:
+                self.audit.record(f"{table}.remove", record_id, actor=actor)
+                self.index.refresh(table, record_id)
+            return removed
+
     def get_promises(self) -> PromiseRegistry:
         path = self.path("canon/promises.json")
         return (

@@ -38,7 +38,7 @@ def build_continuity_book(store: ProjectStore) -> tuple[list[Case], list[Case]]:
     """Populate `store` with the clean book; return (contradictions, decoys)."""
     book, obs = load_yaml()
     s = store
-    s.update_project(settings={"travel": book["entities"]["travel"]})
+    s.update_project(settings={"travel": book["entities"]["travel"], "secrets": book.get("secrets", {})})
     s.save(
         "spec",
         m.BookSpec(
