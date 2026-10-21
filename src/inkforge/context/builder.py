@@ -30,6 +30,7 @@ from inkforge.models.router import ModelRouter
 from inkforge.models.types import Message
 from inkforge.pipeline.blocks import spec_block
 from inkforge.prompts.registry import PromptRegistry, RenderedPrompt
+from inkforge.quality.lessons import drafting_rules
 from inkforge.storage.hashing import sha256_text
 from inkforge.storage.workspace import ProjectStore
 
@@ -39,6 +40,10 @@ RENDER_ORDER = ("spec", "core", "codex", "digests", "chapter", "recall", "recap"
 RECAP_MIN_TOKENS = 150
 SAFETY = 0.05
 CHARS_PER_TOKEN = 4.5  # prose; only used to cut text to an approximate token length before re-counting
+
+
+def style_rules_block(rules: list[str]) -> str:
+    return "" if not rules else "\nStyle rules (from the author):\n" + "\n".join(f"- {r}" for r in rules)
 
 
 class ContextTooSmall(RuntimeError):
@@ -210,6 +215,7 @@ class DraftContextBuilder:
         plan = s.read("chapter", card.chapter_id)
         target = target_words or card.target_length or 1500
         spec = s.read("spec")
+        rules = drafting_rules(s)  # lessons the author promoted from recurring findings
         limit, reserve, budget = self.budget()
 
         recap = self._recap(scene_id)
@@ -246,7 +252,9 @@ class DraftContextBuilder:
             )
 
         sections: dict[str, Section] = {
-            "spec": Section("spec", spec_block(spec), ["spec"]),
+            "spec": Section(
+                "spec", spec_block(spec) + style_rules_block(rules), ["spec", *(["lessons"] if rules else [])]
+            ),
             "core": Section(
                 "core",
                 core.text() if core else "",

@@ -194,6 +194,7 @@ class ReviseStage(Stage):
         failure: str | None = None
         calls = 0
         last_candidate = base
+        names = [n for e in s.list_codex() for n in {e.name, e.name.split()[0], *e.aliases} if len(n) > 2]
         for attempt in range(1, max_attempts + 1):
             rp = self._prompt(ctx, scene, w, passage, failure)
             rec.prompt(
@@ -212,7 +213,7 @@ class ReviseStage(Stage):
             raw, _ = strip_prompt_echo(clean_passage(g.text), "\n".join(m.content for m in rp.messages))
             new = clean_scene_text(raw).text.strip()
             new = _keep_edges(passage, new)
-            failure = shape_problem(passage, new)
+            failure = shape_problem(passage, new, names)
             candidate = splice(base, w, new) if failure is None else base
             if failure is None:
                 stray = outside(base, candidate, w.start, w.end)

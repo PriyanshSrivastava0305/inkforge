@@ -161,22 +161,24 @@ Ph0 ─▶ Ph1 ─▶ Ph2 ─▶ Ph3 ─▶ Ph4 ═▶ M1
 
 **Goal:** evidence-linked critique and safe, scoped revision.
 
-- [ ] Deterministic checks suite (names, repetition, slop lint, meta, POV/tense, length)
-- [ ] Fact extraction with verbatim-quote verification → review queue; CLI review
-- [ ] Canon store with temporal validity resolved through the Timeline (`story_index`); predicate vocabulary incl. item predicates (`held_by`, `located_at`, `condition`)
+- [x] Deterministic checks suite (names, repetition, slop lint, meta, POV/tense, length, participants) — `quality/deterministic.py`
+- [x] Fact extraction with verbatim-quote verification → review queue; CLI review (`inkforge facts list|accept|reject|retcon`)
+- [x] Canon store with temporal validity resolved through the Timeline (`story_index`); predicate vocabulary incl. item predicates (`held_by`, `located_at`, `condition`)
 - [x] Conflict rules: single-valued, temporal, knowledge, presence, object state, age/date, promises (travel opt-in) — `quality/rules.py`, no model; input is observations in a controlled vocabulary
 - [x] Scene `temporal_mode` relaxations per [07](07-quality-engine.md#3-canon-conflict-rules) (flashback/flashforward/dream/unreliable)
-- [ ] Model adjudication for ambiguous conflicts
-- [ ] Voice critics per character; craft rubric
-- [ ] Finding lifecycle + severities + "intentional" suppression
-- [ ] Stage G: scoped revision instructions, span edits, diff, re-check, keep-only-if-better, attempt limits
-- [ ] Specialist pass order for "polish chapter"
-- [ ] Lessons (promote recurring finding → style rule)
-- [ ] Golden continuity evaluation + critic calibration set
+- [x] Model adjudication for ambiguous conflicts (free-text single-valued: no → dropped, unclear → hypothesis)
+- [x] Voice critics per character; craft rubric (quotes verified; weak or quote-restating notes dropped)
+- [x] Finding lifecycle + severities + "intentional" suppression (per detector family; vanished → fixed; "needs author")
+- [x] Stage G: scoped revision instructions, span edits, diff, re-check, keep-only-if-better, attempt limits
+- [x] Specialist pass order for "polish chapter" (`inkforge polish`)
+- [x] Lessons (promote recurring finding → style rule; suggested, only the author adds)
+- [~] Golden continuity evaluation (rules 25/25; end to end partial, see below) + critic calibration set (deferred: needs author labels)
 
 **Slice 1 result (2026-10-13, rules only):** on the golden continuity book the rules find **25/25** planted contradictions, each under the rule it was planted for, with **1/10** decoy false positives (d09, "sea-coloured" vs blue — needs judgement, left for model adjudication) and no hits on the clean book. **Caveat:** observations come from the fixture, so this measures the rules, not the pipeline; end-to-end recall will be bounded by fact extraction from prose (next slice).
 
 **Slice 2 (end to end, extraction → quote check → rules):** llama3.2:1b 4/24 recall, 1/10 decoy FP (verification rejected 222 of 258 proposals). llama3.1 8B with prompt v1: 9/24, 2/10 FP; failures were values written as ids, spurious secret mentions, presence not stated → prompt v2, value grounding/anchoring (D37), presence derived from the card. 8B with v2: **17/23** contradictions before the run was stopped (decoys not reached; log in `docs/benchmarks/`). Full evals deferred — the model is replaceable; `scripts/eval_continuity.py` reruns them.
+
+**Agentic layer (2026-10-22):** Stage F (`critique`) and Stage G (`revise`) are Conductor stages — checkpointed per scene, resumable, cancellable; modes `check`, `revise`, `polish`. Stage G guards: edit spliced into its paragraph window + word-diff proof nothing outside changed; rewrite must keep ≥ 40% of the passage's content words and every Codex name in it; kept only if the raising detector stops firing, the evidence words changed, no new high finding or canon contradiction appears and the rubric holds (ε = 1); retried with the reason, then "needs author". Each kept edit is its own unapproved draft version + RevisionProposal + diff. Tested on scripted models incl. cancel-mid-revision + resume and crash-after-save recovery.
 
 **Deliverables:** `packages/quality`; `check`, `revise`, `facts review` commands.
 **Exit criteria:** seeded contradiction recall ≥ 80%, decoy false-positive ≤ 20%; every finding has verifiable evidence; no canon change without confirmation (test); revision never changes text outside allowed spans for span edits.

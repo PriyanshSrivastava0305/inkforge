@@ -335,3 +335,72 @@ def test_findings_in_one_paragraph_share_a_window():
     ws, lost = windows(TEXT, [f1, f2, gone])
     assert len(ws) == 1 and (ws[0].start, ws[0].end) == (0, len(P1)) and lost == [gone]
     assert re.fullmatch(r"\S.*\S", TEXT[ws[0].start : ws[0].end])
+
+
+def test_a_replacement_passage_is_not_an_edit(s):
+    """Found via the CLI fake: unrelated prose 'fixed' a slop finding by deleting the passage."""
+    run(s, Model(), "check")
+    accept(s, "rule:slop")
+    unrelated = (
+        "The keeper climbed stair 412 while the storm gathered over the drowned coast and gulls wheeled."
+    )
+    job = run(s, Model(revise=lambda passage, prompt: unrelated), "revise", rubric=False)
+    assert text_of(s) == TEXT
+    assert "replaced the passage" in events(s, job, "revise.attempt")[0]["reason"]
+
+
+def test_an_edit_may_not_drop_a_character_from_the_passage(s):
+    run(s, Model(), "check")
+    accept(s, "critic:voice")
+    job = run(s, Model(revise=lambda passage, prompt: passage.replace("Mira said", "she said")
+                       .replace("Not tonight, not for anyone.", "Not tonight.")), "revise", rubric=False)  # fmt: skip
+    assert text_of(s) == TEXT
+    assert "dropped Mira" in events(s, job, "revise.attempt")[0]["reason"]
+
+
+# ================================================================ interruption and recovery
+def test_cancelling_mid_revision_changes_nothing_and_resume_finishes(s):
+    run(s, Model(), "check")
+    (slop,) = accept(s, "rule:slop")
+    model = Model()
+    router = ModelRouter(load_model_config(), FakeAdapter(lambda req: slow(model, req)))
+    c = Conductor(s, router)
+    job = c.create_job(stages_for("revise"), {"scene": SCENE})
+    holder["cancel"] = lambda: c.request_cancel(job.job_id)
+    done = asyncio.run(c.run(job))
+    assert done.status == JobStatus.CANCELLED
+    assert text_of(s) == TEXT and s.findings.get(slop.id).status == "accepted"
+    assert not (s.findings.get(slop.id).resolution_note or "").startswith("needs author")
+    holder.clear()
+    resumed = asyncio.run(
+        Conductor(s, ModelRouter(load_model_config(), FakeAdapter(Model()))).resume(job.job_id)
+    )
+    assert resumed.status == JobStatus.SUCCEEDED and s.findings.get(slop.id).status == "fixed"
+    assert "Suddenly" not in text_of(s)
+
+
+holder: dict = {}
+
+
+def slow(model: Model, req: ChatRequest) -> FakeResponse:
+    r = model(req)
+    if req.json_schema is None and "cancel" in holder:  # the revision call: cancel while it streams
+        holder.pop("cancel")()
+        return FakeResponse(r.text + " " + "word " * 400, chunk_delay_s=0.02)
+    return r
+
+
+def test_a_crash_after_saving_a_kept_edit_is_finished_on_resume(s):
+    run(s, Model(), "check")
+    (slop,) = accept(s, "rule:slop")
+    c = Conductor(s, ModelRouter(load_model_config(), FakeAdapter(Model())))
+    job = c.create_job(stages_for("revise"), {"scene": SCENE})
+    fixed = TEXT.replace("Suddenly the wind", "The wind")
+    v = s.save("draft", fixed, target=SCENE, extra={"job_id": job.job_id, "revision_id": "rev-0042",
+                                                   "finding_ids": [slop.id]}).version  # fmt: skip
+    model = Model()
+    c2 = Conductor(s, ModelRouter(load_model_config(), FakeAdapter(model)))
+    done = asyncio.run(c2.run(c2.load_job(job.job_id)))
+    assert done.status == JobStatus.SUCCEEDED and "prose" not in model.calls  # not revised twice
+    f = s.findings.get(slop.id)
+    assert f.status == "fixed" and f.resolution_note == f"revised in v{v} (rev-0042)"

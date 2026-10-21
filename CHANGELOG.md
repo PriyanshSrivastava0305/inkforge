@@ -5,6 +5,11 @@
 ### Added
 - Canon conflict rules (`quality/rules.py`): single-valued, death/temporal, knowledge, presence, object state, age/date, promises, travel; judged in story order, with dream and unreliable-account relaxations. No model calls.
 - Golden continuity book is machine-checkable (`observations.yaml`, loader); rules score 25/25 recall, 1/10 decoy false positives.
+- Fact extraction with quote verification, value grounding and anchoring (D37); review queue; canon accept/reject/retcon (refused on conflict unless forced).
+- Stage F `critique`: deterministic checks, canon rules + model adjudication, craft rubric, voice critics; evidence verified; per-version quality reports.
+- Stage G `revise`: span-scoped edits with diff guard, re-check, keep-only-if-better, retries, "needs author"; one draft version + RevisionProposal per kept edit.
+- Modes `check`, `revise`, `polish`; CLI `check`, `revise`, `polish`, `facts`, `lessons`, `findings --accept`.
+- Lessons: recurring findings suggested as style rules; active lessons are shown to the drafting model.
 
 ## [Unreleased] — Phase 5: long-book memory
 

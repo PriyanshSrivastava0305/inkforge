@@ -116,7 +116,70 @@ def clean_passage(raw: str) -> str:
     return t.strip()
 
 
-def shape_problem(old: str, new: str) -> str | None:
+MIN_KEPT = 0.4  # share of the passage's content words an *edit* keeps (a replacement keeps ~none)
+_FUNCTION = set(
+    [
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "but",
+        "of",
+        "to",
+        "in",
+        "on",
+        "at",
+        "by",
+        "for",
+        "with",
+        "from",
+        "as",
+        "is",
+        "was",
+        "were",
+        "be",
+        "been",
+        "it",
+        "its",
+        "this",
+        "that",
+        "he",
+        "she",
+        "they",
+        "her",
+        "his",
+        "him",
+        "them",
+        "their",
+        "i",
+        "you",
+        "we",
+        "me",
+        "my",
+        "our",
+        "your",
+        "not",
+        "no",
+        "so",
+        "then",
+        "there",
+        "here",
+        "had",
+        "has",
+        "have",
+        "did",
+        "do",
+        "does",
+    ]
+)
+
+
+def _content(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z']+", text.lower()) if len(w) > 2 and w not in _FUNCTION}
+
+
+def shape_problem(old: str, new: str, names: list[str] | None = None) -> str | None:
     """Reasons a rewrite can't be a local edit of `old` (before any checks run)."""
     if not new.strip():
         return "the rewrite was empty"
@@ -125,4 +188,10 @@ def shape_problem(old: str, new: str) -> str | None:
         return f"the rewrite is {ratio:.1f}× the length of the passage; change only what the issue needs"
     if new.count("\n\n") > old.count("\n\n") + 1:
         return "the rewrite added paragraphs; keep the passage's paragraph breaks"
+    before = _content(old)
+    if len(before) >= 5 and len(before & _content(new)) / len(before) < MIN_KEPT:
+        return "the rewrite replaced the passage instead of editing it; keep its events and wording"
+    for name in names or []:
+        if re.search(rf"\b{re.escape(name)}\b", old) and not re.search(rf"\b{re.escape(name)}\b", new):
+            return f"the rewrite dropped {name} from the passage"
     return None

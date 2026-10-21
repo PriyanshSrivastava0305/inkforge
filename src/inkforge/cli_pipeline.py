@@ -38,7 +38,7 @@ EDITABLE: dict[str, bool] = {
 QUIET_EVENTS = {"step.start"}
 
 
-def register(app: typer.Typer, console: Console, open_store, workspace_opt, project_opt) -> None:
+def register(app: typer.Typer, console: Console, open_store, workspace_opt, project_opt) -> Any:
     profile_opt = typer.Option(None, "--profile-set", help="'fast' = llama3.2:1b for quick plumbing runs")
     yes_opt = typer.Option(
         False, "--yes", help="Approve planning gates (spec/design/outline/cards) automatically; audited"
@@ -548,12 +548,13 @@ def register(app: typer.Typer, console: Console, open_store, workspace_opt, proj
         scene: str | None = typer.Option(None),
         dismiss: list[str] = typer.Option([], "--dismiss", help="Mark finding id(s) dismissed"),
         intentional: list[str] = typer.Option([], "--intentional", help="Mark finding id(s) intentional"),
+        accept: list[str] = typer.Option([], "--accept", help="Accept finding id(s) for `inkforge revise`"),
         show_all: bool = typer.Option(False, "--all", help="Include dismissed/intentional/fixed"),
         workspace: Path | None = workspace_opt,
     ) -> None:
-        """List evidence-linked findings; dismiss or mark them intentional (full Quality Desk in Phase 6)."""
+        """List evidence-linked findings; accept them for revision, dismiss them or mark them intentional."""
         store = open_store(workspace, project)
-        for ids, status in ((dismiss, "dismissed"), (intentional, "intentional")):
+        for ids, status in ((dismiss, "dismissed"), (intentional, "intentional"), (accept, "accepted")):
             for fid in ids:
                 f = store.findings.get(fid)
                 if f is None:
@@ -672,6 +673,8 @@ def register(app: typer.Typer, console: Console, open_store, workspace_opt, proj
             color = {"candidate": "yellow", "accepted": "green", "rejected": "red"}[str(e.codex_status)]
             table.add_row(e.id, e.name, f"[{color}]{e.codex_status}[/{color}]", str(extra)[:50])
         console.print(table)
+
+    return start  # other command modules (cli_quality) launch jobs the same way
 
 
 def store_run_lock(store: ProjectStore) -> Any:

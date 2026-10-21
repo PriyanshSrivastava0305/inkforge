@@ -27,6 +27,12 @@ uv run inkforge status -p the-glass-orchard
 uv run inkforge approve -p the-glass-orchard spec && uv run inkforge resume -p the-glass-orchard
 uv run inkforge codex -p the-glass-orchard --accept all
 uv run inkforge draft -p the-glass-orchard                      # Stage E
+uv run inkforge check -p the-glass-orchard                      # Stage F: rules, canon, craft, voice
+uv run inkforge findings -p the-glass-orchard --accept find-0003
+uv run inkforge revise -p the-glass-orchard                     # Stage G: fix accepted findings
+uv run inkforge polish -p the-glass-orchard --chapter ch02      # check + fix med/high, pass by pass
+uv run inkforge facts list -p the-glass-orchard                 # review extracted facts; accept/reject
+uv run inkforge lessons list -p the-glass-orchard               # recurring findings → style rules
 uv run inkforge approve -p the-glass-orchard drafts --all
 uv run inkforge export -p the-glass-orchard                     # or --preview
 uv run inkforge backup -p the-glass-orchard

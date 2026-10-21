@@ -17,6 +17,7 @@ from rich.table import Table
 from inkforge import __version__
 from inkforge.bench import run_bench
 from inkforge.cli_pipeline import register as register_pipeline
+from inkforge.cli_quality import register as register_quality
 from inkforge.config import load_app_config, load_model_config
 from inkforge.domain.forms import load_forms
 from inkforge.models.health import Check, runtime_checks
@@ -57,7 +58,8 @@ def _open(ws: Path | None, project: str) -> ProjectStore:
         raise typer.Exit(1) from None
 
 
-register_pipeline(app, console, _open, WorkspaceOpt, ProjectOpt)
+_start = register_pipeline(app, console, _open, WorkspaceOpt, ProjectOpt)
+register_quality(app, console, _open, WorkspaceOpt, ProjectOpt, _start)
 
 
 @app.callback()

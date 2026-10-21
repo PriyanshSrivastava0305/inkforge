@@ -87,6 +87,8 @@ open ──▶ accepted ──▶ (revision) ──▶ fixed
   └──▶ intentional   (also suppresses the same rule for that pair of passages)
 ```
 
+Implemented: each detector family (deterministic `rule:*`, `rule:canon_*`, `critic:craft_*`, `critic:voice`) syncs only its own findings on re-check; a finding that no longer occurs becomes `fixed`; dismissed/intentional/accepted ones are never re-opened. Stage G marks what it cannot do as `accepted` + `needs author: <reason>` (not local, evidence gone, attempts exhausted).
+
 Severity defaults: canon conflicts = high, knowledge/timeline = high, voice = medium, craft = low, slop lint = low. Blockers are configurable (e.g., unresolved high continuity blocks export preflight).
 
 ## Stage G — revision loop

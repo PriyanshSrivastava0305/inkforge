@@ -53,6 +53,7 @@ ignore = ["E501", "RUF001", "RUF002", "RUF003"]  # typographic quotes/dashes are
 [tool.ruff.lint.per-file-ignores]
 "src/inkforge/cli.py" = ["B008"]
 "src/inkforge/cli_pipeline.py" = ["B008"]  # typer.Option()/Argument() defaults are the Typer idiom
+"src/inkforge/cli_quality.py" = ["B008"]
 
 [tool.pyright]
 include = ["src", "tests"]
