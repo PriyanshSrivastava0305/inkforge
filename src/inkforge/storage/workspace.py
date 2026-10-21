@@ -26,6 +26,7 @@ from inkforge.domain.models import (
     Outline,
     Project,
     PromiseRegistry,
+    RevisionProposal,
     SceneCard,
     SceneVersionMeta,
     StoryDesign,
@@ -455,10 +456,14 @@ class ProjectStore:
     def findings(self) -> JsonlTable[Finding]:
         return JsonlTable(self.path("quality/findings.jsonl"), Finding)
 
+    @property
+    def revisions(self) -> JsonlTable[RevisionProposal]:
+        return JsonlTable(self.path("quality/revisions.jsonl"), RevisionProposal)
+
     def upsert(
         self,
-        table: Literal["facts", "review_queue", "findings"],
-        record: Fact | Finding,
+        table: Literal["facts", "review_queue", "findings", "revisions"],
+        record: Fact | Finding | RevisionProposal,
         *,
         actor: Actor = Actor.SYSTEM,
     ) -> None:
@@ -469,7 +474,7 @@ class ProjectStore:
 
     def remove(
         self,
-        table: Literal["facts", "review_queue", "findings"],
+        table: Literal["facts", "review_queue", "findings", "revisions"],
         record_id: str,
         *,
         actor: Actor = Actor.SYSTEM,

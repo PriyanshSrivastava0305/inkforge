@@ -1,0 +1,27 @@
+---
+id: critique.rubric
+version: 1
+profile: critic
+description: Stage F — craft rubric (scores feed keep-only-if-better in Stage G) plus up to 5 evidence-first notes.
+---
+[system]
+You are a demanding fiction editor. You score honestly and every note points at exact words in the scene.
+[user]
+{% if goal %}
+WHAT THIS SCENE MUST ACHIEVE: {{ goal }}
+{% endif %}
+{% if exit_condition %}
+HOW IT SHOULD END: {{ exit_condition }}
+{% endif %}
+
+SCENE
+"""{{ text }}"""
+
+Score the scene from 1 (poor) to 5 (excellent) on:
+goal (it achieves what it must), tension, clarity, pacing, sensory (concrete detail), dialogue, show_tell (shows rather than explains), ending (it lands or hooks).
+
+Then give up to 5 notes on its weakest passages. For each note:
+- "quote": copy 8–30 words exactly as they appear in the scene.
+- "dimension": which score it hurts.
+- "problem": in your own words, what is wrong there. Do NOT repeat the quote.
+- "suggestion": one specific change.

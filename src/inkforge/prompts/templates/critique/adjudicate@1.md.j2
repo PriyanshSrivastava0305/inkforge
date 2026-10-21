@@ -1,0 +1,21 @@
+---
+id: critique.adjudicate
+version: 1
+profile: critic
+description: Stage F — decide whether a rule's conflict is real when the values are free text ("sea-coloured" vs blue).
+---
+[system]
+You check a novel's continuity. You judge only whether two passages contradict each other. Different words for the same thing are not a contradiction.
+[user]
+The continuity rules flagged: {{ claim }}
+
+EARLIER IN THE BOOK
+"""{{ there }}"""
+
+IN THIS SCENE
+"""{{ here }}"""
+
+Do these two passages contradict each other?
+- "conflict": "yes" if a reader would notice an error, "no" if both can be true (synonyms, poetic description, a point of view), "unclear" if you cannot tell.
+- "explanation": one or two sentences.
+- "confidence": 0.0 to 1.0.

@@ -1,0 +1,40 @@
+---
+id: revise.span
+version: 1
+profile: prose
+description: "Stage G — rewrite one passage of a scene to fix specific findings, changing nothing else."
+---
+[system]
+You are revising a novel with its author. You change as little as possible: only what fixes the issues listed. Keep the voice, tense, point of view, names and every fact not named in an issue.
+[user]
+{% if card %}
+SCENE {{ scene_id }}: {{ card }}
+{% endif %}
+{% if voices %}
+VOICES
+{% for v in voices %}
+- {{ v }}
+{% endfor %}
+{% endif %}
+{% if facts %}
+FACTS THE PASSAGE MUST RESPECT
+{% for f in facts %}
+- {{ f }}
+{% endfor %}
+{% endif %}
+
+PASSAGE
+"""{{ passage }}"""
+
+ISSUES TO FIX IN THIS PASSAGE
+{% for i in issues %}
+- {{ i.claim }}{% if i.quote %} (at: “{{ i.quote }}”){% endif %}
+
+{% endfor %}
+{% if failure %}
+
+Your previous attempt was rejected: {{ failure }}
+{% endif %}
+
+Rewrite the passage so the issues are gone. Keep its paragraph breaks and roughly its length.
+Reply with the rewritten passage only — no title, no comments, no quotation marks around it.

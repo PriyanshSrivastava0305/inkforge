@@ -35,9 +35,11 @@ from inkforge.pipeline.stage import (
 )
 from inkforge.pipeline.stages.cards import CardsStage
 from inkforge.pipeline.stages.chapters import ChaptersStage
+from inkforge.pipeline.stages.critique import CritiqueStage
 from inkforge.pipeline.stages.design import DesignStage
 from inkforge.pipeline.stages.draft import DraftStage
 from inkforge.pipeline.stages.export import PreviewStage
+from inkforge.pipeline.stages.revise import ReviseStage
 from inkforge.pipeline.stages.spec import SpecStage
 from inkforge.policy.lock import ProjectLock
 from inkforge.prompts.registry import PromptError, PromptRegistry
@@ -48,11 +50,27 @@ from inkforge.system import keep_awake, power_status
 
 STAGES: dict[str, Stage] = {
     s.name: s
-    for s in (SpecStage(), DesignStage(), ChaptersStage(), CardsStage(), DraftStage(), PreviewStage())
+    for s in (
+        SpecStage(),
+        DesignStage(),
+        ChaptersStage(),
+        CardsStage(),
+        DraftStage(),
+        CritiqueStage(),
+        ReviseStage(),
+        PreviewStage(),
+    )
 }
 PLAN_ORDER = ["spec", "design", "chapters", "cards"]
 # full ends at a watermarked preview: a final export always needs explicit approval (D23)
-MODES = {"plan": PLAN_ORDER, "draft": ["drafts"], "full": [*PLAN_ORDER, "drafts", "preview"]}
+MODES = {
+    "plan": PLAN_ORDER,
+    "draft": ["drafts"],
+    "full": [*PLAN_ORDER, "drafts", "preview"],
+    "check": ["critique"],  # Stage F
+    "revise": ["revise"],  # Stage G on accepted findings
+    "polish": ["critique", "revise"],  # F then G, specialist passes in order (docs/07)
+}
 PLANNING_GATES = {"spec", "design", "outline", "scene_cards"}  # --yes may answer these (D23)
 TRANSIENT = (GenerationTimeout, ModelLoadError, RuntimeUnavailable)
 EventSink = Callable[[str, dict[str, Any]], None]

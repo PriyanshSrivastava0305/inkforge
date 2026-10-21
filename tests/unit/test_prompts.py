@@ -126,6 +126,33 @@ CONTEXTS: dict[tuple[str, int], dict] = {
         "pov_name": "Ailsa",
     },
     ("memory.digest", 1): {"kind": "scene", "target": "ch01-sc01", "limit": 120, "material": "Text."},
+    ("critique.adjudicate", 1): {"claim": "eyes grey vs blue", "here": "blue eyes", "there": "grey eyes"},
+    ("critique.rubric", 1): {
+        "text": "Some scene.",
+        "goal": "she decides",
+        "exit_condition": "the door shuts",
+    },
+    ("critique.voice", 1): {
+        "name": "Mira",
+        "voice": {
+            "diction": "plain",
+            "sentence_length": None,
+            "vocabulary_level": None,
+            "verbal_tics": ["well"],
+            "taboo_words": [],
+            "sample_lines": ["Hold the lamp."],
+        },
+        "lines": ["Not tonight."],
+    },
+    ("revise.span", 1): {
+        "scene_id": "ch01-sc01",
+        "card": "she climbs the tower",
+        "voices": ["Mira: plain"],
+        "facts": ["Mira Vale: eye color = grey"],
+        "passage": "Her blue eyes stung.",
+        "issues": [{"claim": "eyes are grey in canon", "quote": "blue eyes"}],
+        "failure": "the edit changed text outside the passage",
+    },
     ("facts.extract", 1): {
         "scene_id": "ch01-sc01",
         "when": "1892-10-01",

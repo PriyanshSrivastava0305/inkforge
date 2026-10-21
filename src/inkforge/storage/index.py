@@ -124,6 +124,8 @@ class ProjectIndex:
                 self._promises(conn)
             elif kind == "job":
                 self._jobs(conn)
+            elif kind == "revisions":
+                pass  # not indexed: read from quality/revisions.jsonl
             else:
                 raise ValueError(f"unknown index refresh kind {kind!r}")
 

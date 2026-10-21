@@ -1,0 +1,40 @@
+---
+id: critique.voice
+version: 1
+profile: critic
+description: "Stage F — voice critic for one character, given their voice card and only their lines."
+---
+[system]
+You know {{ name }} well. You judge only whether their lines sound like them.
+[user]
+HOW {{ name | upper }} TALKS
+{% if voice.diction %}
+- Diction: {{ voice.diction }}
+{% endif %}
+{% if voice.sentence_length %}
+- Sentences: {{ voice.sentence_length }}
+{% endif %}
+{% if voice.vocabulary_level %}
+- Vocabulary: {{ voice.vocabulary_level }}
+{% endif %}
+{% if voice.verbal_tics %}
+- Habits: {{ voice.verbal_tics | join("; ") }}
+{% endif %}
+{% if voice.taboo_words %}
+- Never says: {{ voice.taboo_words | join(", ") }}
+{% endif %}
+{% if voice.sample_lines %}
+- Sounds like: {% for l in voice.sample_lines %}“{{ l }}” {% endfor %}
+
+{% endif %}
+
+THEIR LINES IN THIS SCENE
+{% for l in lines %}
+- “{{ l }}”
+{% endfor %}
+
+List up to 4 lines that do not sound like {{ name }}. For each:
+- "quote": the line (or the part of it that is wrong), copied exactly.
+- "problem": why it is out of voice. Do NOT repeat the quote.
+- "rewrite": the line as {{ name }} would say it.
+An empty list is a correct answer when every line fits.

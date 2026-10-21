@@ -325,12 +325,22 @@ class FactExtractor:
 
     # -- the call
     async def extract(
-        self, scene_id: str, *, cancel: CancelToken | None = None, queue: bool = True
+        self,
+        scene_id: str,
+        *,
+        cancel: CancelToken | None = None,
+        queue: bool = True,
+        text: str | None = None,
     ) -> Extraction:
+        """Facts from the scene's effective text — or from `text` (a revision candidate), which is never
+        queued: a candidate isn't the scene until it is kept."""
         got = effective_text(self.store, scene_id)
         if got is None:
             raise ValueError(f"{scene_id} has no draft to extract facts from")
-        eff, text = got
+        eff, current = got
+        if text is not None:
+            queue = False
+        text = current if text is None else text
         result = Extraction(scene_id, eff.version)
         entities = self.entities(scene_id, text)
         if not entities:
