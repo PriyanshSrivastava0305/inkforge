@@ -134,6 +134,14 @@ CONTEXTS: dict[tuple[str, int], dict] = {
         "secrets": [("fact-deed-forged", "the deed was forged")],
         "max_facts": 8,
     },
+    ("facts.extract", 2): {
+        "scene_id": "ch01-sc01",
+        "when": "1892-10-01",
+        "text": "Mira's grey eyes.",
+        "entities": [{"id": "char-mira", "name": "Mira Vale", "aliases": []}],
+        "secrets": [("fact-deed-forged", "the deed was forged")],
+        "max_facts": 8,
+    },
 }
 
 

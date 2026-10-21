@@ -1,0 +1,2089 @@
+{
+  "summary": {
+    "model": "llama3.2:1b",
+    "date": "2026-10-14",
+    "recall": "4/24",
+    "decoy_false_positives": "1/10",
+    "observations_kept": 36,
+    "proposals_discarded": 222,
+    "minutes": 45.8
+  },
+  "cases": [
+    {
+      "case": "c01",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch02-sc03",
+      "ok": true,
+      "seconds": 37.7,
+      "error": null,
+      "observations": [
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "Mira's blue eyes and laughed, a short surprised sound"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "age",
+          "34",
+          "“34” is not in the quoted words"
+        ],
+        [
+          "loc-crane-house",
+          "condition",
+          "lavender and lamp oil",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-locket",
+          "has_item",
+          "June",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "obj-silver-pear",
+          "has_item",
+          "Mira",
+          "has_item needs a character as its subject"
+        ]
+      ],
+      "hits": [
+        [
+          "single_valued",
+          "high",
+          false,
+          "Mira Vale: eye color is “blue” here but “grey” in ch01-sc01"
+        ]
+      ]
+    },
+    {
+      "case": "c02",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch03-sc01",
+      "ok": true,
+      "seconds": 74.7,
+      "error": null,
+      "observations": [
+        [
+          "char-mira",
+          "eye_color",
+          "green",
+          "June's green eyes watered in the smoke"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "loc-glass-orchard",
+          "the glass ticked in the cold"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "age",
+          "34",
+          "“34” is not in the quoted words"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "intact",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-locket",
+          "has_item",
+          "char-mira",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-locket",
+          "quote is not in the scene"
+        ],
+        [
+          "obj-locket",
+          "has_item",
+          "char-june",
+          "has_item needs a character as its subject"
+        ]
+      ],
+      "hits": [
+        [
+          "single_valued",
+          "high",
+          false,
+          "Mira Vale: eye color is “green” here but “grey” in ch01-sc01"
+        ]
+      ]
+    },
+    {
+      "case": "c03",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch04-sc01",
+      "ok": false,
+      "seconds": 85.9,
+      "error": null,
+      "observations": [
+        [
+          "loc-crane-house",
+          "location_at",
+          "loc-crane-house",
+          "Elias sat behind his desk as if it were a wall"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-elias",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ],
+        [
+          "loc-crane-house",
+          "condition",
+          "broken",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-elias",
+          "status",
+          "dead",
+          "“dead” is not in the quoted words"
+        ],
+        [
+          "char-mira",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-elias",
+          "eye_color",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c04",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch05-sc03",
+      "ok": false,
+      "seconds": 91.3,
+      "error": null,
+      "observations": [
+        [
+          "loc-chapel",
+          "location_at",
+          "loc-chapel",
+          "The chapel was cold and smelled of candle wax"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-bram",
+          "eye_color",
+          "grey",
+          "“grey” is not in the quoted words"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-nell",
+          "eye_color",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "char-nell",
+          "eye_color",
+          "constable",
+          "“constable” is not in the quoted words"
+        ],
+        [
+          "char-bram",
+          "eye_color",
+          "grey",
+          "“grey” is not in the quoted words"
+        ],
+        [
+          "char-june",
+          "status",
+          "dead",
+          "quote is not in the scene"
+        ],
+        [
+          "char-nell",
+          "eye_color",
+          "right",
+          "“right” is not in the quoted words"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c05",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch06-sc04",
+      "ok": false,
+      "seconds": 35.9,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "obj-tom-letter",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c06",
+      "kind": "contradiction",
+      "rule": "temporal",
+      "scene": "ch05-sc02",
+      "ok": true,
+      "seconds": 83.2,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-ledger",
+          "Elias mutters an answer from the doorway and is gone before she can turn"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-ledger",
+          "Mira called out to ask whether the\nlamp should stay lit, Elias mutters an answer from the doorway and is gone before she can turn"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "obj-ledger",
+          "Tom lifted out the ledger and tucked it under his arm"
+        ]
+      ],
+      "discarded": [
+        [
+          "loc-crane-house",
+          "condition",
+          "grey",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-tom",
+          "eye_color",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "char-tom",
+          "status",
+          "dead",
+          "“dead” is not in the quoted words"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "obj-ledger",
+          "duplicate"
+        ],
+        [
+          "char-elias",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ]
+      ],
+      "hits": [
+        [
+          "temporal",
+          "high",
+          false,
+          "Elias Crane is dead by this point in the story (since ch04-sc03) but acts here"
+        ],
+        [
+          "object_state",
+          "high",
+          false,
+          "Mira Vale has Elias's ledger here, but Elias Crane has held it since ch03-sc03 and no handover is recorded"
+        ],
+        [
+          "object_state",
+          "high",
+          false,
+          "Tom Vale has Elias's ledger here, but Elias Crane has held it since ch03-sc03 and no handover is recorded"
+        ]
+      ]
+    },
+    {
+      "case": "c07",
+      "kind": "contradiction",
+      "rule": "temporal",
+      "scene": "ch06-sc02",
+      "ok": false,
+      "seconds": 73.4,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-bram",
+          "eye_color",
+          "grey",
+          "quote is not in the scene"
+        ],
+        [
+          "char-elias",
+          "has_item",
+          "deed-forged",
+          "“deed-forged” is not a known obj entity"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-chapel",
+          "location_at",
+          "Saltmere chapel",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "title_rank",
+          "“title_rank” is not a known obj entity"
+        ],
+        [
+          "char-tom",
+          "status",
+          "injured",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c08",
+      "kind": "contradiction",
+      "rule": "temporal",
+      "scene": "ch06-sc01",
+      "ok": false,
+      "seconds": 86.0,
+      "error": null,
+      "observations": [
+        [
+          "char-nell",
+          "has_item",
+          "obj-revolver",
+          "Nell went white, then red. \"I never touched it,\" she said. \"I spoke with Elias\nyesterday, in the kitchen, and he said nothing about any gun"
+        ],
+        [
+          "char-bram",
+          "has_item",
+          "obj-revolver",
+          "Bram lifted it out with a\nhandkerchief"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-bram",
+          "eye_color",
+          "black",
+          "quote is not in the scene"
+        ],
+        [
+          "char-elias",
+          "has_item",
+          "obj-revolver",
+          "quote is not in the scene"
+        ],
+        [
+          "char-elias",
+          "status",
+          "dead",
+          "“dead” is not in the quoted words"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ],
+        [
+          "loc-crane-house",
+          "location_at",
+          "char-crane-house",
+          "“char-crane-house” is not a known loc entity"
+        ],
+        [
+          "char-bram",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ]
+      ],
+      "hits": [
+        [
+          "object_state",
+          "high",
+          false,
+          "Nell Pike has Elias's revolver here, but Elias Crane has held it since ch02-sc02 and no handover is recorded"
+        ],
+        [
+          "object_state",
+          "high",
+          false,
+          "Bram Okafor has Elias's revolver here, but Elias Crane has held it since ch02-sc02 and no handover is recorded"
+        ]
+      ]
+    },
+    {
+      "case": "c09",
+      "kind": "contradiction",
+      "rule": "knowledge",
+      "scene": "ch03-sc01",
+      "ok": false,
+      "seconds": 79.3,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "has_item",
+          "obj-locket",
+          "June said nothing for a long time"
+        ],
+        [
+          "loc-saltmere",
+          "location_at",
+          "loc-chapel",
+          "June asked why Mira had come to Saltmere at all"
+        ]
+      ],
+      "discarded": [
+        [
+          "loc-saltmere",
+          "condition",
+          "grey",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "has_item",
+          "obj-locket",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "loc-chapel",
+          "status",
+          "dead",
+          "status needs a character as its subject"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "has_item",
+          "obj-locket",
+          "has_item needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c10",
+      "kind": "contradiction",
+      "rule": "knowledge",
+      "scene": "ch01-sc03",
+      "ok": false,
+      "seconds": 69.0,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-ledger",
+          "She\nworried about Elias's debts, and wondered who else in Saltmere already knew how deep they ran"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "loc-glass-orchard",
+          "The stove-pipes were cold and the trees rang faintly\nwhen she touched them"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "has_item",
+          "obj-silver-pear",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-saltmere",
+          "condition",
+          "grey",
+          "condition needs an item as its subject"
+        ],
+        [
+          "loc-saltmere",
+          "status",
+          "dead",
+          "status needs a character as its subject"
+        ],
+        [
+          "char-elias",
+          "eye_color",
+          "left",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-ledger",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c11",
+      "kind": "contradiction",
+      "rule": "knowledge",
+      "scene": "ch04-sc02",
+      "ok": false,
+      "seconds": 132.2,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-june",
+          "has_item",
+          "supper",
+          "“supper” is not a known obj entity"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "supper",
+          "“supper” is not a known obj entity"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "supper",
+          "“supper” is not a known obj entity"
+        ],
+        [
+          "loc-saltmere",
+          "condition",
+          "active",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-june",
+          "eye_color",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "right",
+          "quote is too long to point at the words that state the fact"
+        ],
+        [
+          "char-tom",
+          "eye_color",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "loc-saltmere",
+          "status",
+          "dead",
+          "status needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c12",
+      "kind": "contradiction",
+      "rule": "knowledge",
+      "scene": "ch05-sc03",
+      "ok": false,
+      "seconds": 128.9,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-bram",
+          "eye_color",
+          "grey",
+          "quote is too long to point at the words that state the fact"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-nell",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "loc-chapel",
+          "location_at",
+          "saltmere_chapel",
+          "“saltmere_chapel” is not a known loc entity"
+        ],
+        [
+          "obj-ledger",
+          "has_item",
+          "char-anna",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-nell",
+          "has_item",
+          "char-anna",
+          "“char-anna” is not a known obj entity"
+        ],
+        [
+          "loc-chapel",
+          "has_item",
+          "char-anna",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "char-anna",
+          "“char-anna” is not a known obj entity"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c13",
+      "kind": "contradiction",
+      "rule": "presence",
+      "scene": "ch03-sc01",
+      "ok": false,
+      "seconds": 84.1,
+      "error": null,
+      "observations": [
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "loc-glass-orchard",
+          "The frost warning came at dusk. Mira and June hurried between the glasshouses with the coal scuttles,\nand Tom helps light the stove-pipes along the north row, his sleeves rolled to the elbow"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "status",
+          "constable",
+          "“constable” is not a status value"
+        ],
+        [
+          "obj-locket",
+          "has_item",
+          "June's silver locket",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "obj-locket",
+          "condition",
+          "intact",
+          "quote is not in the scene"
+        ],
+        [
+          "obj-locket",
+          "location_at",
+          "The Glass Orchard",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c14",
+      "kind": "contradiction",
+      "rule": "presence",
+      "scene": "ch02-sc03",
+      "ok": false,
+      "seconds": 69.6,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-locket",
+          "June put it on at once, turning to the\nmirror. Behind them, Elias watches from the doorway, arms folded, saying nothing"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-locket",
+          "Mira gave her the locket and June put it on at once, turning to the\nmirror"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-crane-house",
+          "condition",
+          "constable",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-locket",
+          "duplicate"
+        ],
+        [
+          "char-elias",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ]
+      ],
+      "hits": [
+        [
+          "object_state",
+          "high",
+          false,
+          "Elias Crane has June's silver locket here, but Mira Vale has held it since ch02-sc01 and no handover is recorded"
+        ]
+      ]
+    },
+    {
+      "case": "c15",
+      "kind": "contradiction",
+      "rule": "presence",
+      "scene": "ch04-sc01",
+      "ok": false,
+      "seconds": 77.1,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-elias",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ],
+        [
+          "loc-crane-house",
+          "condition",
+          "lost",
+          "condition needs an item as its subject"
+        ],
+        [
+          "loc-crane-house",
+          "status",
+          "dead",
+          "status needs a character as its subject"
+        ],
+        [
+          "char-elias",
+          "eye_color",
+          "grey",
+          "“grey” is not in the quoted words"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ],
+        [
+          "char-tom",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c16",
+      "kind": "contradiction",
+      "rule": "object_state",
+      "scene": "ch05-sc05",
+      "ok": false,
+      "seconds": 74.3,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-june",
+          "has_item",
+          "obj-brass-key",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "good",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-locket",
+          "active",
+          "char-mira",
+          "active needs a character as its subject"
+        ],
+        [
+          "obj-silver-pear",
+          "has_item",
+          "loc-glass-orchard",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "loc-glass-orchard",
+          "status",
+          "alive",
+          "status needs a character as its subject"
+        ],
+        [
+          "obj-brass-key",
+          "held_by",
+          "char-june",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c17",
+      "kind": "contradiction",
+      "rule": "object_state",
+      "scene": "ch05-sc05",
+      "ok": false,
+      "seconds": 90.8,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-june",
+          "has_item",
+          "lamp",
+          "“lamp” is not a known obj entity"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "earth and old frost",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-brass-key",
+          "held_by",
+          "char-june",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "brass glasshouse key",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "status",
+          "dead",
+          "status needs a character as its subject"
+        ],
+        [
+          "obj-brass-key",
+          "has_item",
+          "brass glasshouse key",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-june",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c18",
+      "kind": "contradiction",
+      "rule": "object_state",
+      "scene": "ch06-sc02",
+      "ok": false,
+      "seconds": 65.5,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-bram",
+          "eye_color",
+          "grey",
+          "quote is not in the scene"
+        ],
+        [
+          "char-elias",
+          "has_item",
+          "obj-ledger",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-ledger",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "obj-ledger",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-chapel",
+          "condition",
+          "good",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-ledger",
+          "active",
+          "June",
+          "active needs a character as its subject"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "obj-ledger",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c19",
+      "kind": "contradiction",
+      "rule": "object_state",
+      "scene": "ch06-sc04",
+      "ok": false,
+      "seconds": 105.8,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ],
+        [
+          "char-tom",
+          "status",
+          "constable",
+          "“constable” is not a status value"
+        ],
+        [
+          "loc-carrow",
+          "status",
+          "harbor town",
+          "status needs a character as its subject"
+        ],
+        [
+          "loc-glass-orchard",
+          "status",
+          "orchard",
+          "status needs a character as its subject"
+        ],
+        [
+          "obj-locket",
+          "has_item",
+          "June's silver locket",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "obj-silver-pear",
+          "condition",
+          "broken",
+          "“broken” is not in the quoted words"
+        ],
+        [
+          "obj-tom-letter",
+          "has_item",
+          "Tom's letter from Carrow",
+          "has_item needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c20",
+      "kind": "contradiction",
+      "rule": "age_date",
+      "scene": "ch06-sc03",
+      "ok": true,
+      "seconds": 87.8,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "age",
+          "21",
+          "When he had finished, June, now twenty-one, folded her hands on the\ntable and asked what would happen to the forged deed"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-crane-house",
+          "Mira let out a\nbreath she had been holding"
+        ],
+        [
+          "char-mira",
+          "active",
+          "asked",
+          "When he had finished, June, now twenty-one, folded her hands on the\ntable and asked what would happen to the forged deed"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ],
+        [
+          "loc-crane-house",
+          "status",
+          "dead",
+          "status needs a character as its subject"
+        ],
+        [
+          "char-mira",
+          "condition",
+          "intact",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "deed",
+          "“deed” is not a known obj entity"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ]
+      ],
+      "hits": [
+        [
+          "age_date",
+          "high",
+          false,
+          "June Crane is 21 here, but born 1873-06-10 makes them 19 on 1892-10-22"
+        ]
+      ]
+    },
+    {
+      "case": "c21",
+      "kind": "contradiction",
+      "rule": "age_date",
+      "scene": "ch04-sc05",
+      "ok": false,
+      "seconds": 76.4,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-locket",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-silver-pear",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "grey",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-june",
+          "eye_color",
+          "left",
+          "quote is not in the scene"
+        ],
+        [
+          "char-elias",
+          "status",
+          "dead",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "age",
+          "constable",
+          "age is not a number"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "The Glass Orchard",
+          "quote is not in the scene"
+        ],
+        [
+          "char-elias",
+          "title_rank",
+          "constable",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c22",
+      "kind": "contradiction",
+      "rule": "age_date",
+      "scene": "ch03-sc04",
+      "ok": false,
+      "seconds": 61.2,
+      "error": null,
+      "observations": [
+        [
+          "loc-crane-house",
+          "location_at",
+          "loc-crane-house",
+          "The deed was forged, he wrote; he had seen the register himself, and\nhe would leave Carrow as soon as he could"
+        ],
+        [
+          "obj-tom-letter",
+          "held_by",
+          "char-mira",
+          "The deed was forged, he wrote; he had seen the register himself, and\nhe would leave Carrow as soon as he could"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "obj-tom-letter",
+          "Mira took Tom's letter up to her room and read it by the window"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-carrow",
+          "location_at",
+          "Mira's room",
+          "“Mira's room” is not a known loc entity"
+        ],
+        [
+          "obj-tom-letter",
+          "has_item",
+          "loc-crane-house",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "obj-tom-letter",
+          "active",
+          "Mira",
+          "active needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c24",
+      "kind": "contradiction",
+      "rule": "promise",
+      "scene": "ch06-sc03",
+      "ok": false,
+      "seconds": 92.4,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-june",
+          "has_item",
+          "will",
+          "“will” is not a known obj entity"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "char-nell",
+          "has_item",
+          "orchard",
+          "“orchard” is not a known obj entity"
+        ],
+        [
+          "loc-crane-house",
+          "condition",
+          "broken",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-nell",
+          "has_item",
+          "deed",
+          "“deed” is not a known obj entity"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "second",
+          "“second” is not a known obj entity"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "second",
+          "“second” is not a known obj entity"
+        ],
+        [
+          "loc-crane-house",
+          "has_item",
+          "deed",
+          "has_item needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c25",
+      "kind": "contradiction",
+      "rule": "travel",
+      "scene": "ch04-sc02",
+      "ok": false,
+      "seconds": 73.6,
+      "error": null,
+      "observations": [
+        [
+          "loc-carrow",
+          "location_at",
+          "loc-saltmere",
+          "They walked up to the inn together"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-saltmere",
+          "location_at",
+          "Saltmere harbor town",
+          "quote is not in the scene"
+        ],
+        [
+          "obj-tom-letter",
+          "has_item",
+          "Tom's letter from Carrow",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "Tom's letter from Carrow",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-saltmere",
+          "has_item",
+          "Tom's letter from Carrow",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "obj-tom-letter",
+          "condition",
+          "Tom's letter from Carrow",
+          "“tom's letter from carrow” is not a condition value"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d01",
+      "kind": "decoy",
+      "rule": "temporal",
+      "scene": "ch04-sc05",
+      "ok": true,
+      "seconds": 88.0,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-locket",
+          "Elias argues with his wife among the trees, his voice carrying through\nthe glass, while the stove-pipes smoke behind them. The silver pear stands whole in the lamplight"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-silver-pear",
+          "The silver pear stands whole in the lamplight"
+        ]
+      ],
+      "discarded": [
+        [
+          "loc-glass-orchard",
+          "condition",
+          "grey",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-june",
+          "eye_color",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "char-elias",
+          "eye_color",
+          "constant",
+          "“constant” is not in the quoted words"
+        ],
+        [
+          "char-elias",
+          "title_rank",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "char-elias",
+          "age",
+          "34",
+          "“34” is not in the quoted words"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d02",
+      "kind": "decoy",
+      "rule": "age_date",
+      "scene": "ch04-sc05",
+      "ok": true,
+      "seconds": 73.4,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-brass-key",
+          "x, watched from the glasshouse doorway with her thumb in her mouth. Her father\nand mother were shouting among the trees and neither of them saw her"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "broken",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-brass-key",
+          "has_item",
+          "char-elias",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "char-elias",
+          "“char-elias” is not a known obj entity"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "The Glass Orchard",
+          "quote is not in the scene"
+        ],
+        [
+          "obj-brass-key",
+          "held_by",
+          "char-elias",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d03",
+      "kind": "decoy",
+      "rule": "temporal",
+      "scene": "ch05-sc01",
+      "ok": true,
+      "seconds": 73.4,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-locket",
+          "Elias speaks to June gently, as he\nnever did awake: \"Look under the silver pear.\" She woke with her face wet"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-silver-pear",
+          "She woke with her face wet"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "loc-glass-orchard",
+          "She woke with her face wet"
+        ]
+      ],
+      "discarded": [
+        [
+          "loc-glass-orchard",
+          "condition",
+          "grey",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-june",
+          "status",
+          "dead",
+          "“dead” is not in the quoted words"
+        ],
+        [
+          "char-elias",
+          "eye_color",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "char-june",
+          "eye_color",
+          "left",
+          "“left” is not in the quoted words"
+        ],
+        [
+          "loc-glass-orchard",
+          "status",
+          "injured",
+          "status needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d04",
+      "kind": "decoy",
+      "rule": "object_state",
+      "scene": "ch05-sc01",
+      "ok": true,
+      "seconds": 61.8,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-locket",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "eye_color",
+          "green",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "intact",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-silver-pear",
+          "has_item",
+          "char-june",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-elias",
+          "status",
+          "dead",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "loc-glass-orchard",
+          "status",
+          "alive",
+          "status needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d05",
+      "kind": "decoy",
+      "rule": "presence",
+      "scene": "ch05-sc04",
+      "ok": true,
+      "seconds": 101.8,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-nell",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ],
+        [
+          "char-tom",
+          "eye_color",
+          "blue",
+          "“blue” is not in the quoted words"
+        ],
+        [
+          "loc-crane-house",
+          "status",
+          "dead",
+          "status needs a character as its subject"
+        ],
+        [
+          "loc-glass-orchard",
+          "status",
+          "alive",
+          "status needs a character as its subject"
+        ],
+        [
+          "obj-brass-key",
+          "has_item",
+          "char-tom",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "obj-brass-key",
+          "has_item",
+          "char-nell",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "loc-crane-house",
+          "active",
+          "Tom",
+          "active needs a character as its subject"
+        ],
+        [
+          "loc-glass-orchard",
+          "active",
+          "Tom",
+          "active needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d06",
+      "kind": "decoy",
+      "rule": "object_state",
+      "scene": "ch03-sc01",
+      "ok": true,
+      "seconds": 90.1,
+      "error": null,
+      "observations": [
+        [
+          "obj-locket",
+          "held_by",
+          "char-june",
+          "June's silver\nlocket swung at her throat each time she bent to feed a stove-pipe"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-mira",
+          "eye_color",
+          "blue",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "broken",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-locket",
+          "has_item",
+          "char-june",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "obj-silver-pear",
+          "has_item",
+          "char-mira",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "loc-glass-orchard",
+          "active",
+          "June",
+          "active needs a character as its subject"
+        ],
+        [
+          "obj-silver-pear",
+          "active",
+          "Mira",
+          "active needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d07",
+      "kind": "decoy",
+      "rule": "knowledge",
+      "scene": "ch05-sc03",
+      "ok": true,
+      "seconds": 76.7,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-bram",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ],
+        [
+          "char-june",
+          "status",
+          "dead",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-chapel",
+          "condition",
+          "intact",
+          "condition needs an item as its subject"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "broken",
+          "condition needs an item as its subject"
+        ],
+        [
+          "char-nell",
+          "eye_color",
+          "left",
+          "quote is not in the scene"
+        ],
+        [
+          "char-nell",
+          "title_rank",
+          "constable",
+          "quote is not in the scene"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "The Glass Orchard",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d08",
+      "kind": "decoy",
+      "rule": "age_date",
+      "scene": "ch06-sc05",
+      "ok": false,
+      "seconds": 70.7,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "age",
+          "35",
+          "A year later, Mira was thirty-five and still in Saltmere"
+        ],
+        [
+          "loc-saltmere",
+          "location_at",
+          "loc-chapel",
+          "She knelt by the central glasshouse and\nplanted a new pear in the turned earth while June held the lamp"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "eye_color",
+          "silver",
+          "quote is not in the scene"
+        ],
+        [
+          "obj-brass-key",
+          "has_item",
+          "obj-silver-pear",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "obj-silver-pear",
+          "condition",
+          "constable",
+          "“constable” is not a condition value"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "loc-saltmere",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ]
+      ],
+      "hits": [
+        [
+          "age_date",
+          "high",
+          false,
+          "June Crane is 35 here, but born 1873-06-10 makes them 20 on 1893-10-01"
+        ]
+      ]
+    },
+    {
+      "case": "d09",
+      "kind": "decoy",
+      "rule": "single_valued",
+      "scene": "ch01-sc02",
+      "ok": true,
+      "seconds": 109.4,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "has_item",
+          "obj-brass-key",
+          "Elias introduced his daughter with a wave of his hand. June was nineteen and watchful. Mira thought\nJune's eyes were sea-coloured, the grey-blue of the harbor at noon"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-brass-key",
+          "June was nineteen and watchful. Mira thought\nJune's eyes were sea-coloured, the grey-blue of the harbor at noon"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-brass-key",
+          "Elias introduced his daughter with a wave of his hand. June was nineteen and watchful. Mira thought\nJune's eyes were sea-coloured, the grey-blue of the harbor at noon"
+        ]
+      ],
+      "discarded": [
+        [
+          "loc-crane-house",
+          "condition",
+          "good",
+          "condition needs an item as its subject"
+        ],
+        [
+          "loc-saltmere",
+          "condition",
+          "good",
+          "condition needs an item as its subject"
+        ],
+        [
+          "obj-brass-key",
+          "has_item",
+          "brass glasshouse key",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "loc-saltmere",
+          "status",
+          "alive",
+          "status needs a character as its subject"
+        ],
+        [
+          "obj-brass-key",
+          "condition",
+          "good",
+          "“good” is not a condition value"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d10",
+      "kind": "decoy",
+      "rule": "temporal",
+      "scene": "ch06-sc04",
+      "ok": true,
+      "seconds": 67.5,
+      "error": null,
+      "observations": [],
+      "discarded": [
+        [
+          "char-elias",
+          "has_item",
+          "forged",
+          "“forged” is not a known obj entity"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "location_at",
+          "“location_at” is not a known obj entity"
+        ],
+        [
+          "loc-saltmere",
+          "has_item",
+          "location_at",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "location_at",
+          "“location_at” is not a known obj entity"
+        ],
+        [
+          "char-elias",
+          "status",
+          "dead",
+          "“dead” is not in the quoted words"
+        ],
+        [
+          "char-mira",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-tom",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "loc-saltmere",
+          "status",
+          "alive",
+          "status needs a character as its subject"
+        ]
+      ],
+      "hits": []
+    }
+  ]
+}

@@ -42,8 +42,42 @@ STATE = (
     "located_at",
     "condition",
     "date_of_event",
+    "departs_on",
 )
 EVENT = ("active", "has_item", "mentions_fact")
+PERSON_PREDICATES = {
+    "active",
+    "has_item",
+    "status",
+    "age",
+    "eye_color",
+    "hair",
+    "height",
+    "handedness",
+    "title_rank",
+    "location_at",
+    "departs_on",
+    "mentions_fact",
+}
+SYNONYMS = {  # what the model writes → the controlled value
+    "whole": "intact",
+    "untouched": "intact",
+    "undamaged": "intact",
+    "unbroken": "intact",
+    "shattered": "destroyed",
+    "smashed": "destroyed",
+    "ruined": "destroyed",
+    "cracked": "broken",
+    "chipped": "broken",
+    "missing": "lost",
+    "gone": "lost",
+    "deceased": "dead",
+    "killed": "dead",
+    "wounded": "injured",
+    "hurt": "injured",
+    "left-handed": "left",
+    "right-handed": "right",
+}
 ENTITY_VALUE = {"location_at": "loc-", "located_at": "loc-", "held_by": "char-", "has_item": "obj-"}
 LITERAL_IN_QUOTE = {"eye_color", "hair", "handedness", "title_rank"}  # the value must be in the quoted words
 MAX_QUOTE_WORDS = 40
@@ -329,7 +363,7 @@ class FactExtractor:
         proposals = [
             FactProposal.model_validate(p, from_attributes=True) for p in getattr(res.value, "facts", [])
         ]
-        self.verify(result, text, proposals, entities, labels)
+        self.verify(result, text, proposals, entities, secrets)
         if queue:
             self._queue(result)
         return result
@@ -341,14 +375,15 @@ class FactExtractor:
         text: str,
         proposals: list[FactProposal],
         entities: list[CodexEntry],
-        secrets: list[str],
+        secrets: list[tuple[str, str]],
     ) -> None:
         known = {e.id: e for e in entities}
+        about = dict(secrets)
         card = self.store.try_read("card", result.scene_id)
         mode = str(card.temporal_mode) if card else "linear"
         seen: set[tuple[str, str, str]] = set()
         for p in proposals:
-            reason, value = self._judge(p, known, secrets)
+            reason, value = self._judge(p, known, list(about))
             found = locate_quote(text, p.quote) if reason is None else None
             if reason is None and found is None:
                 reason = "quote is not in the scene"
@@ -358,6 +393,8 @@ class FactExtractor:
                     reason = "quote is too long to point at the words that state the fact"
                 elif not grounded(p.predicate, value, quoted):
                     reason = f"“{value}” is not in the quoted words"
+                else:
+                    reason = self._anchored(p.predicate, p.subject, value, quoted, about, result.scene_id)
             if reason is None and (p.subject, p.predicate, value) in seen:
                 reason = "duplicate"
             if reason is not None or found is None:
@@ -385,6 +422,67 @@ class FactExtractor:
                         confidence=min(confidence, 0.5) if mode == "unreliable" else confidence,
                     )
                 )
+        self._derive_presence(result, card)
+
+    def _derive_presence(self, result: Extraction, card: Any) -> None:
+        """Someone who acts in a scene is where the scene happens (the card says where). Checked, never
+        made canon: the model often reports what a character does but not where they are."""
+        if card is None or not card.location_id:
+            return
+        placed = {o.subject_id for o in result.observations if o.predicate == "location_at"}
+        for o in list(result.observations):
+            if o.predicate == "active" and o.subject_id not in placed:
+                placed.add(o.subject_id)
+                result.observations.append(
+                    Observation(result.scene_id, o.subject_id, "location_at", card.location_id, o.quote)
+                )
+
+    def _anchored(
+        self, predicate: str, subject: str, value: str, quoted: str, about: dict[str, str], scene_id: str
+    ) -> str | None:
+        """Does the quote mention what the fact is about? A quote that never names the thing, place or
+        secret can't be evidence for it (8B: "has the locket", quoting a line about stove-pipes)."""
+
+        def named(entity_id: str) -> bool:
+            e = self.store.get_codex(entity_id)
+            return e is None or any(re.search(rf"\b{re.escape(n)}", quoted) for n in _mentions(e))
+
+        if predicate in ("held_by", "located_at", "condition", "date_of_event") and not named(subject):
+            return f"the quote does not name {subject}"
+        if predicate in ("has_item", "located_at") and not named(value):
+            return f"the quote does not name {value}"
+        if predicate == "mentions_fact":
+            words = {w[:5] for w in re.findall(r"[a-z]+", about.get(value, value).lower()) if len(w) > 2}
+            words -= {
+                "the",
+                "and",
+                "was",
+                "had",
+                "has",
+                "his",
+                "her",
+                "for",
+                "not",
+                "but",
+                "are",
+                "that",
+                "with",
+                "from",
+            }
+            if len([w for w in words if re.search(rf"\b{w}", quoted)]) < 2:
+                return f"the quote does not say what {value} is"
+        if predicate == "departs_on":
+            place, _, day = value.partition("@")
+            if not named(place):
+                return f"the quote does not name {place}"
+            d = int(day[-2:])
+            same_day = day == self._when(scene_id)[:10]
+            if not (
+                re.search(rf"\b0?{d}(?:st|nd|rd|th)?\b", quoted)
+                or (same_day and re.search(r"\b(?:this|that) morning\b|\btoday\b|\bat dawn\b", quoted))
+            ):
+                return f"the quote does not give the date {day}"
+        return None
 
     def _judge(self, p: FactProposal, known: dict[str, Any], secrets: list[str]) -> tuple[str | None, str]:
         """(reason to discard or None, normalised value)."""
@@ -394,9 +492,7 @@ class FactExtractor:
         need = SUBJECT_KIND.get(p.predicate)
         if need and not p.subject.startswith(need):
             return f"{p.predicate} needs an item as its subject", value
-        if p.predicate in ("active", "has_item", "status", "age", "eye_color", "hair", "handedness") and not (
-            p.subject.startswith("char-")
-        ):
+        if p.predicate in PERSON_PREDICATES and not p.subject.startswith("char-"):
             return f"{p.predicate} needs a character as its subject", value
         prefix = ENTITY_VALUE.get(p.predicate)
         if prefix:
@@ -407,7 +503,13 @@ class FactExtractor:
         if p.predicate == "mentions_fact":
             match = next((s for s in secrets if s.lower() == value.lower()), None)
             return (None, match) if match else ("not one of the listed facts", value)
-        value = value.lower()
+        if p.predicate == "departs_on":  # "loc-carrow, 1892-10-14" → "loc-carrow@1892-10-14"
+            day = re.search(r"\d{4}-\d{2}-\d{2}", value)
+            place = self._resolve(re.sub(r"[,;@ ]*\d{4}-\d{2}-\d{2}[,; ]*", " ", value).strip(), "loc-")
+            if day is None or place is None:
+                return "departure needs a known place and a YYYY-MM-DD date", value
+            return None, f"{place}@{day.group()}"
+        value = SYNONYMS.get(value.lower(), value.lower())
         if p.predicate in ALLOWED_VALUES and value not in ALLOWED_VALUES[p.predicate]:
             return f"“{value}” is not a {p.predicate} value", value
         if p.predicate == "age":

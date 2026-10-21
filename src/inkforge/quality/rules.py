@@ -28,7 +28,7 @@ Rule = Literal[
 ]
 STATIC = {"eye_color", "hair", "height", "handedness", "title_rank", "date_of_event"}  # never change once set
 TERMINAL_CONDITIONS = {"destroyed", "lost"}  # an item can't be intact again after these
-ALIVE_EVENTS = {"active", "has_item", "mentions_fact"}
+ALIVE_EVENTS = {"active", "has_item", "mentions_fact", "location_at"}  # a dead character is not anywhere
 
 
 @dataclass(frozen=True)
@@ -135,9 +135,13 @@ class World:
 def check_scene(world: World, scene_id: str, observations: list[Observation]) -> list[RuleHit]:
     mode = world.mode(scene_id)
     hits: list[RuleHit] = []
+    # a thing handed over on the page in this scene: its new holder may use it here
+    handed = {o.subject_id: o.value for o in observations if o.predicate == "held_by"}
     for o in observations:
         if mode == "dream" and o.predicate != "mentions_fact":
             continue  # dreams: no state, presence, death or object checks (docs/07)
+        if o.predicate == "has_item" and handed.get(o.value) == o.subject_id:
+            continue
         for hit in _check_one(world, scene_id, o):
             if mode == "unreliable":
                 hit = RuleHit(
@@ -197,13 +201,31 @@ def _check_one(w: World, sid: str, o: Observation) -> list[RuleHit]:
             hit("object_state", f"{who} is {o.value} here but was {prev.value} in {prev.valid_from}", prev)
 
     elif p == "has_item":  # ---- possession without a transfer
-        holder = w.current(o.value, "held_by", sid)
+        holder = w.current(o.value, "held_by", sid, inclusive=True)  # a handover in this scene counts
         if holder is not None and str(holder.value) != o.subject_id:
             hit(
                 "object_state",
                 f"{who} has {w.name(o.value)} here, but {w.name(str(holder.value))} has held it since "
                 f"{holder.valid_from} and no handover is recorded",
                 holder,
+            )
+
+    elif p == "held_by":  # ---- a handover from someone who isn't there to make it
+        holder = w.current(o.subject_id, "held_by", sid)
+        card = w.cards.get(sid)
+        if (
+            holder is not None
+            and str(holder.value) != o.value
+            and card is not None
+            and str(holder.value) not in card.participants
+            and not _left_somewhere(w, o.subject_id, holder, sid)
+        ):
+            hit(
+                "object_state",
+                f"{w.name(o.value)} has {who} here, but {w.name(str(holder.value))} has held it since "
+                f"{holder.valid_from} and is not in this scene to hand it over",
+                holder,
+                "med",
             )
 
     elif p == "mentions_fact":  # ---- knowledge: knows it, or witnessed it
@@ -244,6 +266,18 @@ def _check_one(w: World, sid: str, o: Observation) -> list[RuleHit]:
                 )
                 break
     return out
+
+
+def _left_somewhere(w: World, item: str, holder: Fact, sid: str) -> bool:
+    """Could someone have picked `item` up without its holder? It was put somewhere, lost, or the
+    holder has died since."""
+    since = w._start(holder)
+    for pred in ("located_at", "condition"):
+        f = w.current(item, pred, sid)
+        if f is not None and w._start(f) >= since and (pred == "located_at" or str(f.value) == "lost"):
+            return True
+    status = w.current(str(holder.value), "status", sid)
+    return status is not None and str(status.value) == "dead"
 
 
 def _knows(w: World, char: str, ref: str, sid: str) -> bool:

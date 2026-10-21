@@ -1,0 +1,2034 @@
+{
+  "summary": {
+    "model": "llama3.1:8b-instruct-q4_K_M",
+    "date": "2026-10-15",
+    "recall": "9/24",
+    "decoy_false_positives": "2/10",
+    "observations_kept": 145,
+    "proposals_discarded": 85,
+    "minutes": 1332.8
+  },
+  "cases": [
+    {
+      "case": "c01",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch02-sc03",
+      "ok": false,
+      "seconds": 282.8,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "active",
+          "fastened the chain",
+          "fastened the chain at once"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-locket",
+          "June's fingers closed over it"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-locket",
+          "Mira held out the silver locket"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "I lost this when I was nine"
+        ],
+        [
+          "obj-locket",
+          "condition",
+          "lost",
+          "I lost this when I was nine"
+        ],
+        [
+          "char-mira",
+          "active",
+          "held out the silver locket",
+          "Mira held out the silver locket"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "held_by",
+          "char-june",
+          "held_by needs an item as its subject"
+        ],
+        [
+          "char-june",
+          "active",
+          "laughed",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": [
+        [
+          "object_state",
+          "high",
+          false,
+          "June Crane has June's silver locket here, but Mira Vale has held it since ch02-sc01 and no handover is recorded"
+        ],
+        [
+          "knowledge",
+          "high",
+          false,
+          "June Crane refers to “fact-mother-died-1879” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c02",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch03-sc01",
+      "ok": false,
+      "seconds": 183.0,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "has_item",
+          "obj-locket",
+          "The locket\nswung at her throat each time she bent to the grate"
+        ],
+        [
+          "char-mira",
+          "active",
+          "said",
+          "and they went on"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "loc-glass-orchard",
+          "the glass ticked in the cold"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "eye_color",
+          "char-june",
+          "“char-june” is not in the quoted words"
+        ],
+        [
+          "char-mira",
+          "active",
+          "said",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c03",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch04-sc01",
+      "ok": false,
+      "seconds": 260.6,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "sat behind his desk",
+          "Elias sat behind his desk as if it were a wall"
+        ],
+        [
+          "char-elias",
+          "active",
+          "talked for a long time",
+          "He talked for a long time and said very little"
+        ],
+        [
+          "char-mira",
+          "active",
+          "laid the copy of the deed",
+          "Mira laid the copy of the deed in front of him"
+        ],
+        [
+          "char-mira",
+          "active",
+          "wrote with her right hand",
+          "Mira writes with\nher right hand, quickly"
+        ],
+        [
+          "loc-crane-house",
+          "location_at",
+          "loc-crane-house",
+          "Elias sat behind his desk as if it were a wall"
+        ],
+        [
+          "char-elias",
+          "mentions_fact",
+          "fact-deed-forged",
+          "explain the signature"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "active",
+          "asked him to explain the signature",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-notebook",
+          "“obj-notebook” is not a known obj entity"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "Elias Crane refers to “fact-deed-forged” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c04",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch05-sc03",
+      "ok": false,
+      "seconds": 72819.5,
+      "error": null,
+      "observations": [
+        [
+          "char-bram",
+          "location_at",
+          "loc-chapel",
+          "The chapel was cold and smelled of candle wax. Sergeant Okafor set his helmet on the pew beside him"
+        ],
+        [
+          "char-june",
+          "active",
+          "tell it again from the beginning",
+          "She did. Nell, kneeling two rows back, kept her\neyes on her hands and did not pretend to pray"
+        ],
+        [
+          "char-nell",
+          "active",
+          "kneeling",
+          "Nell, kneeling two rows back, kept her\neyes on her hands and did not pretend to pray"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-bram",
+          "has_item",
+          "obj-helmet",
+          "“obj-helmet” is not a known obj entity"
+        ],
+        [
+          "char-june",
+          "active",
+          "tell it again from the beginning",
+          "duplicate"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c05",
+      "kind": "contradiction",
+      "rule": "single_valued",
+      "scene": "ch06-sc04",
+      "ok": false,
+      "seconds": 187.0,
+      "error": null,
+      "observations": [
+        [
+          "char-mira",
+          "location_at",
+          "loc-saltmere",
+          "Mira sat beside him with her collar up, watching the Carrow\nboat take on coal"
+        ],
+        [
+          "char-tom",
+          "location_at",
+          "loc-saltmere",
+          "The wind came straight off the water and the harbor wall was wet with spray. Tom's black hair was\nplastered flat against his forehead"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-tom",
+          "active",
+          "said",
+          "quote is not in the scene"
+        ],
+        [
+          "obj-tom-letter",
+          "mentions_fact",
+          "fact-elias-debts",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-saltmere",
+          "duplicate"
+        ],
+        [
+          "char-tom",
+          "location_at",
+          "loc-saltmere",
+          "duplicate"
+        ],
+        [
+          "char-tom",
+          "active",
+          "said",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-saltmere",
+          "duplicate"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c06",
+      "kind": "contradiction",
+      "rule": "temporal",
+      "scene": "ch05-sc02",
+      "ok": true,
+      "seconds": 174.2,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "mutters an answer",
+          "Elias mutters an answer from the doorway"
+        ],
+        [
+          "obj-ledger",
+          "located_at",
+          "loc-crane-house",
+          "Tom lifted out the ledger and tucked it under his arm"
+        ],
+        [
+          "obj-ledger",
+          "held_by",
+          "char-tom",
+          "Tom lifted out the ledger and tucked it under his arm"
+        ],
+        [
+          "char-mira",
+          "active",
+          "ask whether the lamp should stay lit",
+          "When Mira called out to ask whether the\nlamp should stay lit"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-elias",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-elias",
+          "active",
+          "mutters an answer",
+          "duplicate"
+        ],
+        [
+          "obj-ledger",
+          "condition",
+          "open",
+          "“open” is not a condition value"
+        ],
+        [
+          "loc-crane-house",
+          "location_at",
+          "char-elias",
+          "“char-elias” is not a known loc entity"
+        ]
+      ],
+      "hits": [
+        [
+          "temporal",
+          "high",
+          false,
+          "Elias Crane is dead by this point in the story (since ch04-sc03) but acts here"
+        ]
+      ]
+    },
+    {
+      "case": "c07",
+      "kind": "contradiction",
+      "rule": "temporal",
+      "scene": "ch06-sc02",
+      "ok": false,
+      "seconds": 112.0,
+      "error": null,
+      "observations": [
+        [
+          "char-bram",
+          "active",
+          "read the statements aloud",
+          "Bram read the\nstatements aloud in a flat voice"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-chapel",
+          "Mira sat with Tom near the back"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-chapel",
+          "June sat alone"
+        ],
+        [
+          "char-elias",
+          "location_at",
+          "loc-chapel",
+          "Elias sits in the\nfront pew at the inquiry"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-elias",
+          "has_item",
+          "char-elias-hat",
+          "“char-elias-hat” is not a known obj entity"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c08",
+      "kind": "contradiction",
+      "rule": "temporal",
+      "scene": "ch06-sc01",
+      "ok": false,
+      "seconds": 149.6,
+      "error": null,
+      "observations": [
+        [
+          "char-bram",
+          "active",
+          "lifted it out",
+          "Bram lifted it out with a\nhandkerchief"
+        ],
+        [
+          "char-nell",
+          "active",
+          "went white, then red",
+          "Nell went white, then red"
+        ],
+        [
+          "char-nell",
+          "mentions_fact",
+          "fact-elias-debts",
+          "I spoke with Elias\nyesterday, in the kitchen, and he said nothing about any gun"
+        ],
+        [
+          "obj-revolver",
+          "located_at",
+          "loc-crane-house",
+          "The revolver lay in Nell's sewing basket under a half-darned stocking"
+        ],
+        [
+          "obj-revolver",
+          "held_by",
+          "char-bram",
+          "Bram lifted it out with a\nhandkerchief"
+        ],
+        [
+          "char-mira",
+          "active",
+          "watched bram write",
+          "Mira watched Bram write that down"
+        ]
+      ],
+      "discarded": [],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "Nell Pike refers to “fact-elias-debts” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c09",
+      "kind": "contradiction",
+      "rule": "knowledge",
+      "scene": "ch03-sc01",
+      "ok": true,
+      "seconds": 292.3,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "active",
+          "asked why mira had come",
+          "June asked why Mira had come to Saltmere at all"
+        ],
+        [
+          "char-mira",
+          "active",
+          "told her the truth",
+          "Mira hesitated, then told her the truth"
+        ],
+        [
+          "char-mira",
+          "mentions_fact",
+          "fact-deed-forged",
+          "the deed to the orchard was forged"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-deed-forged",
+          "the deed to the orchard was forged"
+        ],
+        [
+          "loc-saltmere",
+          "location_at",
+          "loc-saltmere",
+          "June asked why Mira had come to Saltmere at all"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-saltmere",
+          "Mira hesitated, then told her the truth"
+        ]
+      ],
+      "discarded": [
+        [
+          "obj-locket",
+          "condition",
+          "not mentioned",
+          "“not mentioned” is not a condition value"
+        ],
+        [
+          "char-mira",
+          "mentions_fact",
+          "fact-deed-forged",
+          "duplicate"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "Mira Vale refers to “fact-deed-forged” but has not learned it by this point in the story"
+        ],
+        [
+          "knowledge",
+          "high",
+          false,
+          "June Crane refers to “fact-deed-forged” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c10",
+      "kind": "contradiction",
+      "rule": "knowledge",
+      "scene": "ch01-sc03",
+      "ok": true,
+      "seconds": 248.9,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "mentions_fact",
+          "fact-elias-debts",
+          "worried about Elias's debts"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-chapel",
+          "Mira walked the glasshouses alone with a lamp"
+        ],
+        [
+          "obj-ledger",
+          "located_at",
+          "loc-chapel",
+          "On a potting bench she found a ledger"
+        ],
+        [
+          "char-mira",
+          "active",
+          "walked the glasshouses alone",
+          "Mira walked the glasshouses alone with a lamp"
+        ]
+      ],
+      "discarded": [
+        [
+          "obj-ledger",
+          "condition",
+          "swollen",
+          "“swollen” is not a condition value"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-lamp",
+          "“obj-lamp” is not a known obj entity"
+        ],
+        [
+          "obj-silver-pear",
+          "condition",
+          "no condition stated",
+          "“no condition stated” is not a condition value"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "Elias Crane refers to “fact-elias-debts” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c11",
+      "kind": "contradiction",
+      "rule": "knowledge",
+      "scene": "ch04-sc02",
+      "ok": true,
+      "seconds": 245.4,
+      "error": null,
+      "observations": [
+        [
+          "char-tom",
+          "active",
+          "talked over each other",
+          "They\ntalked over each other all the way to the inn"
+        ],
+        [
+          "char-mira",
+          "active",
+          "ran the last yards",
+          "Mira ran the last yards to him"
+        ],
+        [
+          "char-tom",
+          "location_at",
+          "loc-saltmere",
+          " came up the harbor steps with his bag"
+        ],
+        [
+          "char-tom",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "June's mother died out there in the frost of '79"
+        ],
+        [
+          "char-tom",
+          "active",
+          "said",
+          "Over supper he said"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-tom",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "bag",
+          "“bag” is not a known obj entity"
+        ],
+        [
+          "char-tom",
+          "active",
+          "said",
+          "duplicate"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "Tom Vale refers to “fact-mother-died-1879” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c12",
+      "kind": "contradiction",
+      "rule": "knowledge",
+      "scene": "ch05-sc03",
+      "ok": true,
+      "seconds": 202.7,
+      "error": null,
+      "observations": [
+        [
+          "char-bram",
+          "active",
+          "kept his notebook open",
+          "Bram kept his notebook open on his knee"
+        ],
+        [
+          "char-june",
+          "active",
+          "answered his questions slowly",
+          "June answered his questions slowly"
+        ],
+        [
+          "char-nell",
+          "active",
+          "leaned in to whisper",
+          "Nell, two rows behind,\nleaned in to whisper to June about the deed"
+        ],
+        [
+          "char-bram",
+          "mentions_fact",
+          "fact-deed-forged",
+          "June told Bram what she had heard"
+        ],
+        [
+          "char-bram",
+          "mentions_fact",
+          "fact-elias-debts",
+          "Bram nodded as if\nhe had expected it"
+        ]
+      ],
+      "discarded": [
+        [
+          "obj-ledger",
+          "located_at",
+          "loc-study",
+          "“loc-study” is not a known loc entity"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "Bram Okafor refers to “fact-deed-forged” but has not learned it by this point in the story"
+        ],
+        [
+          "knowledge",
+          "high",
+          false,
+          "Bram Okafor refers to “fact-elias-debts” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c13",
+      "kind": "contradiction",
+      "rule": "presence",
+      "scene": "ch03-sc01",
+      "ok": false,
+      "seconds": 195.6,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "active",
+          "hurried between the glasshouses",
+          "Mira and June hurried between the glasshouses"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-locket",
+          "June wore her locket outside her collar"
+        ],
+        [
+          "char-tom",
+          "active",
+          "helps light the stove-pipes",
+          "Tom helps light the stove-pipes along the north row"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "loc-glass-orchard",
+          "between the glasshouses"
+        ],
+        [
+          "char-mira",
+          "active",
+          "hurried between the glasshouses",
+          "Mira and June hurried between the glasshouses"
+        ]
+      ],
+      "discarded": [
+        [
+          "obj-locket",
+          "located_at",
+          "char-june",
+          "“char-june” is not a known loc entity"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c14",
+      "kind": "contradiction",
+      "rule": "presence",
+      "scene": "ch02-sc03",
+      "ok": true,
+      "seconds": 217.2,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "has_item",
+          "obj-locket",
+          "June put it on at once, turning to the\nmirror"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-crane-house",
+          "June's room smelled of lavender"
+        ],
+        [
+          "char-elias",
+          "active",
+          "saying nothing",
+          "Elias watches from the doorway, arms folded, saying nothing"
+        ],
+        [
+          "char-elias",
+          "location_at",
+          "loc-crane-house",
+          "Elias watches from the doorway"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-crane-house",
+          "June's room smelled of lavender"
+        ],
+        [
+          "char-elias",
+          "active",
+          "gone",
+          "When Mira looked\nround again he had gone"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "held_by",
+          "char-june",
+          "held_by needs an item as its subject"
+        ],
+        [
+          "char-elias",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ]
+      ],
+      "hits": [
+        [
+          "object_state",
+          "high",
+          false,
+          "June Crane has June's silver locket here, but Mira Vale has held it since ch02-sc01 and no handover is recorded"
+        ],
+        [
+          "presence",
+          "high",
+          false,
+          "Elias Crane is at Crane House here and at Saltmere chapel in ch02-sc02, which happens at the same time"
+        ]
+      ]
+    },
+    {
+      "case": "c15",
+      "kind": "contradiction",
+      "rule": "presence",
+      "scene": "ch04-sc01",
+      "ok": true,
+      "seconds": 191.2,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "began, very carefully, to lie",
+          "Elias looked from one of them to the other and\nbegan, very carefully, to lie"
+        ],
+        [
+          "char-elias",
+          "active",
+          "looked",
+          "Elias looked from one of them to the other and\nbegan, very carefully, to lie"
+        ],
+        [
+          "char-mira",
+          "active",
+          "asked",
+          "Mira laid the deed in front of Elias and asked him who had signed it"
+        ],
+        [
+          "char-tom",
+          "location_at",
+          "loc-crane-house",
+          "Tom stands behind Mira as she\nconfronts Elias, one hand on the back of her chair"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "has_item",
+          "loc-crane-house",
+          "“loc-crane-house” is not a known obj entity"
+        ]
+      ],
+      "hits": [
+        [
+          "presence",
+          "high",
+          false,
+          "Tom Vale is at Crane House on 1892-10-13, but leaves Carrow (city) on 1892-10-12 (2 days away)"
+        ]
+      ]
+    },
+    {
+      "case": "c16",
+      "kind": "contradiction",
+      "rule": "object_state",
+      "scene": "ch05-sc05",
+      "ok": false,
+      "seconds": 162.3,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "location_at",
+          "loc-glass-orchard",
+          "Mira and June walked the aisle together"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-glass-orchard",
+          "Mira and June walked the aisle together"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "location_at",
+          "loc-glass-orchard",
+          "duplicate"
+        ],
+        [
+          "obj-silver-pear",
+          "condition",
+          "obj-silver-pear",
+          "“obj-silver-pear” is not a condition value"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c17",
+      "kind": "contradiction",
+      "rule": "object_state",
+      "scene": "ch05-sc05",
+      "ok": false,
+      "seconds": 227.0,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "active",
+          "held the lamp",
+          "June held the lamp"
+        ],
+        [
+          "char-mira",
+          "active",
+          "unlocks it",
+          "Mira unlocks it with\nthe brass key"
+        ],
+        [
+          "obj-brass-key",
+          "held_by",
+          "char-mira",
+          "the brass key from her pocket"
+        ],
+        [
+          "obj-brass-key",
+          "located_at",
+          "loc-glass-orchard",
+          "the brass key from her pocket"
+        ]
+      ],
+      "discarded": [
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "char-june",
+          "“char-june” is not a known loc entity"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "char-mira",
+          "“char-mira” is not a known loc entity"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "intact",
+          "condition needs an item as its subject"
+        ],
+        [
+          "loc-glass-orchard",
+          "condition",
+          "intact",
+          "condition needs an item as its subject"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c18",
+      "kind": "contradiction",
+      "rule": "object_state",
+      "scene": "ch06-sc02",
+      "ok": false,
+      "seconds": 225.3,
+      "error": null,
+      "observations": [
+        [
+          "obj-ledger",
+          "located_at",
+          "loc-chapel",
+          "and lays it on the table in front of him"
+        ],
+        [
+          "obj-ledger",
+          "held_by",
+          "char-june",
+          "June produces the ledger from her father's desk drawer, where she says she found it that\nmorning, and lays it on the table in front of him"
+        ],
+        [
+          "char-bram",
+          "active",
+          "asked",
+          "Bram asked whether anyone had seen Elias's accounts"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "where she says she found it that\nmorning"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "active",
+          "stood",
+          "quote is not in the scene"
+        ],
+        [
+          "obj-ledger",
+          "has_item",
+          "obj-ledger",
+          "has_item needs a character as its subject"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-elias-debts",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "June Crane refers to “fact-mother-died-1879” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c19",
+      "kind": "contradiction",
+      "rule": "object_state",
+      "scene": "ch06-sc04",
+      "ok": true,
+      "seconds": 232.9,
+      "error": null,
+      "observations": [
+        [
+          "char-mira",
+          "active",
+          "barely listened",
+          "Mira barely listened"
+        ],
+        [
+          "char-mira",
+          "has_item",
+          "obj-locket",
+          "Mira turns June's locket over in her pocket"
+        ],
+        [
+          "loc-saltmere",
+          "location_at",
+          "loc-saltmere",
+          "The harbor wall was wet with spray"
+        ],
+        [
+          "obj-silver-pear",
+          "mentions_fact",
+          "fact-deed-forged",
+          "the orchard and the frost"
+        ],
+        [
+          "char-tom",
+          "active",
+          "talked about carrow",
+          "Tom talked about Carrow"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "quote is not in the scene"
+        ],
+        [
+          "char-mira",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "quote is not in the scene"
+        ],
+        [
+          "obj-tom-letter",
+          "date_of_event",
+          "1892-10-23",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": [
+        [
+          "object_state",
+          "high",
+          false,
+          "Mira Vale has June's silver locket here, but June Crane has held it since ch02-sc03 and no handover is recorded"
+        ],
+        [
+          "knowledge",
+          "high",
+          false,
+          "the silver pear (glass tree) refers to “fact-deed-forged” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c20",
+      "kind": "contradiction",
+      "rule": "age_date",
+      "scene": "ch06-sc03",
+      "ok": false,
+      "seconds": 222.8,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "active",
+          "asked",
+          "June, now twenty-one, folded her hands on the\ntable and asked"
+        ],
+        [
+          "char-mira",
+          "active",
+          "let out a breath",
+          "Mira let out a\nbreath she had been holding"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-deed-forged",
+          "what would happen to the forged deed"
+        ],
+        [
+          "char-mira",
+          "mentions_fact",
+          "fact-deed-forged",
+          "what would happen to the forged deed"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "age",
+          "char-june",
+          "age is not a number"
+        ],
+        [
+          "loc-crane-house",
+          "located_at",
+          "loc-crane-house",
+          "located_at needs an item as its subject"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-deed-forged",
+          "duplicate"
+        ],
+        [
+          "char-mira",
+          "mentions_fact",
+          "fact-deed-forged",
+          "duplicate"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c21",
+      "kind": "contradiction",
+      "rule": "age_date",
+      "scene": "ch04-sc05",
+      "ok": false,
+      "seconds": 239.9,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "stood among the glass trees and shouted",
+          "Elias, barely thirty, stood among the glass trees and shouted"
+        ],
+        [
+          "char-elias",
+          "location_at",
+          "loc-glass-orchard",
+          "Elias, barely thirty, stood among the glass trees"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-glass-orchard",
+          "Little June watched from the doorway"
+        ],
+        [
+          "char-june",
+          "active",
+          "watched from the doorway",
+          "Little June watched from the doorway with her\nthumb in her mouth"
+        ],
+        [
+          "char-elias",
+          "has_item",
+          "obj-locket",
+          "while the stove-pipes smoked behind them"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-elias",
+          "age",
+          "char-elias",
+          "age is not a number"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "obj-silver-pear",
+          "condition",
+          "whole",
+          "“whole” is not a condition value"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "c22",
+      "kind": "contradiction",
+      "rule": "age_date",
+      "scene": "ch03-sc04",
+      "ok": true,
+      "seconds": 255.2,
+      "error": null,
+      "observations": [
+        [
+          "char-mira",
+          "active",
+          "read it by the window",
+          "Mira took Tom's letter up to her room and read it by the window"
+        ],
+        [
+          "char-mira",
+          "active",
+          "read it",
+          "Mira took Tom's letter up to her room and read it by the window"
+        ],
+        [
+          "char-tom",
+          "mentions_fact",
+          "fact-deed-forged",
+          "The deed was forged, he wrote"
+        ],
+        [
+          "obj-tom-letter",
+          "located_at",
+          "loc-crane-house",
+          "Mira took Tom's letter up to her room"
+        ],
+        [
+          "obj-tom-letter",
+          "date_of_event",
+          "1892-10-14",
+          "It was dated\n14 October in his cramped hand"
+        ],
+        [
+          "char-tom",
+          "active",
+          "would leave carrow",
+          "he would leave Carrow as soon as he could"
+        ]
+      ],
+      "discarded": [
+        [
+          "obj-tom-letter",
+          "date_of_event",
+          "1892-10-14",
+          "duplicate"
+        ],
+        [
+          "char-tom",
+          "mentions_fact",
+          "fact-deed-forged",
+          "duplicate"
+        ]
+      ],
+      "hits": [
+        [
+          "age_date",
+          "high",
+          false,
+          "Tom's letter from Carrow: date of event is “1892-10-14” here but “1892-10-10” in ch03-sc02"
+        ]
+      ]
+    },
+    {
+      "case": "c24",
+      "kind": "contradiction",
+      "rule": "promise",
+      "scene": "ch06-sc03",
+      "ok": false,
+      "seconds": 180.4,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "active",
+          "stood up",
+          "June stood up"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "My mother's second will"
+        ],
+        [
+          "char-nell",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "Nell kept it for me"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-deed-forged",
+          "The lawyer read it twice and\nset the forged deed aside"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "has_item",
+          "obj-paper",
+          "“obj-paper” is not a known obj entity"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "June Crane refers to “fact-mother-died-1879” but has not learned it by this point in the story"
+        ],
+        [
+          "knowledge",
+          "high",
+          false,
+          "Nell Pike refers to “fact-mother-died-1879” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "c25",
+      "kind": "contradiction",
+      "rule": "travel",
+      "scene": "ch04-sc02",
+      "ok": false,
+      "seconds": 261.4,
+      "error": null,
+      "observations": [
+        [
+          "char-mira",
+          "active",
+          "ran to him",
+          "Mira ran to him"
+        ],
+        [
+          "char-tom",
+          "location_at",
+          "loc-saltmere",
+          "Tom came up the harbor steps at four o'clock with his bag over his shoulder"
+        ],
+        [
+          "char-tom",
+          "active",
+          "walked up to the inn together",
+          "They walked up to the inn together"
+        ],
+        [
+          "char-tom",
+          "has_item",
+          "obj-tom-letter",
+          "Tom came up the harbor steps at four o'clock with his bag over his shoulder"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "active",
+          "said",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "active",
+          "grinned",
+          "quote is not in the scene"
+        ],
+        [
+          "char-tom",
+          "date_of_event",
+          "1892-10-14",
+          "“1892-10-14” is not in the quoted words"
+        ],
+        [
+          "char-tom",
+          "location_at",
+          "loc-saltmere",
+          "duplicate"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d01",
+      "kind": "decoy",
+      "rule": "temporal",
+      "scene": "ch04-sc05",
+      "ok": true,
+      "seconds": 260.0,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "argues with his wife",
+          "Elias argues with his wife among the trees"
+        ],
+        [
+          "char-elias",
+          "location_at",
+          "loc-glass-orchard",
+          "among the trees, his voice carrying through\nthe glass"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-glass-orchard",
+          "among the trees"
+        ],
+        [
+          "obj-locket",
+          "held_by",
+          "char-june",
+          "The silver pear stands whole in the lamplight"
+        ],
+        [
+          "obj-locket",
+          "located_at",
+          "loc-glass-orchard",
+          "The silver pear stands whole in the lamplight"
+        ]
+      ],
+      "discarded": [
+        [
+          "obj-silver-pear",
+          "condition",
+          "whole",
+          "“whole” is not a condition value"
+        ],
+        [
+          "char-elias",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d02",
+      "kind": "decoy",
+      "rule": "age_date",
+      "scene": "ch04-sc05",
+      "ok": true,
+      "seconds": 239.3,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "shouting",
+          "Her father\nand mother were shouting"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-brass-key",
+          "with her thumb in her mouth"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "age",
+          "char-june",
+          "age is not a number"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-glass-orchard",
+          "quote is not in the scene"
+        ],
+        [
+          "char-elias",
+          "active",
+          "shouting",
+          "duplicate"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-glass-orchard",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-glass-orchard",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-glass-orchard",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d03",
+      "kind": "decoy",
+      "rule": "temporal",
+      "scene": "ch05-sc01",
+      "ok": true,
+      "seconds": 196.5,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "speaks to june gently",
+          "Elias speaks to June gently"
+        ],
+        [
+          "char-elias",
+          "location_at",
+          "loc-glass-orchard",
+          "her father walked the orchard"
+        ],
+        [
+          "obj-silver-pear",
+          "located_at",
+          "loc-glass-orchard",
+          "Look under the silver pear"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-elias",
+          "active",
+          "speaks to June gently",
+          "duplicate"
+        ],
+        [
+          "char-june",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "obj-locket",
+          "condition",
+          "none",
+          "“none” is not a condition value"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d04",
+      "kind": "decoy",
+      "rule": "object_state",
+      "scene": "ch05-sc01",
+      "ok": true,
+      "seconds": 255.8,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "walking towards it",
+          "her father was walking towards it"
+        ],
+        [
+          "obj-silver-pear",
+          "condition",
+          "intact",
+          "The silver pear stood intact at the end of the row"
+        ],
+        [
+          "loc-glass-orchard",
+          "location_at",
+          "loc-glass-orchard",
+          "the orchard was whole"
+        ],
+        [
+          "obj-silver-pear",
+          "located_at",
+          "loc-glass-orchard",
+          "at the end of the row"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-elias",
+          "status",
+          "alive",
+          "“alive” is not a status value"
+        ],
+        [
+          "obj-silver-pear",
+          "condition",
+          "intact",
+          "duplicate"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "quote is not in the scene"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-elias-debts",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d05",
+      "kind": "decoy",
+      "rule": "presence",
+      "scene": "ch05-sc04",
+      "ok": true,
+      "seconds": 317.1,
+      "error": null,
+      "observations": [
+        [
+          "char-nell",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "She said she had seen Tom at the glasshouse that night,\nstanding in the doorway of The Glass Orchard with a lamp. Nobody else had seen him there"
+        ],
+        [
+          "char-nell",
+          "mentions_fact",
+          "fact-elias-debts",
+          "She said she had seen Tom at the glasshouse that night,\nstanding in the doorway of The Glass Orchard with a lamp. Nobody else had seen him there"
+        ],
+        [
+          "char-nell",
+          "mentions_fact",
+          "fact-deed-forged",
+          "She said she had seen Tom at the glasshouse that night,\nstanding in the doorway of The Glass Orchard with a lamp. Nobody else had seen him there"
+        ],
+        [
+          "char-tom",
+          "location_at",
+          "loc-glass-orchard",
+          "standing in the doorway of The Glass Orchard with a lamp"
+        ],
+        [
+          "obj-brass-key",
+          "located_at",
+          "loc-crane-house",
+          "the glasshouse that night"
+        ],
+        [
+          "char-nell",
+          "active",
+          "told",
+          "Nell told it her own way, and told it often"
+        ],
+        [
+          "char-tom",
+          "active",
+          "standing",
+          "standing in the doorway of The Glass Orchard with a lamp"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-tom",
+          "location_at",
+          "loc-glass-orchard",
+          "duplicate"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "low",
+          true,
+          "Nell Pike refers to “fact-mother-died-1879” but has not learned it by this point in the story"
+        ],
+        [
+          "knowledge",
+          "low",
+          true,
+          "Nell Pike refers to “fact-elias-debts” but has not learned it by this point in the story"
+        ],
+        [
+          "knowledge",
+          "low",
+          true,
+          "Nell Pike refers to “fact-deed-forged” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "d06",
+      "kind": "decoy",
+      "rule": "object_state",
+      "scene": "ch03-sc01",
+      "ok": true,
+      "seconds": 168.1,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "active",
+          "carried coal",
+          "June carried coal between the rows beside Mira"
+        ],
+        [
+          "char-june",
+          "has_item",
+          "obj-locket",
+          "June's silver\nlocket swung at her throat"
+        ],
+        [
+          "char-mira",
+          "location_at",
+          "loc-glass-orchard",
+          "June carried coal between the rows beside Mira"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-mother-died-1879",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d07",
+      "kind": "decoy",
+      "rule": "knowledge",
+      "scene": "ch05-sc03",
+      "ok": false,
+      "seconds": 244.3,
+      "error": null,
+      "observations": [
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-deed-forged",
+          "the deed to the orchard was forged"
+        ],
+        [
+          "char-nell",
+          "mentions_fact",
+          "fact-deed-forged",
+          "the deed was forged"
+        ],
+        [
+          "char-june",
+          "active",
+          "told him plainly",
+          "June told him plainly"
+        ],
+        [
+          "char-bram",
+          "active",
+          "asked her what she knew",
+          "Bram asked her\nwhat she knew"
+        ],
+        [
+          "char-nell",
+          "active",
+          "whispered to june",
+          "Nell leaned in and whispered to June"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-deed-forged",
+          "duplicate"
+        ],
+        [
+          "char-june",
+          "active",
+          "told him plainly",
+          "duplicate"
+        ],
+        [
+          "char-june",
+          "mentions_fact",
+          "fact-deed-forged",
+          "duplicate"
+        ]
+      ],
+      "hits": [
+        [
+          "knowledge",
+          "high",
+          false,
+          "Nell Pike refers to “fact-deed-forged” but has not learned it by this point in the story"
+        ]
+      ]
+    },
+    {
+      "case": "d08",
+      "kind": "decoy",
+      "rule": "age_date",
+      "scene": "ch06-sc05",
+      "ok": true,
+      "seconds": 182.2,
+      "error": null,
+      "observations": [
+        [
+          "char-mira",
+          "location_at",
+          "loc-chapel",
+          "She knelt by the central glasshouse"
+        ],
+        [
+          "char-june",
+          "active",
+          "held the lamp",
+          "while June held the lamp"
+        ],
+        [
+          "obj-silver-pear",
+          "located_at",
+          "loc-glass-orchard",
+          " the central glasshouse"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-mira",
+          "age",
+          "char-june",
+          "age is not a number"
+        ],
+        [
+          "obj-silver-pear",
+          "condition",
+          "intact",
+          "“intact” is not in the quoted words"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d09",
+      "kind": "decoy",
+      "rule": "single_valued",
+      "scene": "ch01-sc02",
+      "ok": true,
+      "seconds": 183.8,
+      "error": null,
+      "observations": [
+        [
+          "char-elias",
+          "active",
+          "introduced",
+          "Elias introduced his daughter"
+        ],
+        [
+          "char-june",
+          "location_at",
+          "loc-crane-house",
+          "Elias introduced his daughter with a wave of his hand"
+        ]
+      ],
+      "discarded": [
+        [
+          "char-june",
+          "age",
+          "char-june",
+          "age is not a number"
+        ],
+        [
+          "char-june",
+          "eye_color",
+          "loc-saltmere",
+          "“loc-saltmere” is not in the quoted words"
+        ],
+        [
+          "char-mira",
+          "active",
+          "thought",
+          "quote is not in the scene"
+        ]
+      ],
+      "hits": []
+    },
+    {
+      "case": "d10",
+      "kind": "decoy",
+      "rule": "temporal",
+      "scene": "ch06-sc04",
+      "ok": false,
+      "seconds": 153.4,
+      "error": null,
+      "observations": [
+        [
+          "char-mira",
+          "active",
+          "laughed for the first time in a week",
+          "Mira laughed for the first time in a\nweek"
+        ],
+        [
+          "char-tom",
+          "active",
+          "said",
+          "Tom said, \"Elias would have hated this"
+        ],
+        [
+          "char-elias",
+          "mentions_fact",
+          "fact-elias-debts",
+          "Elias would have hated this"
+        ],
+        [
+          "loc-saltmere",
+          "location_at",
+          "loc-saltmere",
+          "On the harbor wall"
+        ]
+      ],
+      "discarded": [],
+      "hits": [
+        [
+          "temporal",
+          "high",
+          false,
+          "Elias Crane is dead by this point in the story (since ch04-sc03) but acts here"
+        ]
+      ]
+    }
+  ]
+}

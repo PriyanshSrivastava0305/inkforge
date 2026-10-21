@@ -91,6 +91,7 @@ scenes:
     summary: At the tavern, Constable Bram tells Tom that Elias is deep in debt. Tom keeps it to himself.
     establishes:
       - [char-bram, title_rank, constable]
+      - [char-bram, knows_fact, fact-elias-debts]       # he tells Tom
       - [char-tom, knows_fact, fact-elias-debts]
   - id: ch01-sc05
     when: 1892-10-03
@@ -99,6 +100,7 @@ scenes:
     participants: [char-mira, char-nell]
     summary: Nell tells Mira that June's mother died in the frost of '79, and that the central glasshouse has been locked since. She mentions a letter the wife hid in the chapel.
     establishes:
+      - [char-nell, knows_fact, fact-mother-died-1879]  # she tells Mira
       - [char-mira, knows_fact, fact-mother-died-1879]
     promises_touched: [prom-001, prom-003]
 
@@ -261,6 +263,7 @@ scenes:
     participants: [char-bram, char-june, char-nell]
     summary: Bram questions June at the chapel. Nell, there to pray, tells June about the forgery; June then repeats it to Bram.
     establishes:
+      - [char-nell, knows_fact, fact-deed-forged]       # she is the one who tells June
       - [char-june, knows_fact, fact-deed-forged]
   - id: ch05-sc04
     when: 1892-10-18 18:00

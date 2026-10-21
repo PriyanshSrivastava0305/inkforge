@@ -1,0 +1,66 @@
+---
+id: facts.extract
+version: 2
+profile: planner
+description: Stage F — candidate facts from one scene, each with the exact words that state it. v2 spells out each value's format (8B wrote ids as ages and conditions in v1) and adds departs_on.
+---
+[system]
+You keep the continuity bible for a novelist. You record only what the scene's own words state. You never guess, infer or add.
+[user]
+WHO AND WHAT (use these ids as "subject")
+{% for e in entities %}
+- {{ e.id }} = {{ e.name }}{% if e.aliases %} (also: {{ e.aliases | join(", ") }}){% endif %}
+
+{% endfor %}
+{% if secrets %}
+
+THINGS NOT EVERYONE KNOWS (for "mentions_fact")
+{% for label, about in secrets %}
+- {{ label }}{% if about != label %}: {{ about }}{% endif %}
+
+{% endfor %}
+{% endif %}
+
+SCENE {{ scene_id }}{% if when %} (story date: {{ when }}){% endif %}
+
+"""{{ text }}"""
+
+List up to {{ max_facts }} facts this scene states. Most useful first:
+1. lasting details of a person: eyes, hair, height, handedness, rank or title, age;
+2. dates written in the scene, and when someone left a place;
+3. who holds or uses which thing, things changing hands, a thing broken, lost or whole;
+4. a person showing they know one of the THINGS NOT EVERYONE KNOWS;
+5. who is present and acting.
+
+Each fact has:
+- "subject": one id from the list.
+- "predicate": one of the names below.
+- "value": exactly in the format shown for that predicate.
+- "quote": 4–25 words copied exactly from the scene — the words that state this fact.
+
+predicate      subject     value
+eye_color      person      a colour word from the text: grey
+hair           person      a colour or style word from the text: red
+height         person      a word from the text: tall
+handedness     person      left or right
+title_rank     person      the rank or title word: constable
+age            person      a number: 34
+status         person      dead or injured
+location_at    person      a place id: loc-...
+departs_on     person      a place id, a comma, a date: loc-..., YYYY-MM-DD
+active         person      what they do, 2–6 words: lights the stove
+has_item       person      a thing id: obj-...
+held_by        thing       the id of the person who has it now: char-...
+located_at     thing       a place id: loc-...
+condition      thing       intact, broken, lost or destroyed
+date_of_event  thing       a date written in the text, as YYYY-MM-DD
+{% if secrets %}
+mentions_fact  person      the label before the colon: fact-...
+{% endif %}
+
+Skip anything the scene does not state in words. An empty list is a correct answer.
+
+Example of the expected shape (different story):
+{"facts": [{"subject": "char-anna", "predicate": "eye_color", "value": "brown", "quote": "Anna's brown eyes narrowed at the open ledger"},
+  {"subject": "char-anna", "predicate": "age", "value": "40", "quote": "Anna, forty that spring, kept the books"},
+  {"subject": "obj-lantern", "predicate": "held_by", "value": "char-anna", "quote": "He pressed the lantern into Anna's hands"}]}

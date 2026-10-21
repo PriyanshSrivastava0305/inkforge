@@ -109,7 +109,12 @@ def test_state_facts_are_queued_with_their_source_and_events_are_not(s):
         ("char-mira", "handedness", "left", "her left hand ached from the glazing"),
         ("char-tom", "active", "speaks to Mira", "“You kept it,” said Tom"),
     )
-    assert len(r.observations) == 2 and [f.predicate for f in r.candidates] == ["handedness"]
+    assert [o.predicate for o in r.observations] == [
+        "handedness",
+        "active",
+        "location_at",
+    ]  # presence derived
+    assert [f.predicate for f in r.candidates] == ["handedness"]
     queued = s.review_queue.all()
     assert len(queued) == 1
     f = queued[0]
@@ -297,3 +302,75 @@ def test_whole_paragraph_quotes_are_rejected(s):
     r = extract(s, ("char-mira", "handedness", "left", TEXT.replace("\n\n", " ")))
     assert r.discarded and "too long" in r.discarded[0].reason
     assert extract(s, ("char-mira", "handedness", "left", long_quote)).observations
+
+
+# ---------------------------------------------------------------- 8B findings (2026-10-15)
+def test_an_actor_is_placed_where_the_card_says_the_scene_happens(s):
+    r = extract(s, ("char-tom", "active", "speaks to Mira", "“You kept it,” said Tom"))
+    placed = [o for o in r.observations if o.predicate == "location_at"]
+    assert [(o.subject_id, o.value) for o in placed] == [("char-tom", "loc-lighthouse")]
+    assert not r.candidates  # derived, so checked but never proposed as canon
+
+
+@pytest.mark.parametrize(
+    ("row", "why"),
+    [
+        (
+            ("char-mira", "has_item", "obj-brass-key", "Her blue eyes were tired"),
+            "does not name obj-brass-key",
+        ),
+        (
+            ("obj-brass-key", "held_by", "char-tom", "He stood in the doorway of the lighthouse"),
+            "does not name",
+        ),
+        (("char-tom", "age", "char-tom", "He stood in the doorway of the lighthouse"), "not a number"),
+    ],
+)
+def test_a_quote_must_be_about_what_the_fact_is_about(s, row, why):
+    r = extract(s, row)
+    assert not r.observations and why in r.discarded[0].reason
+
+
+def test_model_wording_is_mapped_to_the_controlled_values(s):
+    s.save_draft("ch01-sc02", "The brass key lay whole on the sill, untouched since spring.")
+    r = extract(s, ("obj-brass-key", "condition", "whole", "The brass key lay whole on the sill"))
+    assert [(o.predicate, o.value) for o in r.observations] == [("condition", "intact")]
+
+
+def test_a_secret_is_mentioned_only_if_the_quote_says_it(s):
+    s.update_project(settings={"secrets": {"fact-key-copy": "Tom had a copy of the brass key made"}})
+    s.upsert(
+        "facts",
+        m.Fact(
+            id=s.mint("fact"),
+            subject_id="char-tom",
+            predicate="knows_fact",
+            value="fact-key-copy",
+            valid_from="ch01-sc01",
+            canon_status=m.CanonStatus.CANON,
+        ),
+    )
+    s.save_draft("ch01-sc02", "“I know about the copy of the key,” Mira said. “I lost this when I was nine.”")
+    r = extract(
+        s,
+        ("char-mira", "mentions_fact", "fact-key-copy", "I know about the copy of the key"),
+        ("char-mira", "mentions_fact", "fact-key-copy", "I lost this when I was nine"),
+    )
+    assert [o.quote for o in r.observations if o.predicate == "mentions_fact"] == [
+        "I know about the copy of the key"
+    ]
+    assert "does not say what" in r.discarded[0].reason
+
+
+def test_departures_need_a_named_place_and_a_stated_day(s):
+    s.save_codex(m.Location(id="loc-carrow", name="Carrow"))
+    card = s.read("card", "ch01-sc02")
+    s.save("card", card.model_copy(update={"time": m.SceneTime(story_datetime="1892-10-14")}))
+    s.save_draft("ch01-sc02", "“I left Carrow only that morning,” Tom said, “and I have not stopped since.”")
+    r = extract(
+        s,
+        ("char-tom", "departs_on", "loc-carrow, 1892-10-14", "I left Carrow only that morning"),
+        ("char-tom", "departs_on", "Carrow, 1892-10-11", "I left Carrow only that morning"),
+    )
+    assert [o.value for o in r.observations if o.predicate == "departs_on"] == ["loc-carrow@1892-10-14"]
+    assert "does not give the date" in r.discarded[0].reason

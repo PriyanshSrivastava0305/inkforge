@@ -31,10 +31,11 @@ approved-or-draft scene text
 ## 2. Fact extraction (review queue)
 
 - After a scene is drafted/approved, a planner-profile call extracts **candidate facts** as structured triples with the exact supporting quote: `(subject_id, predicate, value, quote)`.
-- Code verifies the quote exists verbatim in the text (fuzzy ≥ 0.95) — otherwise the fact is discarded (prevents hallucinated evidence).
+- Code verifies the quote exists verbatim in the text (fuzzy ≥ 0.95) — otherwise the fact is discarded (prevents hallucinated evidence). The quote must be ≤ 40 words, and a literal value must be visible in it (D37): an age as digits or words, a date's day and month, a colour or rank word, words of death/injury or of breakage/wholeness.
 - Subject must resolve to a known Codex id (`char-*`, `loc-*`, `obj-*`, `lore-*`) or a proposed new entity (which goes into the Codex candidate queue along with the fact).
 - Predicates come from a controlled vocabulary to keep checks deterministic: `age, eye_color, hair, height, status (alive/dead/injured), injury, location_at, holds_object, knows_fact, relationship, title_rank, date_of_event, rule_of_world` for characters/world, and `held_by, located_at, condition (intact/broken/lost/destroyed)` for items. Free-form predicates are allowed but only checked by the model.
 - `valid_from` is the scene being extracted from. The previous value of a single-valued, time-varying predicate (e.g. `held_by`) gets `valid_to` set automatically when the new fact is accepted.
+- Implemented vocabulary (`quality/extract.py`): state — `eye_color, hair, height, handedness, title_rank, age, status (dead/injured), location_at, held_by, located_at, condition, date_of_event`; events (checked, never canon) — `active, has_item, mentions_fact`. `mentions_fact` values are labels of canon `knows_fact` values, shown with descriptions from `settings.secrets`. Payoffs without setup and free-form predicates are left to model adjudication.
 - Candidates go to `canon/review_queue.jsonl`. Author accepts (→ canon), rejects, or bulk-accepts low-risk types. Setting: auto-accept extracted facts that don't conflict with existing canon (off by default).
 
 ## 3. Canon conflict rules
