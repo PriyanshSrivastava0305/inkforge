@@ -404,3 +404,13 @@ def test_a_crash_after_saving_a_kept_edit_is_finished_on_resume(s):
     assert done.status == JobStatus.SUCCEEDED and "prose" not in model.calls  # not revised twice
     f = s.findings.get(slop.id)
     assert f.status == "fixed" and f.resolution_note == f"revised in v{v} (rev-0042)"
+
+
+def test_changing_only_punctuation_is_not_a_fix(s):
+    """1B trial (2026-10-23): a voice finding was 'fixed' by deleting three commas."""
+    run(s, Model(), "check")
+    accept(s, "critic:voice")
+    job = run(s, Model(revise=lambda passage, prompt: passage.replace("tonight, not", "tonight not")), "revise",
+              rubric=False)  # fmt: skip
+    assert text_of(s) == TEXT
+    assert "unchanged" in events(s, job, "revise.attempt")[0]["reason"]

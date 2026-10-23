@@ -238,7 +238,13 @@ class ChaptersStage(Stage):
         return [f"chapter:{c}" for c in mine]
 
     def finalize(self, ctx: StageContext) -> list[Problem]:
-        return outline_checks(ctx)
+        out = outline_checks(ctx)
+        asked = ctx.params.get("chapters") or ctx.store.project.settings.get("chapters")
+        outline = ctx.store.try_read("outline")
+        if asked and outline and len(outline.chapters) != int(asked):
+            out.append(Problem("warning", f"asked for {asked} chapter(s) but every act needs at least one: "
+                               f"planned {len(outline.chapters)}"))  # fmt: skip
+        return out
 
     def gate_artifacts(self, ctx: StageContext) -> list[tuple[ArtifactKind, str | None]]:
         outline = ctx.store.try_read("outline")

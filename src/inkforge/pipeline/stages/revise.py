@@ -21,6 +21,7 @@ own version with its own diff, so every change is attributable and reversible (`
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from pydantic import BaseModel
@@ -257,12 +258,15 @@ class ReviseStage(Stage):
                 if any(a.detector == f.detector and a.evidence[0].span[0] < new_end and a.evidence[0].span[1] > w.start
                        for a in after):  # fmt: skip
                     return f"still detected: {f.claim}", calls
-            elif evidence_in(candidate, f) is not None and not f.detector.startswith(PREFIX):
+            elif not f.detector.startswith(PREFIX) and (
+                evidence_in(candidate, f) is not None or same_words(w.quotes[findex(w, f)], candidate)
+            ):
+                # 1B trial: deleting three commas "fixed" a voice finding — punctuation is not an edit
                 return f"the passage the issue points at is unchanged: “{w.quotes[0][:80]}”", calls
             elif f.detector.startswith(PREFIX):
                 # the words that contradict canon must change; re-extraction alone could just miss them
                 obs_value = next((ev.quote for ev in f.evidence if ev.scene_id == scene), "")
-                if obs_value and obs_value in candidate:
+                if obs_value and same_words(obs_value, candidate):
                     return f"the contradicting words are unchanged: “{obs_value[:80]}”", calls
         fresh_high = [a for a in after if a.severity == "high" and (a.detector, a.claim) not in before]
         if fresh_high:
@@ -404,6 +408,16 @@ class ReviseStage(Stage):
 
     def gate_artifacts(self, ctx: StageContext) -> list[tuple[ArtifactKind, str | None]]:
         return []
+
+
+def findex(w: Window, f: Finding) -> int:
+    return next(i for i, x in enumerate(w.findings) if x.id == f.id)
+
+
+def same_words(quote: str, text: str) -> bool:
+    """Do the quote's words still appear, in order, in the text (ignoring punctuation and case)?"""
+    q = " ".join(re.findall(r"[a-z0-9']+", quote.lower()))
+    return bool(q) and q in " ".join(re.findall(r"[a-z0-9']+", text.lower()))
 
 
 def _keep_edges(old: str, new: str) -> str:
