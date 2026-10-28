@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1470" width="1400" height="1470" role="img" aria-labelledby="t d">
+  <title id="t">InkForge system architecture</title>
+  <desc id="d">Layered architecture of the InkForge local story-writing agent: author, CLI, conductor, pipeline stages A to H, context and memory, quality engine, prompts, model router, model adapters, and file storage.</desc>
+  <defs>
+    <style>
+      text { font-family: "Segoe UI", Helvetica, Arial, sans-serif; fill: #1f2937; }
+      .h1 { font-size: 28px; font-weight: 700; }
+      .sub { font-size: 14px; fill: #4b5563; }
+      .ttl { font-size: 15px; font-weight: 700; letter-spacing: 0.4px; }
+      .ln { font-size: 13px; }
+      .sm { font-size: 12px; }
+      .chipT { font-size: 14px; font-weight: 700; }
+      .chipS { font-size: 11px; fill: #4b5563; }
+      .note { font-size: 12px; fill: #6b7280; }
+      .arrow { stroke: #374151; stroke-width: 2; fill: none; marker-end: url(#ah); }
+      .rail { stroke: #64748b; stroke-width: 1.6; stroke-dasharray: 5 4; fill: none; marker-end: url(#ahs); }
+    </style>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#374151"/>
+    </marker>
+    <marker id="ahs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect width="1400" height="1470" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="40" y="42" class="h1">InkForge — System Architecture</text>
+  <text x="40" y="64" class="sub">Local-first story and script writing agent · everything runs on one laptop · no cloud · local git only</text>
+
+  <!-- 1. Author -->
+  <rect x="40" y="82" width="900" height="58" rx="10" fill="#fff4d6" stroke="#e0a800" stroke-width="2"/>
+  <text x="58" y="106" class="ttl">AUTHOR (you)</text>
+  <text x="58" y="128" class="ln">Only you: approve gates and drafts · accept findings · accept or retcon canon · add style lessons</text>
+  <rect x="970" y="82" width="390" height="58" rx="10" fill="#fafafa" stroke="#9ca3af" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="988" y="106" class="ttl" style="fill:#6b7280">PLANNED: LOCAL WEB APP (Phase 7+)</text>
+  <text x="988" y="128" class="ln" style="fill:#6b7280">Same Conductor, browser instead of terminal</text>
+  <path class="arrow" d="M490 140 V172"/>
+
+  <!-- 2. CLI -->
+  <rect x="40" y="172" width="1320" height="96" rx="10" fill="#e3f0ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="58" y="196" class="ttl">COMMAND LINE (Typer)  ·  cli.py  ·  cli_pipeline.py  ·  cli_quality.py</text>
+  <text x="58" y="220" class="ln">run · spec · design · outline · cards · draft · check · revise · polish · resume · cancel · approve · export</text>
+  <text x="58" y="242" class="ln">facts list/accept/reject/retcon · lessons list/add/remove · findings --accept · diff · show · status · backup · doctor</text>
+  <text x="1342" y="196" class="sm" text-anchor="end">scripts/try_agent.py = one-command end-to-end trial</text>
+  <path class="arrow" d="M700 268 V300"/>
+  <text x="712" y="289" class="note">creates a Job</text>
+
+  <!-- 3. Conductor -->
+  <rect x="40" y="300" width="1320" height="100" rx="10" fill="#ede7ff" stroke="#7c5ce0" stroke-width="2"/>
+  <text x="58" y="324" class="ttl">CONDUCTOR  (the orchestrator)</text>
+  <text x="58" y="348" class="ln">Job file checkpointed after every step · resume · cancel file · one retry on transient model errors</text>
+  <text x="58" y="370" class="ln">Approval gates: spec · design · outline · scene_cards  (--yes answers planning gates only; drafts are never auto-approved)</text>
+  <text x="58" y="390" class="ln">Crash repair · integrity check · project run-lock · keep-awake · modes: plan · draft · full · check · revise · polish</text>
+  <path class="arrow" d="M700 400 V432"/>
+  <text x="712" y="421" class="note">runs one stage step per scene / chapter</text>
+
+  <!-- 4. Stages -->
+  <rect x="40" y="432" width="1320" height="104" rx="10" fill="#e0f7f3" stroke="#14b8a6" stroke-width="2"/>
+  <text x="58" y="455" class="ttl">PIPELINE STAGES</text>
+  <g>
+    <rect x="58"   y="468" width="140" height="56" rx="8" fill="#fff" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="128"  y="490" class="chipT" text-anchor="middle">A  Spec</text>
+    <text x="128"  y="509" class="chipS" text-anchor="middle">planner model</text>
+
+    <rect x="226"  y="468" width="140" height="56" rx="8" fill="#fff" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="296"  y="490" class="chipT" text-anchor="middle">B  Design</text>
+    <text x="296"  y="509" class="chipS" text-anchor="middle">planner model</text>
+
+    <rect x="394"  y="468" width="140" height="56" rx="8" fill="#fff" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="464"  y="490" class="chipT" text-anchor="middle">C  Chapters</text>
+    <text x="464"  y="509" class="chipS" text-anchor="middle">planner model</text>
+
+    <rect x="562"  y="468" width="140" height="56" rx="8" fill="#fff" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="632"  y="490" class="chipT" text-anchor="middle">D  Scene cards</text>
+    <text x="632"  y="509" class="chipS" text-anchor="middle">planner model</text>
+
+    <rect x="730"  y="468" width="140" height="56" rx="8" fill="#fff" stroke="#0f766e" stroke-width="2"/>
+    <text x="800"  y="490" class="chipT" text-anchor="middle">E  Drafts</text>
+    <text x="800"  y="509" class="chipS" text-anchor="middle">prose model</text>
+
+    <rect x="898"  y="468" width="140" height="56" rx="8" fill="#fff" stroke="#0f766e" stroke-width="2"/>
+    <text x="968"  y="490" class="chipT" text-anchor="middle">F  Critique</text>
+    <text x="968"  y="509" class="chipS" text-anchor="middle">critic + planner</text>
+
+    <rect x="1066" y="468" width="140" height="56" rx="8" fill="#fff" stroke="#0f766e" stroke-width="2"/>
+    <text x="1136" y="490" class="chipT" text-anchor="middle">G  Revise</text>
+    <text x="1136" y="509" class="chipS" text-anchor="middle">prose + critic</text>
+
+    <rect x="1234" y="468" width="108" height="56" rx="8" fill="#fff" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="1288" y="490" class="chipT" text-anchor="middle">H  Preview</text>
+    <text x="1288" y="509" class="chipS" text-anchor="middle">no model</text>
+  </g>
+  <g class="arrow" style="stroke-width:1.6">
+    <path d="M198 496 H224"/><path d="M366 496 H392"/><path d="M534 496 H560"/><path d="M702 496 H728"/>
+    <path d="M870 496 H896"/><path d="M1038 496 H1064"/><path d="M1206 496 H1232"/>
+  </g>
+  <text x="1342" y="455" class="note" text-anchor="end">gates after A–D · you approve drafts between E and F</text>
+
+  <path class="arrow" d="M250 536 V568"/>
+  <path class="arrow" d="M700 536 V568"/>
+  <path class="arrow" d="M1150 536 V568"/>
+
+  <!-- 5a. Context + memory -->
+  <rect x="40" y="568" width="420" height="250" rx="10" fill="#e8f7e4" stroke="#4caf50" stroke-width="2"/>
+  <text x="58" y="592" class="ttl">CONTEXT + LONG-BOOK MEMORY</text>
+  <text x="58" y="618" class="ln">Context builder v2 — token-budgeted prompt:</text>
+  <text x="58" y="638" class="ln">spec · core · codex · digests · chapter · recall</text>
+  <text x="58" y="658" class="ln">· recap · card   (trims recall first, then digests)</text>
+  <text x="58" y="686" class="ln"><tspan font-weight="700">DIGEST</tspan>  scene / chapter / act summaries</text>
+  <text x="58" y="708" class="ln"><tspan font-weight="700">CORE</tspan>  canon facts in force at this story time</text>
+  <text x="58" y="730" class="ln"><tspan font-weight="700">RECALL</tspan>  SQLite FTS5 search of earlier scenes</text>
+  <text x="58" y="758" class="ln">Memory reads each scene's effective version</text>
+  <text x="58" y="778" class="ln">(approved, else active). Prompt-echo stripped.</text>
+  <text x="58" y="802" class="ln">Style lessons you approved are added to the spec.</text>
+
+  <!-- 5b. Quality engine -->
+  <rect x="490" y="568" width="420" height="250" rx="10" fill="#ffebdd" stroke="#f97316" stroke-width="2"/>
+  <text x="508" y="592" class="ttl">QUALITY ENGINE  (rules first, model second)</text>
+  <text x="508" y="618" class="ln"><tspan font-weight="700">deterministic</tspan>  repetition, slop, POV, tense, length</text>
+  <text x="508" y="640" class="ln"><tspan font-weight="700">extract</tspan>  model facts + verified quotes → queue</text>
+  <text x="508" y="662" class="ln"><tspan font-weight="700">rules</tspan>  canon conflicts: 8 kinds, story-time order</text>
+  <text x="508" y="684" class="ln"><tspan font-weight="700">check</tspan>  adjudication, finding sync per detector</text>
+  <text x="508" y="706" class="ln"><tspan font-weight="700">critics</tspan>  craft rubric (8 scores), voice, judge</text>
+  <text x="508" y="728" class="ln"><tspan font-weight="700">revision</tspan>  paragraph windows, diff span guard</text>
+  <text x="508" y="750" class="ln"><tspan font-weight="700">canon</tspan>  accept / reject / retcon (you only)</text>
+  <text x="508" y="772" class="ln"><tspan font-weight="700">report · lessons · names</tspan></text>
+  <text x="508" y="800" class="sm">Every finding carries evidence quoted from the text.</text>
+
+  <!-- 5c. Prompts -->
+  <rect x="940" y="568" width="420" height="250" rx="10" fill="#f1f1f3" stroke="#8b8b93" stroke-width="2"/>
+  <text x="958" y="592" class="ttl">PROMPT REGISTRY</text>
+  <text x="958" y="618" class="ln">Versioned Jinja templates (sandboxed):</text>
+  <text x="958" y="642" class="ln">spec · design · outline · cards</text>
+  <text x="958" y="664" class="ln">draft.scene · draft.continue</text>
+  <text x="958" y="686" class="ln">facts.extract · memory.digest</text>
+  <text x="958" y="708" class="ln">critique.adjudicate / rubric / voice</text>
+  <text x="958" y="730" class="ln">revise.span</text>
+  <text x="958" y="758" class="ln">Story-structure skills:</text>
+  <text x="958" y="780" class="ln">three-act · save-the-cat · hero's journey</text>
+  <text x="958" y="804" class="sm">Project can override any template or skill.</text>
+
+  <path class="arrow" d="M250 818 V850"/>
+  <path class="arrow" d="M700 818 V850"/>
+  <path class="arrow" d="M1150 818 V850"/>
+  <text x="712" y="840" class="note">every model call goes through one door</text>
+
+  <!-- 6. Router -->
+  <rect x="40" y="850" width="1320" height="114" rx="10" fill="#ffe3e8" stroke="#e11d48" stroke-width="2"/>
+  <text x="58" y="874" class="ttl">MODEL ROUTER  (the only way to reach a model)</text>
+  <text x="58" y="898" class="ln">Profiles: planner · prose · critic  |  Allow-list: only llama3.1:8b-instruct-q4_K_M and llama3.2:1b  |  Loopback only (127.0.0.1)</text>
+  <text x="58" y="920" class="ln">generate_structured: schema + allowed-ID checks + validate + advise → repair → best fallback  |  Repetition guard</text>
+  <text x="58" y="942" class="ln">Three awake-time timeouts · unload-before-switch · cancellation · run recorder · offline tokenizer</text>
+  <path class="arrow" d="M250 964 V996"/>
+  <path class="arrow" d="M700 964 V996"/>
+  <path class="arrow" d="M1150 964 V996"/>
+
+  <!-- 7. Adapters -->
+  <rect x="40" y="996" width="420" height="84" rx="10" fill="#f4f4f6" stroke="#6b7280" stroke-width="2"/>
+  <text x="58" y="1020" class="ttl">OLLAMA ADAPTER</text>
+  <text x="58" y="1044" class="ln">127.0.0.1:11434 · llama3.1 8B Q4 (writer)</text>
+  <text x="58" y="1064" class="ln">llama3.2 1B (fast plumbing tests)</text>
+  <rect x="490" y="996" width="420" height="84" rx="10" fill="#f4f4f6" stroke="#6b7280" stroke-width="2"/>
+  <text x="508" y="1020" class="ttl">OPENAI-COMPATIBLE LOCAL ADAPTER</text>
+  <text x="508" y="1044" class="ln">llama.cpp-style local servers (optional)</text>
+  <text x="508" y="1064" class="ln">same allow-list and loopback rule</text>
+  <rect x="940" y="996" width="420" height="84" rx="10" fill="#f4f4f6" stroke="#6b7280" stroke-width="2"/>
+  <text x="958" y="1020" class="ttl">FAKE ADAPTER  (tests)</text>
+  <text x="958" y="1044" class="ln">scripted · auto · replay recorded runs</text>
+  <text x="958" y="1064" class="ln">powers the whole test suite and the 20 s trial</text>
+
+  <!-- 8. Storage -->
+  <rect x="40" y="1112" width="1320" height="172" rx="10" fill="#e8edf3" stroke="#475569" stroke-width="2"/>
+  <text x="58" y="1136" class="ttl">STORAGE  ·  files are the source of truth</text>
+  <text x="1342" y="1136" class="sm" text-anchor="end">~/InkForge/workspace/projects/&lt;project&gt;/</text>
+  <text x="58" y="1164" class="ln"><tspan font-weight="700">Versioned artifacts</tspan>  name.vN + meta.json</text>
+  <text x="58" y="1186" class="ln">spec · design · outline · chapters · cards · drafts · timeline</text>
+  <text x="58" y="1208" class="ln">Staleness by input hashes · atomic writes</text>
+  <text x="58" y="1230" class="ln"><tspan font-weight="700">codex/</tspan>  characters · locations · items · lore</text>
+  <text x="58" y="1252" class="ln"><tspan font-weight="700">canon/</tspan>  facts.jsonl · review_queue.jsonl</text>
+  <text x="720" y="1164" class="ln"><tspan font-weight="700">quality/</tspan>  findings · revisions · reports/</text>
+  <text x="720" y="1186" class="ln"><tspan font-weight="700">style/</tspan> lessons.json  ·  <tspan font-weight="700">memory/</tspan> digests/</text>
+  <text x="720" y="1208" class="ln"><tspan font-weight="700">runs/&lt;job&gt;/</tspan>  events · prompts · diffs · manifests</text>
+  <text x="720" y="1230" class="ln"><tspan font-weight="700">index.sqlite + recall.sqlite</tspan>  (derived, rebuildable)</text>
+  <text x="720" y="1252" class="ln">audit log · backups · OS file locks · path guard</text>
+
+  <!-- left rail: everything reads/writes storage -->
+  <path class="rail" d="M40 350 H24 V1198 H38"/>
+  <text x="12" y="780" class="note" text-anchor="middle" transform="rotate(-90 12 780)">all layers read and write storage</text>
+
+  <!-- Legend / status -->
+  <rect x="40" y="1314" width="1320" height="104" rx="10" fill="#fafafa" stroke="#9ca3af" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="58" y="1338" class="ttl" style="fill:#6b7280">BUILT (Phases 0–6)  vs  NOT BUILT YET</text>
+  <text x="58" y="1362" class="ln">Built and tested: everything above — planning, drafting, memory, quality engine, CLI, router, storage.</text>
+  <text x="58" y="1384" class="ln">Not built yet: Phase 7 local web app · 8 story map, timeline and Codex editor · 9 script mode · 10 more exports (docx, epub)</text>
+  <text x="58" y="1406" class="ln">and hardening · 11 launcher and daily-use polish (v1.0). They will sit on top of the CLI layer and call the same Conductor.</text>
+
+  <text x="700" y="1448" class="note" text-anchor="middle">InkForge · 27 October 2026 · only the author can approve drafts, accept findings or change canon</text>
+</svg>

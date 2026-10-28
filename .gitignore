@@ -43,3 +43,6 @@ chaos-out/
 offline-run-8b/
 offline-run-p5/
 recall.sqlite
+
+# keep benchmark logs that are referenced from the docs
+!docs/benchmarks/*.log

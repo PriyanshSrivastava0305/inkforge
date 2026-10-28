@@ -2,8 +2,9 @@
 
 Local-first story and script writing agent — personal tool, strictly local (no network calls at runtime).
 
-- **Plan & docs:** [`docs/`](docs/README.md) — start with `01`, then the roadmap in `10`.
-- **Status:** Phases 0–5: MVP (idea → plan → drafts → approved Markdown, offline) plus long-book memory. Next: Phase 6 (quality engine). Sample output: [`examples/salt-letters`](examples/salt-letters/README.md). See [`CHANGELOG.md`](CHANGELOG.md).
+- **New here (or a Claude session picking this up)?** Read [`claude_context.md`](claude_context.md) first — concept, rules, architecture, status, next steps.
+- **Plan & docs:** [`docs/`](docs/README.md) — start with `01`, then the roadmap in `10`. Architecture diagram: [`docs/inkforge-architecture.svg`](docs/inkforge-architecture.svg). Progress: [`docs/PROGRESS-REPORT.md`](docs/PROGRESS-REPORT.md).
+- **Status:** Phases 0–6 done: plan → draft → long-book memory → check (continuity, craft, voice) → scoped revision, all offline. Next: full model evaluations on faster hardware, then Phase 7 (local web app). Sample output: [`examples/salt-letters`](examples/salt-letters/README.md). See [`CHANGELOG.md`](CHANGELOG.md).
 - **Models (D16):** `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests), via Ollama on `127.0.0.1`.
 
 ## Setup

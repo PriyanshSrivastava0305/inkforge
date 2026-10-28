@@ -4,9 +4,9 @@ InkForge is a **local-first story and script writing agent**. It takes an author
 
 This folder (`docs/`) is the working plan. It is built on top of [`reference/INKFORGE_BUILD_GUIDE.md`](reference/INKFORGE_BUILD_GUIDE.md) and the architecture diagrams in [`reference/`](reference/), and on a review of three reference agents (AuthorAgent, GOAT-Storytelling-Agent, OpenWrite).
 
-> **Status:** Phases 0–5 ✓ — MVP plus long-book memory (digests, established facts, recalled passages). Next: Phase 6 (quality engine). Last updated 2026-10-09.
+> **Status:** Phases 0–6 ✓ — MVP, long-book memory, and the quality engine (check + scoped revision). Next: full real-model evaluations, then Phase 7 (web app). Last updated 2026-10-28. Handoff for new sessions: [`../claude_context.md`](../claude_context.md).
 >
-> **Fixed context:** personal tool, strictly local, CPU-only laptop (i7-1165G7, 16 GB). Models: `llama3.1:8b-instruct-q4_K_M` (default), `llama3.2:1b` (fast tests). See D16–D18 in [12](12-decisions-and-open-questions.md).
+> **Fixed context:** personal tool, strictly local. Built and tuned on a CPU-only laptop (i7-1165G7, 16 GB) with `llama3.1:8b-instruct-q4_K_M` (default) and `llama3.2:1b` (fast tests); work is moving to a Blackwell GPU machine where the model allow-list can grow (still local-only). See D16–D18 in [12](12-decisions-and-open-questions.md) and §8 of `claude_context.md`.
 
 ## How to read this folder
 
